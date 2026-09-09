@@ -331,3 +331,103 @@ tbody tr:hover {
         gap: 15px;
     }
 }
+/* =========================
+   ADD DAILY REPORT
+   ========================= */
+
+.report-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 11px 13px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    box-sizing: border-box;
+    background: #ffffff;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-bottom: 30px;
+}
+
+.secondary-button {
+    display: inline-block;
+    padding: 11px 20px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    background: white;
+    color: #374151;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.secondary-button:hover {
+    background: #f3f4f6;
+}
+
+.report-form .primary-button {
+    border: none;
+    cursor: pointer;
+}
+
+@media (max-width: 700px) {
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .form-actions a,
+    .form-actions button {
+        width: 100%;
+        text-align: center;
+        box-sizing: border-box;
+    }
+
+}
