@@ -45,8 +45,8 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
         alert("Daily Report berhasil disimpan!");
-
-        window.location.href = "daily-monitoring.html";
+        
+        window.location.assign("./daily-monitoring.html");
 
     });
 
