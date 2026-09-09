@@ -1,1 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Daily Report - Project Control System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
 
+<body>
+
+<header class="top-header">
+    <div>
+        <h1>PROJECT CONTROL SYSTEM</h1>
+        <p>Digital Project Monitoring & Reporting Prototype</p>
+    </div>
+
+    <a href="daily-monitoring.html" class="back-button">
+        ← Back
+    </a>
+</header>
+
+
+<main class="container">
+
+    <div class="page-header">
+        <div>
+            <h2>Add Daily Report</h2>
+            <p>Input daily field activities and project conditions.</p>
+        </div>
+    </div>
+
+
+    <form class="report-form">
+
+        <!-- BASIC INFORMATION -->
+        <div class="content-card">
+
+            <h3 class="section-title">
+                📋 Basic Information
+            </h3>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Project</label>
+                    <select required>
+                        <option value="">Select Project</option>
+                        <option>Rumah Dinas Type 200</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Unit</label>
+                    <select required>
+                        <option value="">Select Unit</option>
+                        <option>Unit 01</option>
+                        <option>Unit 02</option>
+                        <option>Unit 03</option>
+                        <option>Unit 04</option>
+                        <option>Unit 05</option>
+                        <option>Unit 06</option>
+                        <option>Unit 07</option>
+                        <option>Unit 08</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Weather</label>
+                    <select required>
+                        <option value="">Select Weather</option>
+                        <option>Clear</option>
+                        <option>Cloudy</option>
+                        <option>Rain</option>
+                        <option>Heavy Rain</option>
+                    </select>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- MANPOWER -->
+        <div class="content-card">
+
+            <h3 class="section-title">
+                👷 Manpower
+            </h3>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Foreman</label>
+                    <input type="number" min="0" placeholder="People">
+                </div>
+
+                <div class="form-group">
+                    <label>Head Worker</label>
+                    <input type="number" min="0" placeholder="People">
+                </div>
+
+                <div class="form-group">
+                    <label>Skilled Worker</label>
+                    <input type="number" min="0" placeholder="People">
+                </div>
+
+                <div class="form-group">
+                    <label>Laborer</label>
+                    <input type="number" min="0" placeholder="People">
+                </div>
+
+            </div>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Working Hours / Person</label>
+                    <input type="number" min="0" step="0.5" placeholder="Hours">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- WORK ACTIVITIES -->
+        <div class="content-card">
+
+            <h3 class="section-title">
+                🏗️ Work Activities
+            </h3>
+
+            <div class="form-group">
+                <label>Activity</label>
+                <textarea
+                    rows="4"
+                    placeholder="Example: Column reinforcement fabrication, column formwork installation, concrete casting..."
+                ></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Status</label>
+
+                <select>
+                    <option>On Progress</option>
+                    <option>Completed</option>
+                    <option>Delayed</option>
+                    <option>Not Started</option>
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <!-- MATERIAL -->
+        <div class="content-card">
+
+            <h3 class="section-title">
+                🧱 Material
+            </h3>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Material</label>
+                    <input
+                        type="text"
+                        placeholder="Example: Cement, sand, rebar, batako..."
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label>Quantity</label>
+                    <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        placeholder="Quantity"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label>Unit</label>
+                    <select>
+                        <option value="">Select Unit</option>
+                        <option>kg</option>
+                        <option>ton</option>
+                        <option>m³</option>
+                        <option>m²</option>
+                        <option>pcs</option>
+                        <option>batang</option>
+                        <option>sak</option>
+                        <option>lembar</option>
+                        <option>rit</option>
+                    </select>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- NOTES -->
+        <div class="content-card">
+
+            <h3 class="section-title">
+                📝 Daily Notes
+            </h3>
+
+            <div class="form-group">
+
+                <label>Notes / Field Condition</label>
+
+                <textarea
+                    rows="5"
+                    placeholder="Example: Acian hampir selesai. Material cat dasar dan alat sudah tersedia di lokasi."
+                ></textarea>
+
+            </div>
+
+        </div>
+
+
+        <!-- BUTTON -->
+        <div class="form-actions">
+
+            <a href="daily-monitoring.html" class="secondary-button">
+                Cancel
+            </a>
+
+            <button type="submit" class="primary-button">
+                Save Daily Report
+            </button>
+
+        </div>
+
+    </form>
+
+</main>
+
+</body>
+</html>
