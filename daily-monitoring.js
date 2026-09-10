@@ -1,162 +1,60 @@
-// =====================================================
-// DAILY MONITORING
-// =====================================================
+/* =========================================================
+   DAILY MONITORING
+   Project Control System
+   ========================================================= */
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
 
-    // =====================================================
-    // PROJECT & UNIT DATA
-    // =====================================================
+    /* =====================================================
+       CONFIG
+    ====================================================== */
 
-    const projectData = {
-
-        Kalimantan: {
-
-            "Tipe 200": [
-                "DANREM"
-            ],
-
-            "Tipe 175": [
-                "KASREM",
-                "KASI 01",
-                "KASI 02",
-                "KASI 03",
-                "KASI 04",
-                "KASI 05",
-                "KASI 06"
-            ]
-
-        },
-
-        Tasikmalaya: {
-
-            "Casa Sabrina": [
-                "Tipe 95 - Rumah No. 09",
-                "Tipe 95 - Rumah No. 10",
-                "Tipe 95 - Rumah No. 14",
-                "Tipe 95 - Rumah No. 15",
-                "Tipe 128 - Rumah No. 38",
-                "Tipe 150 - Rumah No. 19",
-                "Tipe 150 - Rumah No. 21",
-                "Tipe Custom - Rumah No. 12",
-                "Tipe Custom - Rumah No. 9-11",
-                "Tipe Custom - Rumah No. 18-20"
-            ],
-
-            "Buana Royale Residence": [
-                "Tipe 45 - Y-7",
-                "Tipe 95 - D3",
-                "Tipe 95 - D5"
-            ],
-
-            "Andalusia": [
-                "Tipe Custom - Boulevard 1-2 E"
-            ]
-
-        }
-
-    };
+    const REPORT_STORAGE_KEY = "dailyReports";
 
 
-    // =====================================================
-    // GET FILTER ELEMENTS
-    // =====================================================
+    /* =====================================================
+       ELEMENTS
+    ====================================================== */
 
-    const dateFilter =
-        document.getElementById("dateFilter");
+    const dateFilter = document.getElementById("dateFilter");
+    const locationFilter = document.getElementById("locationFilter");
+    const projectFilter = document.getElementById("projectFilter");
+    const unitFilter = document.getElementById("unitFilter");
 
-    const locationFilter =
-        document.getElementById("locationFilter");
+    const totalManpowerEl = document.getElementById("totalManpower");
+    const normalManhoursEl = document.getElementById("normalManhours");
+    const overtimeManhoursEl = document.getElementById("overtimeManhours");
+    const totalManhoursEl = document.getElementById("totalManhours");
+    const onProgressEl = document.getElementById("onProgress");
+    const completedEl = document.getElementById("completed");
 
-    const projectFilter =
-        document.getElementById("projectFilter");
-
-    const unitFilter =
-        document.getElementById("unitFilter");
-
-
-    // =====================================================
-    // GET TABLE ELEMENTS
-    // =====================================================
-
-    const reportTableBody =
-        document.getElementById("reportTableBody");
-
-    const materialTableBody =
-        document.getElementById("materialTableBody");
+    const reportTableBody = document.getElementById("reportTableBody");
+    const progressTableBody = document.getElementById("progressTableBody");
+    const materialTableBody = document.getElementById("materialTableBody");
 
 
-    /*
-        Daily Monitoring mempunyai 3 tabel:
-
-        1. Recent Daily Reports
-        2. Daily Progress & Quantity
-        3. Material Summary
-
-        Karena tabel progress belum mempunyai ID khusus,
-        kita ambil tbody tabel ke-2.
-    */
-
-    const allTableBodies =
-        document.querySelectorAll("table tbody");
-
-    const progressTableBody =
-        allTableBodies.length >= 2
-            ? allTableBodies[1]
-            : null;
-
-
-    // =====================================================
-    // KPI ELEMENTS
-    // =====================================================
-
-    const totalManpower =
-        document.getElementById("totalManpower");
-
-    const normalManhours =
-        document.getElementById("normalManhours");
-
-    const overtimeManhours =
-        document.getElementById("overtimeManhours");
-
-    const totalManhours =
-        document.getElementById("totalManhours");
-
-    const onProgress =
-        document.getElementById("onProgress");
-
-    const completed =
-        document.getElementById("completed");
-
-
-    // =====================================================
-    // LOAD REPORTS
-    // =====================================================
+    /* =====================================================
+       HELPERS
+    ====================================================== */
 
     function getReports() {
 
         try {
 
-            const saved =
-                localStorage.getItem("dailyReports");
+            const stored = localStorage.getItem(REPORT_STORAGE_KEY);
 
-            if (!saved) {
+            if (!stored) {
                 return [];
             }
 
-            const reports =
-                JSON.parse(saved);
+            const parsed = JSON.parse(stored);
 
-            if (!Array.isArray(reports)) {
-                return [];
-            }
-
-            return reports;
+            return Array.isArray(parsed) ? parsed : [];
 
         } catch (error) {
 
             console.error(
-                "Error loading daily reports:",
+                "Failed to read daily reports:",
                 error
             );
 
@@ -167,578 +65,843 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // =====================================================
-    // UPDATE PROJECT FILTER
-    // =====================================================
-
-    function updateProjectFilter() {
-
-        if (!projectFilter) {
-            return;
-        }
-
-        const location =
-            locationFilter.value;
-
-        projectFilter.innerHTML =
-            '<option value="">All Projects</option>';
-
+    function getMasterSchedule() {
 
         if (
-            !location ||
-            !projectData[location]
+            typeof window.masterSchedule !== "undefined" &&
+            Array.isArray(window.masterSchedule)
         ) {
-
-            updateUnitFilter();
-
-            return;
-
+            return window.masterSchedule;
         }
 
+        if (
+            typeof masterSchedule !== "undefined" &&
+            Array.isArray(masterSchedule)
+        ) {
+            return masterSchedule;
+        }
 
-        Object.keys(
-            projectData[location]
-        ).forEach(function (project) {
-
-            const option =
-                document.createElement("option");
-
-            option.value =
-                project;
-
-            option.textContent =
-                project;
-
-            projectFilter.appendChild(
-                option
-            );
-
-        });
-
-
-        updateUnitFilter();
+        return [];
 
     }
 
 
-    // =====================================================
-    // UPDATE UNIT FILTER
-    // =====================================================
+    function number(value) {
 
-    function updateUnitFilter() {
+        const parsed = parseFloat(value);
 
-        if (!unitFilter) {
-            return;
+        return Number.isFinite(parsed)
+            ? parsed
+            : 0;
+
+    }
+
+
+    function formatNumber(value, decimals = 2) {
+
+        return number(value).toLocaleString(
+            "en-US",
+            {
+                minimumFractionDigits: decimals,
+                maximumFractionDigits: decimals
+            }
+        );
+
+    }
+
+
+    function formatPercent(value) {
+
+        return `${formatNumber(value, 2)}%`;
+
+    }
+
+
+    function escapeHTML(value) {
+
+        if (value === null || value === undefined) {
+            return "";
         }
 
-        const location =
-            locationFilter.value;
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
 
-        const project =
-            projectFilter.value;
-
-
-        unitFilter.innerHTML =
-            '<option value="">All Units</option>';
-
-
-        if (
-            !location ||
-            !project ||
-            !projectData[location] ||
-            !projectData[location][project]
-        ) {
-
-            return;
-
-        }
+    }
 
 
-        projectData[location][project]
-            .forEach(function (unit) {
+    function normalize(value) {
+
+        return String(value || "")
+            .trim()
+            .toLowerCase();
+
+    }
+
+
+    function getActivityId(activity) {
+
+        return (
+            activity?.activityId ||
+            activity?.id ||
+            ""
+        );
+
+    }
+
+
+    function getActivityName(activity) {
+
+        return (
+            activity?.name ||
+            activity?.activity ||
+            activity?.activityName ||
+            "-"
+        );
+
+    }
+
+
+    function getWorkPackage(activity) {
+
+        return (
+            activity?.workPackage ||
+            activity?.category ||
+            activity?.wbs ||
+            "-"
+        );
+
+    }
+
+
+    function getQuantity(activity) {
+
+        return number(
+            activity?.quantity ??
+            activity?.actualQuantity ??
+            activity?.actualToday ??
+            0
+        );
+
+    }
+
+
+    function getPlannedQuantity(activity) {
+
+        return number(
+            activity?.plannedQuantity ??
+            activity?.planned ??
+            0
+        );
+
+    }
+
+
+    function getUnit(activity) {
+
+        return (
+            activity?.unit ||
+            activity?.quantityUnit ||
+            "-"
+        );
+
+    }
+
+
+    function getWeight(activity) {
+
+        return number(
+            activity?.weight ??
+            activity?.bobot ??
+            0
+        );
+
+    }
+
+
+    /* =====================================================
+       MASTER SCHEDULE MAP
+    ====================================================== */
+
+    function createScheduleMap() {
+
+        const schedule = getMasterSchedule();
+
+        const map = new Map();
+
+        schedule.forEach(item => {
+
+            const id = getActivityId(item);
+
+            if (!id) {
+                return;
+            }
+
+            map.set(String(id), item);
+
+        });
+
+        return map;
+
+    }
+
+
+    /* =====================================================
+       REPORT FILTERING
+    ====================================================== */
+
+    function getFilteredReports() {
+
+        const reports = getReports();
+
+        const selectedDate =
+            dateFilter?.value || "All";
+
+        const selectedLocation =
+            locationFilter?.value || "All";
+
+        const selectedProject =
+            projectFilter?.value || "All";
+
+        const selectedUnit =
+            unitFilter?.value || "All";
+
+
+        return reports.filter(report => {
+
+            const reportDate =
+                report.reportDate ||
+                report.date ||
+                "";
+
+
+            const reportLocation =
+                report.location ||
+                "";
+
+
+            const reportProject =
+                report.project ||
+                "";
+
+
+            const reportUnit =
+                report.unit ||
+                "";
+
+
+            if (
+                selectedDate !== "All" &&
+                selectedDate !== "" &&
+                reportDate !== selectedDate
+            ) {
+                return false;
+            }
+
+
+            if (
+                selectedLocation !== "All" &&
+                normalize(reportLocation) !==
+                normalize(selectedLocation)
+            ) {
+                return false;
+            }
+
+
+            if (
+                selectedProject !== "All" &&
+                normalize(reportProject) !==
+                normalize(selectedProject)
+            ) {
+                return false;
+            }
+
+
+            if (
+                selectedUnit !== "All" &&
+                normalize(reportUnit) !==
+                normalize(selectedUnit)
+            ) {
+                return false;
+            }
+
+
+            return true;
+
+        });
+
+    }
+
+
+    /* =====================================================
+       FILTER OPTIONS
+    ====================================================== */
+
+    function populateFilters() {
+
+        const reports = getReports();
+
+        const currentProject =
+            projectFilter?.value || "All";
+
+        const currentUnit =
+            unitFilter?.value || "All";
+
+
+        if (projectFilter) {
+
+            const projects = [
+                ...new Set(
+                    reports
+                        .map(report => report.project)
+                        .filter(Boolean)
+                )
+            ];
+
+            projectFilter.innerHTML = `
+                <option value="All">
+                    All Projects
+                </option>
+            `;
+
+            projects.forEach(project => {
 
                 const option =
                     document.createElement("option");
 
-                option.value =
-                    unit;
+                option.value = project;
+                option.textContent = project;
 
-                option.textContent =
-                    unit;
-
-                unitFilter.appendChild(
-                    option
-                );
+                projectFilter.appendChild(option);
 
             });
 
-    }
 
-
-    // =====================================================
-    // FILTER REPORTS
-    // =====================================================
-
-    function filterReports(reports) {
-
-        const selectedDate =
-            dateFilter
-                ? dateFilter.value
-                : "";
-
-
-        const selectedLocation =
-            locationFilter
-                ? locationFilter.value
-                : "";
-
-
-        const selectedProject =
-            projectFilter
-                ? projectFilter.value
-                : "";
-
-
-        const selectedUnit =
-            unitFilter
-                ? unitFilter.value
-                : "";
-
-
-        return reports.filter(
-            function (report) {
-
-                if (
-                    selectedDate &&
-                    report.date !== selectedDate
-                ) {
-
-                    return false;
-
-                }
-
-
-                if (
-                    selectedLocation &&
-                    report.location !== selectedLocation
-                ) {
-
-                    return false;
-
-                }
-
-
-                if (
-                    selectedProject &&
-                    report.project !== selectedProject
-                ) {
-
-                    return false;
-
-                }
-
-
-                if (
-                    selectedUnit &&
-                    report.unit !== selectedUnit
-                ) {
-
-                    return false;
-
-                }
-
-
-                return true;
-
+            if (
+                projects.includes(currentProject)
+            ) {
+                projectFilter.value =
+                    currentProject;
             }
-        );
-
-    }
-
-
-    // =====================================================
-    // UPDATE KPI
-    // =====================================================
-
-    function updateKPI(reports) {
-
-        let manpower = 0;
-
-        let normalHours = 0;
-
-        let overtimeHours = 0;
-
-        let totalHours = 0;
-
-        let progressCount = 0;
-
-        let completedCount = 0;
-
-
-        reports.forEach(
-            function (report) {
-
-                // -----------------------------
-                // MANPOWER
-                // -----------------------------
-
-                let reportManpower = 0;
-
-
-                if (
-                    report.manpower &&
-                    typeof report.manpower === "object"
-                ) {
-
-                    reportManpower =
-                        Number(
-                            report.manpower.total || 0
-                        );
-
-                } else {
-
-                    reportManpower =
-                        Number(
-                            report.manpower || 0
-                        );
-
-                }
-
-
-                manpower +=
-                    reportManpower;
-
-
-                // -----------------------------
-                // MAN-HOURS
-                // -----------------------------
-
-                let normalMH =
-                    Number(
-                        report.normalManhours || 0
-                    );
-
-
-                let overtimeMH =
-                    Number(
-                        report.overtimeManhours || 0
-                    );
-
-
-                let totalMH =
-                    Number(
-                        report.totalManhours || 0
-                    );
-
-
-                // Compatibility with old data
-                if (
-                    totalMH === 0 &&
-                    reportManpower > 0
-                ) {
-
-                    const normal =
-                        Number(
-                            report.normalHours || 0
-                        );
-
-
-                    const overtime =
-                        Number(
-                            report.overtimeHours || 0
-                        );
-
-
-                    normalMH =
-                        reportManpower *
-                        normal;
-
-
-                    overtimeMH =
-                        reportManpower *
-                        overtime;
-
-
-                    totalMH =
-                        normalMH +
-                        overtimeMH;
-
-                }
-
-
-                normalHours +=
-                    normalMH;
-
-
-                overtimeHours +=
-                    overtimeMH;
-
-
-                totalHours +=
-                    totalMH;
-
-
-                // -----------------------------
-                // STATUS
-                // -----------------------------
-
-                let status =
-                    report.status || "";
-
-
-                if (
-                    report.activities &&
-                    Array.isArray(report.activities)
-                ) {
-
-                    const statuses =
-                        report.activities
-                            .map(function (activity) {
-                                return activity.status;
-                            })
-                            .filter(Boolean);
-
-
-                    if (
-                        statuses.includes(
-                            "On Progress"
-                        )
-                    ) {
-
-                        status =
-                            "On Progress";
-
-                    } else if (
-                        statuses.length > 0 &&
-                        statuses.every(
-                            function (item) {
-                                return item === "Completed";
-                            }
-                        )
-                    ) {
-
-                        status =
-                            "Completed";
-
-                    }
-
-                }
-
-
-                if (
-                    status === "Completed"
-                ) {
-
-                    completedCount++;
-
-                } else if (
-                    status === "On Progress"
-                ) {
-
-                    progressCount++;
-
-                }
-
-            }
-        );
-
-
-        // -----------------------------
-        // DISPLAY KPI
-        // -----------------------------
-
-        if (totalManpower) {
-
-            totalManpower.textContent =
-                manpower;
 
         }
 
 
-        if (normalManhours) {
+        if (unitFilter) {
 
-            normalManhours.textContent =
-                normalHours.toFixed(1);
+            const units = [
+                ...new Set(
+                    reports
+                        .map(report => report.unit)
+                        .filter(Boolean)
+                )
+            ];
 
-        }
-
-
-        if (overtimeManhours) {
-
-            overtimeManhours.textContent =
-                overtimeHours.toFixed(1);
-
-        }
-
-
-        if (totalManhours) {
-
-            totalManhours.textContent =
-                totalHours.toFixed(1);
-
-        }
-
-
-        if (onProgress) {
-
-            onProgress.textContent =
-                progressCount;
-
-        }
-
-
-        if (completed) {
-
-            completed.textContent =
-                completedCount;
-
-        }
-
-    }
-
-
-    // =====================================================
-    // STATUS BADGE
-    // =====================================================
-
-    function getStatusBadge(status) {
-
-        if (
-            status === "Completed"
-        ) {
-
-            return `
-                <span class="status-completed">
-                    Completed
-                </span>
+            unitFilter.innerHTML = `
+                <option value="All">
+                    All Units
+                </option>
             `;
 
-        }
+            units.forEach(unit => {
 
+                const option =
+                    document.createElement("option");
 
-        if (
-            status === "On Progress"
-        ) {
+                option.value = unit;
+                option.textContent = unit;
 
-            return `
-                <span class="status-progress">
-                    On Progress
-                </span>
-            `;
+                unitFilter.appendChild(option);
 
-        }
-
-
-        if (
-            status === "Delayed"
-        ) {
-
-            return `
-                <span class="status-delayed">
-                    Delayed
-                </span>
-            `;
-
-        }
-
-
-        return status || "-";
-
-    }
-
-
-    // =====================================================
-    // GET ACTIVITY SUMMARY
-    // =====================================================
-
-    function getActivitySummary(report) {
-
-        // New multiple-activity format
-        if (
-            report.activities &&
-            Array.isArray(report.activities) &&
-            report.activities.length > 0
-        ) {
-
-            return report.activities
-                .map(function (activity) {
-
-                    return activity.name;
-
-                })
-                .filter(Boolean)
-                .join(", ");
-
-        }
-
-
-        // Old single-activity format
-        return report.activity || "-";
-
-    }
-
-
-    // =====================================================
-    // GET REPORT STATUS
-    // =====================================================
-
-    function getReportStatus(report) {
-
-        if (
-            report.activities &&
-            Array.isArray(report.activities) &&
-            report.activities.length > 0
-        ) {
-
-            const statuses =
-                report.activities
-                    .map(function (activity) {
-
-                        return activity.status;
-
-                    })
-                    .filter(Boolean);
+            });
 
 
             if (
-                statuses.includes(
-                    "On Progress"
-                )
+                units.includes(currentUnit)
             ) {
+                unitFilter.value =
+                    currentUnit;
+            }
 
-                return "On Progress";
+        }
 
+    }
+
+
+    /* =====================================================
+       KPI - MANPOWER
+    ====================================================== */
+
+    function updateManpowerKPI(reports) {
+
+        let totalManpower = 0;
+        let normalManhours = 0;
+        let overtimeManhours = 0;
+
+
+        reports.forEach(report => {
+
+            const foreman =
+                number(report.foreman);
+
+            const headWorker =
+                number(report.headWorker);
+
+            const skilledWorker =
+                number(report.skilledWorker);
+
+            const staffOffice =
+                number(report.staffOffice);
+
+
+            const manpower =
+                number(
+                    report.manpower
+                ) ||
+                (
+                    foreman +
+                    headWorker +
+                    skilledWorker +
+                    staffOffice
+                );
+
+
+            const normalHours =
+                number(
+                    report.normalHours
+                );
+
+
+            const overtimeHours =
+                number(
+                    report.overtimeHours
+                );
+
+
+            totalManpower += manpower;
+
+            normalManhours +=
+                manpower * normalHours;
+
+            overtimeManhours +=
+                manpower * overtimeHours;
+
+        });
+
+
+        const totalManhours =
+            normalManhours +
+            overtimeManhours;
+
+
+        if (totalManpowerEl) {
+            totalManpowerEl.textContent =
+                formatNumber(totalManpower, 0);
+        }
+
+
+        if (normalManhoursEl) {
+            normalManhoursEl.textContent =
+                formatNumber(normalManhours, 2);
+        }
+
+
+        if (overtimeManhoursEl) {
+            overtimeManhoursEl.textContent =
+                formatNumber(overtimeManhours, 2);
+        }
+
+
+        if (totalManhoursEl) {
+            totalManhoursEl.textContent =
+                formatNumber(totalManhours, 2);
+        }
+
+    }
+
+
+    /* =====================================================
+       ACTIVITY DATA
+    ====================================================== */
+
+    function buildActivityData(reports) {
+
+        const scheduleMap =
+            createScheduleMap();
+
+
+        const activityMap =
+            new Map();
+
+
+        reports.forEach(report => {
+
+            const activities =
+                Array.isArray(report.activities)
+                    ? report.activities
+                    : [];
+
+
+            activities.forEach(activity => {
+
+                const activityId =
+                    getActivityId(activity);
+
+
+                const key =
+                    activityId ||
+                    `${normalize(report.project)}|
+                     ${normalize(report.unit)}|
+                     ${normalize(getActivityName(activity))}`;
+
+
+                if (!activityMap.has(key)) {
+
+                    const scheduleItem =
+                        scheduleMap.get(
+                            String(activityId)
+                        );
+
+
+                    activityMap.set(
+                        key,
+                        {
+
+                            activityId,
+
+                            project:
+                                report.project || "",
+
+                            unitProject:
+                                report.unit || "",
+
+                            workPackage:
+                                getWorkPackage(
+                                    activity
+                                ),
+
+                            activity:
+                                getActivityName(
+                                    activity
+                                ),
+
+                            plannedQuantity:
+                                getPlannedQuantity(
+                                    activity
+                                ) ||
+                                number(
+                                    scheduleItem?.plannedQuantity
+                                ),
+
+                            quantityUnit:
+                                getUnit(
+                                    activity
+                                ) ||
+                                scheduleItem?.unit ||
+                                "-",
+
+                            weight:
+                                getWeight(
+                                    activity
+                                ) ||
+                                number(
+                                    scheduleItem?.weight
+                                ),
+
+                            actualToday: 0,
+
+                            dates: [],
+
+                            statuses: []
+
+                        }
+                    );
+
+                }
+
+
+                const item =
+                    activityMap.get(key);
+
+
+                item.actualToday +=
+                    getQuantity(activity);
+
+
+                if (report.reportDate) {
+
+                    item.dates.push(
+                        report.reportDate
+                    );
+
+                }
+
+
+                if (activity.status) {
+
+                    item.statuses.push(
+                        activity.status
+                    );
+
+                }
+
+            });
+
+        });
+
+
+        return [...activityMap.values()];
+
+    }
+
+
+    /* =====================================================
+       CUMULATIVE ACTUAL
+    ====================================================== */
+
+    function getAllReportsForActivity(
+        activityId,
+        project,
+        unitProject
+    ) {
+
+        const reports =
+            getReports();
+
+
+        let total = 0;
+
+
+        reports.forEach(report => {
+
+            if (
+                project &&
+                normalize(report.project) !==
+                normalize(project)
+            ) {
+                return;
             }
 
 
             if (
-                statuses.length > 0 &&
-                statuses.every(
-                    function (status) {
-
-                        return status === "Completed";
-
-                    }
-                )
+                unitProject &&
+                normalize(report.unit) !==
+                normalize(unitProject)
             ) {
-
-                return "Completed";
-
+                return;
             }
 
-        }
+
+            const activities =
+                Array.isArray(report.activities)
+                    ? report.activities
+                    : [];
 
 
-        return report.status || "-";
+            activities.forEach(activity => {
+
+                if (
+                    activityId &&
+                    String(
+                        getActivityId(activity)
+                    ) === String(activityId)
+                ) {
+
+                    total +=
+                        getQuantity(activity);
+
+                }
+
+            });
+
+        });
+
+
+        return total;
 
     }
 
 
-    // =====================================================
-    // RENDER RECENT DAILY REPORTS
-    // =====================================================
+    /* =====================================================
+       PROGRESS CALCULATION
+    ====================================================== */
 
-    function renderReportTable(reports) {
+    function calculateProgress(item) {
+
+        const cumulativeActual =
+            getAllReportsForActivity(
+                item.activityId,
+                item.project,
+                item.unitProject
+            );
+
+
+        const planned =
+            number(
+                item.plannedQuantity
+            );
+
+
+        let progress = 0;
+
+
+        if (planned > 0) {
+
+            progress =
+                (
+                    cumulativeActual /
+                    planned
+                ) * 100;
+
+        }
+
+
+        progress =
+            Math.max(
+                0,
+                Math.min(
+                    100,
+                    progress
+                )
+            );
+
+
+        const weightedProgress =
+            (
+                progress *
+                number(item.weight)
+            ) / 100;
+
+
+        return {
+
+            cumulativeActual,
+
+            progress,
+
+            weightedProgress
+
+        };
+
+    }
+
+
+    /* =====================================================
+       OVERALL PROGRESS
+    ====================================================== */
+
+    function calculateOverallProgress(
+        reports
+    ) {
+
+        const activities =
+            buildActivityData(reports);
+
+
+        let totalWeightedProgress = 0;
+
+        let totalWeight = 0;
+
+
+        activities.forEach(item => {
+
+            const result =
+                calculateProgress(item);
+
+
+            totalWeightedProgress +=
+                result.weightedProgress;
+
+
+            totalWeight +=
+                number(item.weight);
+
+        });
+
+
+        /*
+         * Because the selected reports can represent
+         * only part of the project, we calculate
+         * weighted progress against the schedule
+         * represented by the activities.
+         */
+
+        if (totalWeight <= 0) {
+
+            return 0;
+
+        }
+
+
+        return (
+            totalWeightedProgress /
+            totalWeight
+        ) * 100;
+
+    }
+
+
+    /* =====================================================
+       ACTIVITY STATUS KPI
+    ====================================================== */
+
+    function updateActivityKPI(reports) {
+
+        const activities =
+            buildActivityData(reports);
+
+
+        let onProgress = 0;
+        let completed = 0;
+
+
+        activities.forEach(item => {
+
+            const result =
+                calculateProgress(item);
+
+
+            if (result.progress >= 100) {
+
+                completed++;
+
+            } else if (
+                result.cumulativeActual > 0
+            ) {
+
+                onProgress++;
+
+            }
+
+        });
+
+
+        if (onProgressEl) {
+
+            onProgressEl.textContent =
+                onProgress;
+
+        }
+
+
+        if (completedEl) {
+
+            completedEl.textContent =
+                completed;
+
+        }
+
+    }
+
+
+    /* =====================================================
+       RECENT DAILY REPORTS
+    ====================================================== */
+
+    function renderReports(reports) {
 
         if (!reportTableBody) {
             return;
@@ -753,8 +916,8 @@ document.addEventListener("DOMContentLoaded", function () {
             reportTableBody.innerHTML = `
                 <tr>
                     <td colspan="9"
-                        style="text-align:center; color:#98a2b3;">
-                        No daily reports available.
+                        style="text-align:center;">
+                        No daily reports recorded.
                     </td>
                 </tr>
             `;
@@ -766,123 +929,166 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const sortedReports =
             [...reports].sort(
-                function (a, b) {
-
-                    return (
-                        new Date(
-                            b.date || b.timestamp
-                        ) -
-                        new Date(
-                            a.date || a.timestamp
+                (a, b) =>
+                    String(
+                        b.reportDate ||
+                        b.date ||
+                        ""
+                    ).localeCompare(
+                        String(
+                            a.reportDate ||
+                            a.date ||
+                            ""
                         )
-                    );
-
-                }
+                    )
             );
 
 
-        sortedReports.forEach(
-            function (report) {
+        sortedReports.forEach(report => {
 
-                const row =
-                    document.createElement("tr");
-
-
-                let manpower = 0;
+            const activities =
+                Array.isArray(report.activities)
+                    ? report.activities
+                    : [];
 
 
-                if (
-                    report.manpower &&
-                    typeof report.manpower === "object"
-                ) {
-
-                    manpower =
-                        Number(
-                            report.manpower.total || 0
-                        );
-
-                } else {
-
-                    manpower =
-                        Number(
-                            report.manpower || 0
-                        );
-
-                }
-
-
-                const totalMH =
-                    Number(
-                        report.totalManhours || 0
-                    );
-
-
-                const activity =
-                    getActivitySummary(
-                        report
-                    );
-
-
-                const status =
-                    getReportStatus(
-                        report
-                    );
-
-
-                row.innerHTML = `
-
-                    <td>
-                        ${report.date || "-"}
-                    </td>
-
-                    <td>
-                        ${report.location || "-"}
-                    </td>
-
-                    <td>
-                        ${report.project || "-"}
-                    </td>
-
-                    <td>
-                        ${report.unit || "-"}
-                    </td>
-
-                    <td>
-                        ${report.weather || "-"}
-                    </td>
-
-                    <td>
-                        ${manpower}
-                    </td>
-
-                    <td>
-                        ${totalMH.toFixed(1)}
-                    </td>
-
-                    <td>
-                        ${activity}
-                    </td>
-
-                    <td>
-                        ${getStatusBadge(status)}
-                    </td>
-
-                `;
-
-
-                reportTableBody.appendChild(
-                    row
+            const manpower =
+                number(
+                    report.manpower
+                ) ||
+                (
+                    number(report.foreman) +
+                    number(report.headWorker) +
+                    number(report.skilledWorker) +
+                    number(report.staffOffice)
                 );
 
+
+            const normalHours =
+                number(
+                    report.normalHours
+                );
+
+
+            const overtimeHours =
+                number(
+                    report.overtimeHours
+                );
+
+
+            const manhours =
+                manpower *
+                (
+                    normalHours +
+                    overtimeHours
+                );
+
+
+            const statuses =
+                activities.map(
+                    activity =>
+                        activity.status
+                );
+
+
+            let status = "—";
+
+
+            if (
+                statuses.includes("Completed")
+            ) {
+
+                status = "Completed";
+
+            } else if (
+                statuses.includes("On Progress")
+            ) {
+
+                status = "On Progress";
+
+            } else if (
+                statuses.length > 0
+            ) {
+
+                status =
+                    statuses[0] || "—";
+
             }
-        );
+
+
+            const row =
+                document.createElement("tr");
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${escapeHTML(
+                        report.reportDate ||
+                        report.date ||
+                        "-"
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHTML(
+                        report.location || "-"
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHTML(
+                        report.project || "-"
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHTML(
+                        report.unit || "-"
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHTML(
+                        report.weather || "-"
+                    )}
+                </td>
+
+                <td>
+                    ${formatNumber(
+                        manpower,
+                        0
+                    )}
+                </td>
+
+                <td>
+                    ${formatNumber(
+                        manhours,
+                        2
+                    )}
+                </td>
+
+                <td>
+                    ${activities.length}
+                </td>
+
+                <td>
+                    ${escapeHTML(status)}
+                </td>
+
+            `;
+
+
+            reportTableBody.appendChild(row);
+
+        });
 
     }
 
 
-    // =====================================================
-    // RENDER DAILY PROGRESS & QUANTITY
-    // =====================================================
+    /* =====================================================
+       DAILY PROGRESS TABLE
+    ====================================================== */
 
     function renderProgressTable(reports) {
 
@@ -894,133 +1100,13 @@ document.addEventListener("DOMContentLoaded", function () {
         progressTableBody.innerHTML = "";
 
 
-        const progressRows = [];
-
-
-        reports.forEach(
-            function (report) {
-
-                // =========================================
-                // NEW MULTIPLE ACTIVITY FORMAT
-                // =========================================
-
-                if (
-                    report.activities &&
-                    Array.isArray(report.activities) &&
-                    report.activities.length > 0
-                ) {
-
-                    report.activities.forEach(
-                        function (activity) {
-
-                            if (
-                                !activity ||
-                                !activity.name
-                            ) {
-                                return;
-                            }
-
-
-                            progressRows.push({
-
-                                date:
-                                    report.date || "-",
-
-                                project:
-                                    report.project || "-",
-
-                                unit:
-                                    report.unit || "-",
-
-                                activity:
-                                    activity.name || "-",
-
-                                quantity:
-                                    Number(
-                                        activity.quantity || 0
-                                    ),
-
-                                quantityUnit:
-                                    activity.unit || "-",
-
-                                plannedQuantity:
-                                    activity.plannedQuantity || "-",
-
-                                progress:
-                                    activity.dailyProgress !== undefined
-                                        ? activity.dailyProgress
-                                        : "-"
-
-                            });
-
-                        }
-                    );
-
-
-                    return;
-
-                }
-
-
-                // =========================================
-                // OLD SINGLE ACTIVITY FORMAT
-                // =========================================
-
-                if (
-                    report.activity
-                ) {
-
-                    progressRows.push({
-
-                        date:
-                            report.date || "-",
-
-                        project:
-                            report.project || "-",
-
-                        unit:
-                            report.unit || "-",
-
-                        activity:
-                            report.activity || "-",
-
-                        quantity:
-                            Number(
-                                report.quantity || 0
-                            ),
-
-                        quantityUnit:
-                            report.quantityUnit || "-",
-
-                        plannedQuantity:
-                            report.plannedQuantity || "-",
-
-                        progress:
-                            report.dailyProgress !== undefined
-                                ? report.dailyProgress
-                                : "-"
-
-                    });
-
-                }
-
-            }
-        );
-
-
-        // =========================================
-        // NO DATA
-        // =========================================
-
-        if (
-            progressRows.length === 0
-        ) {
+        if (reports.length === 0) {
 
             progressTableBody.innerHTML = `
                 <tr>
                     <td colspan="8"
-                        style="text-align:center; color:#98a2b3;">
-                        No progress data available.
+                        style="text-align:center;">
+                        No progress data recorded.
                     </td>
                 </tr>
             `;
@@ -1030,77 +1116,177 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        // =========================================
-        // RENDER EACH ACTIVITY
-        // =========================================
-
-        progressRows.forEach(
-            function (item) {
-
-                const row =
-                    document.createElement("tr");
+        const rows = [];
 
 
-                const progressValue =
-                    item.progress === "-"
-                        ? "-"
-                        : `${Number(
-                            item.progress
-                        ).toFixed(2)}%`;
+        reports.forEach(report => {
+
+            const activities =
+                Array.isArray(report.activities)
+                    ? report.activities
+                    : [];
 
 
-                row.innerHTML = `
+            activities.forEach(activity => {
 
-                    <td>
-                        ${item.date}
-                    </td>
-
-                    <td>
-                        ${item.project}
-                    </td>
-
-                    <td>
-                        ${item.unit}
-                    </td>
-
-                    <td>
-                        ${item.activity}
-                    </td>
-
-                    <td>
-                        ${item.quantity}
-                    </td>
-
-                    <td>
-                        ${item.quantityUnit}
-                    </td>
-
-                    <td>
-                        ${item.plannedQuantity}
-                    </td>
-
-                    <td>
-                        ${progressValue}
-                    </td>
-
-                `;
+                const planned =
+                    getPlannedQuantity(
+                        activity
+                    );
 
 
-                progressTableBody.appendChild(
-                    row
-                );
+                const actual =
+                    getQuantity(
+                        activity
+                    );
 
-            }
+
+                let progress = 0;
+
+
+                if (planned > 0) {
+
+                    progress =
+                        (
+                            actual /
+                            planned
+                        ) * 100;
+
+                }
+
+
+                progress =
+                    Math.max(
+                        0,
+                        Math.min(
+                            100,
+                            progress
+                        )
+                    );
+
+
+                rows.push({
+
+                    date:
+                        report.reportDate ||
+                        report.date ||
+                        "-",
+
+                    project:
+                        report.project ||
+                        "-",
+
+                    unit:
+                        report.unit ||
+                        "-",
+
+                    activity:
+                        getActivityName(
+                            activity
+                        ),
+
+                    quantity:
+                        actual,
+
+                    quantityUnit:
+                        getUnit(
+                            activity
+                        ),
+
+                    plannedQuantity:
+                        planned,
+
+                    progress
+
+                });
+
+            });
+
+        });
+
+
+        rows.sort(
+            (a, b) =>
+                String(b.date)
+                    .localeCompare(
+                        String(a.date)
+                    )
         );
+
+
+        rows.forEach(item => {
+
+            const row =
+                document.createElement("tr");
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${escapeHTML(
+                        item.date
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHTML(
+                        item.project
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHTML(
+                        item.unit
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHTML(
+                        item.activity
+                    )}
+                </td>
+
+                <td>
+                    ${formatNumber(
+                        item.quantity,
+                        3
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHTML(
+                        item.quantityUnit
+                    )}
+                </td>
+
+                <td>
+                    ${formatNumber(
+                        item.plannedQuantity,
+                        3
+                    )}
+                </td>
+
+                <td>
+                    ${formatPercent(
+                        item.progress
+                    )}
+                </td>
+
+            `;
+
+
+            progressTableBody.appendChild(row);
+
+        });
 
     }
 
 
-    // =====================================================
-    // RENDER MATERIAL SUMMARY
-    // =====================================================
+    /* =====================================================
+       MATERIAL SUMMARY
+    ====================================================== */
 
-    function renderMaterialTable(reports) {
+    function renderMaterials(reports) {
 
         if (!materialTableBody) {
             return;
@@ -1110,103 +1296,79 @@ document.addEventListener("DOMContentLoaded", function () {
         materialTableBody.innerHTML = "";
 
 
-        const materialSummary = {};
+        const materialMap =
+            new Map();
 
 
-        reports.forEach(
-            function (report) {
+        reports.forEach(report => {
 
-                if (
-                    !report.materials ||
-                    !Array.isArray(
-                        report.materials
-                    )
-                ) {
+            const materials =
+                Array.isArray(report.materials)
+                    ? report.materials
+                    : [];
 
-                    return;
+
+            materials.forEach(material => {
+
+                const name =
+                    material.name ||
+                    material.materialName ||
+                    "-";
+
+
+                const unit =
+                    material.unit ||
+                    "-";
+
+
+                const quantity =
+                    number(
+                        material.quantity
+                    );
+
+
+                const key =
+                    `${normalize(name)}|
+                     ${normalize(unit)}`;
+
+
+                if (!materialMap.has(key)) {
+
+                    materialMap.set(
+                        key,
+                        {
+
+                            name,
+
+                            quantity: 0,
+
+                            unit
+
+                        }
+                    );
 
                 }
 
 
-                report.materials.forEach(
-                    function (material) {
+                materialMap.get(key)
+                    .quantity += quantity;
 
-                        if (
-                            !material ||
-                            !material.name
-                        ) {
+            });
 
-                            return;
-
-                        }
-
-
-                        const name =
-                            material.name.trim();
-
-
-                        const unit =
-                            material.unit || "-";
-
-
-                        const quantity =
-                            Number(
-                                material.quantity || 0
-                            );
-
-
-                        const key =
-                            name +
-                            "||" +
-                            unit;
-
-
-                        if (
-                            !materialSummary[key]
-                        ) {
-
-                            materialSummary[key] = {
-
-                                name:
-                                    name,
-
-                                quantity:
-                                    0,
-
-                                unit:
-                                    unit
-
-                            };
-
-                        }
-
-
-                        materialSummary[key]
-                            .quantity +=
-                            quantity;
-
-                    }
-                );
-
-            }
-        );
+        });
 
 
         const materials =
-            Object.values(
-                materialSummary
-            );
+            [...materialMap.values()];
 
 
-        if (
-            materials.length === 0
-        ) {
+        if (materials.length === 0) {
 
             materialTableBody.innerHTML = `
                 <tr>
                     <td colspan="3"
-                        style="text-align:center; color:#98a2b3;">
-                        No material data available.
+                        style="text-align:center;">
+                        No material data recorded.
                     </td>
                 </tr>
             `;
@@ -1216,62 +1378,64 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        materials.forEach(
-            function (material) {
+        materials.forEach(material => {
 
-                const row =
-                    document.createElement("tr");
-
-
-                row.innerHTML = `
-
-                    <td>
-                        ${material.name}
-                    </td>
-
-                    <td>
-                        ${material.quantity}
-                    </td>
-
-                    <td>
-                        ${material.unit}
-                    </td>
-
-                `;
+            const row =
+                document.createElement("tr");
 
 
-                materialTableBody.appendChild(
-                    row
-                );
+            row.innerHTML = `
 
-            }
-        );
+                <td>
+                    ${escapeHTML(
+                        material.name
+                    )}
+                </td>
+
+                <td>
+                    ${formatNumber(
+                        material.quantity,
+                        3
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHTML(
+                        material.unit
+                    )}
+                </td>
+
+            `;
+
+
+            materialTableBody.appendChild(row);
+
+        });
 
     }
 
 
-    // =====================================================
-    // REFRESH MONITORING
-    // =====================================================
+    /* =====================================================
+       MAIN RENDER
+    ====================================================== */
 
-    function refreshMonitoring() {
-
-        const reports =
-            getReports();
-
+    function renderDashboard() {
 
         const filteredReports =
-            filterReports(
-                reports
-            );
+            getFilteredReports();
 
 
-        updateKPI(
+        updateManpowerKPI(
             filteredReports
         );
 
 
-        renderReportTable(
+        updateActivityKPI(
+            filteredReports
+        );
+
+
+        renderReports(
             filteredReports
         );
 
@@ -1281,22 +1445,22 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-        renderMaterialTable(
+        renderMaterials(
             filteredReports
         );
 
     }
 
 
-    // =====================================================
-    // FILTER EVENTS
-    // =====================================================
+    /* =====================================================
+       FILTER EVENTS
+    ====================================================== */
 
     if (dateFilter) {
 
         dateFilter.addEventListener(
             "change",
-            refreshMonitoring
+            renderDashboard
         );
 
     }
@@ -1306,11 +1470,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
         locationFilter.addEventListener(
             "change",
-            function () {
+            () => {
 
-                updateProjectFilter();
+                populateFilters();
 
-                refreshMonitoring();
+                renderDashboard();
 
             }
         );
@@ -1322,13 +1486,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         projectFilter.addEventListener(
             "change",
-            function () {
-
-                updateUnitFilter();
-
-                refreshMonitoring();
-
-            }
+            renderDashboard
         );
 
     }
@@ -1338,18 +1496,42 @@ document.addEventListener("DOMContentLoaded", function () {
 
         unitFilter.addEventListener(
             "change",
-            refreshMonitoring
+            renderDashboard
         );
 
     }
 
 
-    // =====================================================
-    // INITIALIZE
-    // =====================================================
+    /* =====================================================
+       STORAGE UPDATE
+    ====================================================== */
 
-    updateProjectFilter();
+    window.addEventListener(
+        "storage",
+        event => {
 
-    refreshMonitoring();
+            if (
+                event.key ===
+                REPORT_STORAGE_KEY
+            ) {
+
+                populateFilters();
+
+                renderDashboard();
+
+            }
+
+        }
+    );
+
+
+    /* =====================================================
+       INITIAL LOAD
+    ====================================================== */
+
+    populateFilters();
+
+    renderDashboard();
+
 
 });
