@@ -77,6 +77,33 @@ function getReports() {
 }
 
 
+/* =========================================================
+   REPORT DATE HELPER
+   ========================================================= */
+
+/*
+    Daily Report terbaru menyimpan tanggal sebagai:
+
+        report.reportDate
+
+    Versi lama mungkin menggunakan:
+
+        report.date
+
+    Sistem sekarang mendukung keduanya.
+*/
+
+function getReportDate(report) {
+
+    return String(
+        report?.reportDate ??
+        report?.date ??
+        ""
+    ).trim();
+
+}
+
+
 function getMasterSchedule() {
 
     if (
@@ -346,7 +373,7 @@ function getFilteredReports() {
     return reports.filter(report => {
 
         const reportDate =
-            String(report.date ?? "");
+            getReportDate(report);
 
         const reportLocation =
             String(
@@ -682,6 +709,7 @@ function buildActivityData(reports) {
                         project,
                         unit,
                         activityId,
+
                         activity:
                             getReportActivityName(activity) ||
                             getActivityName(master),
@@ -730,7 +758,7 @@ function buildActivityData(reports) {
 
         });
 
-    });
+    }
 
 
     return [
@@ -781,10 +809,13 @@ function getAllReportsForActivity(
         }
 
 
+        const reportDate =
+            getReportDate(report);
+
+
         if (
             untilDate &&
-            String(report.date ?? "") >
-            untilDate
+            reportDate > untilDate
         ) {
 
             return;
@@ -1051,7 +1082,9 @@ function getProgressDate() {
 
     const reports =
         getReports()
-            .filter(report => report.date);
+            .filter(report =>
+                getReportDate(report)
+            );
 
 
     if (!reports.length) {
@@ -1062,7 +1095,9 @@ function getProgressDate() {
 
 
     return reports
-        .map(report => report.date)
+        .map(report =>
+            getReportDate(report)
+        )
         .sort()
         .at(-1);
 
@@ -1304,10 +1339,13 @@ function calculateActualProjectProgress(
     selectedReports =
         selectedReports.filter(report => {
 
+            const reportDate =
+                getReportDate(report);
+
+
             if (
                 untilDate &&
-                String(report.date ?? "") >
-                untilDate
+                reportDate > untilDate
             ) {
 
                 return false;
@@ -1367,10 +1405,8 @@ function calculateActualProjectProgress(
         const activityId =
             getActivityId(activity);
 
-
         const weight =
             getActivityWeight(activity);
-
 
         const plannedQuantity =
             getActivityPlannedQuantity(activity);
@@ -1674,9 +1710,9 @@ function renderReports(
         [...reports]
             .sort(
                 (a, b) =>
-                    String(b.date ?? "")
+                    getReportDate(b)
                         .localeCompare(
-                            String(a.date ?? "")
+                            getReportDate(a)
                         )
             );
 
@@ -1741,7 +1777,9 @@ function renderReports(
                     <tr>
 
                         <td>
-                            ${escapeHTML(report.date)}
+                            ${escapeHTML(
+                                getReportDate(report)
+                            )}
                         </td>
 
                         <td>
@@ -1858,7 +1896,7 @@ function renderProgressTable(
             rows.push({
 
                 date:
-                    report.date,
+                    getReportDate(report),
 
                 project:
                     report.project,
