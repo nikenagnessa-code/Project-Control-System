@@ -6,7 +6,6 @@ console.log("DAILY REPORT JS LOADED");
 
 document.addEventListener("DOMContentLoaded", function () {
 
-
     // =====================================================
     // FORM ELEMENTS
     // =====================================================
@@ -86,13 +85,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 "Tipe Custom - Rumah No. 18-20"
             ],
 
-
             "Buana Royale Residence": [
                 "Tipe 45 - Y-7",
                 "Tipe 95 - D3",
                 "Tipe 95 - D5"
             ],
-
 
             "Andalusia": [
                 "Tipe Custom - Boulevard 1-2 E"
@@ -253,48 +250,145 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // =====================================================
-    // ACTIVITY UNIT OPTIONS
+    // MASTER SCHEDULE
     // =====================================================
 
-    const activityUnits = [
+    /*
+        masterSchedule berasal dari:
+        ./master-schedule.js
 
-        "",
-        "m³",
-        "m²",
-        "m¹",
-        "kg",
-        "ton",
-        "pcs",
-        "titik",
-        "unit",
-        "lot"
+        Struktur yang digunakan:
 
-    ];
+        {
+            id,
+            category,
+            workPackage,
+            activity,
+            plannedQuantity,
+            unit,
+            weight
+        }
+    */
 
-
-    const activityUnitOptions =
-        activityUnits
-            .map(function (unit) {
-
-                if (!unit) {
-
-                    return `
-                        <option value="">
-                            Select Unit
-                        </option>
-                    `;
-
-                }
+    const schedule =
+        Array.isArray(window.masterSchedule)
+            ? window.masterSchedule
+            : (
+                Array.isArray(masterSchedule)
+                    ? masterSchedule
+                    : []
+            );
 
 
-                return `
-                    <option value="${unit}">
-                        ${unit}
-                    </option>
-                `;
+    console.log(
+        "MASTER SCHEDULE LOADED:",
+        schedule.length,
+        "activities"
+    );
 
-            })
-            .join("");
+
+    // =====================================================
+    // GET WORK PACKAGES
+    // =====================================================
+
+    function getWorkPackages() {
+
+        const packages = [];
+
+
+        schedule.forEach(function (item) {
+
+            if (
+                !item ||
+                !item.workPackage
+            ) {
+                return;
+            }
+
+
+            if (
+                !packages.includes(
+                    item.workPackage
+                )
+            ) {
+
+                packages.push(
+                    item.workPackage
+                );
+
+            }
+
+        });
+
+
+        return packages;
+
+    }
+
+
+    // =====================================================
+    // CREATE WORK PACKAGE OPTIONS
+    // =====================================================
+
+    function createWorkPackageOptions() {
+
+        const packages =
+            getWorkPackages();
+
+
+        let html = `
+            <option value="">
+                Select Work Package
+            </option>
+        `;
+
+
+        packages.forEach(function (workPackage) {
+
+            html += `
+                <option value="${escapeHtml(workPackage)}">
+                    ${escapeHtml(workPackage)}
+                </option>
+            `;
+
+        });
+
+
+        return html;
+
+    }
+
+
+    // =====================================================
+    // ESCAPE HTML
+    // =====================================================
+
+    function escapeHtml(value) {
+
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
+
+
+    // =====================================================
+    // FIND MASTER ACTIVITY
+    // =====================================================
+
+    function findScheduleActivity(activityId) {
+
+        return schedule.find(function (item) {
+
+            return String(item.id) ===
+                String(activityId);
+
+        }) || null;
+
+    }
 
 
     // =====================================================
@@ -318,25 +412,71 @@ document.addEventListener("DOMContentLoaded", function () {
 
         row.innerHTML = `
 
+            <!-- WORK PACKAGE -->
+
+            <div class="form-group">
+
+                <label>
+                    Work Package
+                </label>
+
+                <select
+                    class="activity-work-package"
+                >
+
+                    ${createWorkPackageOptions()}
+
+                </select>
+
+            </div>
+
+
+            <!-- ACTIVITY -->
+
             <div class="form-group">
 
                 <label>
                     Activity
                 </label>
 
-                <input
-                    type="text"
+                <select
                     class="activity-name"
-                    placeholder="Activity name"
+                    disabled
+                >
+
+                    <option value="">
+                        Select Activity
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- PLANNED QUANTITY -->
+
+            <div class="form-group">
+
+                <label>
+                    Planned Quantity
+                </label>
+
+                <input
+                    type="number"
+                    class="activity-planned"
+                    readonly
+                    placeholder="0"
                 >
 
             </div>
 
 
+            <!-- ACTUAL TODAY -->
+
             <div class="form-group">
 
                 <label>
-                    Quantity
+                    Actual Today
                 </label>
 
                 <input
@@ -350,20 +490,25 @@ document.addEventListener("DOMContentLoaded", function () {
             </div>
 
 
+            <!-- UNIT -->
+
             <div class="form-group">
 
                 <label>
                     Unit
                 </label>
 
-                <select class="activity-unit">
-
-                    ${activityUnitOptions}
-
-                </select>
+                <input
+                    type="text"
+                    class="activity-unit"
+                    readonly
+                    placeholder="-"
+                >
 
             </div>
 
+
+            <!-- DAILY PROGRESS -->
 
             <div class="form-group">
 
@@ -374,14 +519,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 <input
                     type="number"
                     class="activity-progress"
-                    min="0"
-                    max="100"
-                    step="0.01"
+                    readonly
                     placeholder="0"
                 >
 
             </div>
 
+
+            <!-- STATUS -->
 
             <div class="form-group">
 
@@ -408,6 +553,8 @@ document.addEventListener("DOMContentLoaded", function () {
             </div>
 
 
+            <!-- REMOVE -->
+
             <button
                 type="button"
                 class="remove-row-btn remove-activity"
@@ -422,6 +569,417 @@ document.addEventListener("DOMContentLoaded", function () {
         activityContainer.appendChild(
             row
         );
+
+
+        setupActivityRow(
+            row
+        );
+
+    }
+
+
+    // =====================================================
+    // SETUP ACTIVITY ROW
+    // =====================================================
+
+    function setupActivityRow(row) {
+
+        const workPackageSelect =
+            row.querySelector(
+                ".activity-work-package"
+            );
+
+
+        const activitySelect =
+            row.querySelector(
+                ".activity-name"
+            );
+
+
+        const plannedInput =
+            row.querySelector(
+                ".activity-planned"
+            );
+
+
+        const quantityInput =
+            row.querySelector(
+                ".activity-quantity"
+            );
+
+
+        const unitInput =
+            row.querySelector(
+                ".activity-unit"
+            );
+
+
+        const progressInput =
+            row.querySelector(
+                ".activity-progress"
+            );
+
+
+        if (
+            !workPackageSelect ||
+            !activitySelect
+        ) {
+            return;
+        }
+
+
+        // =================================================
+        // WORK PACKAGE → ACTIVITY
+        // =================================================
+
+        workPackageSelect.addEventListener(
+            "change",
+            function () {
+
+                const selectedPackage =
+                    workPackageSelect.value;
+
+
+                activitySelect.innerHTML = `
+                    <option value="">
+                        Select Activity
+                    </option>
+                `;
+
+
+                activitySelect.disabled =
+                    true;
+
+
+                if (!selectedPackage) {
+
+                    clearActivityDetails(
+                        row
+                    );
+
+                    return;
+                }
+
+
+                const activities =
+                    schedule.filter(
+                        function (item) {
+
+                            return (
+                                item.workPackage ===
+                                selectedPackage
+                            );
+
+                        }
+                    );
+
+
+                activities.forEach(
+                    function (item) {
+
+                        const option =
+                            document.createElement(
+                                "option"
+                            );
+
+
+                        option.value =
+                            item.id;
+
+
+                        option.textContent =
+                            item.activity;
+
+
+                        activitySelect.appendChild(
+                            option
+                        );
+
+                    }
+                );
+
+
+                if (activities.length > 0) {
+
+                    activitySelect.disabled =
+                        false;
+
+                }
+
+
+                clearActivityDetails(
+                    row
+                );
+
+            }
+        );
+
+
+        // =================================================
+        // ACTIVITY → MASTER DATA
+        // =================================================
+
+        activitySelect.addEventListener(
+            "change",
+            function () {
+
+                const selectedId =
+                    activitySelect.value;
+
+
+                const selectedActivity =
+                    findScheduleActivity(
+                        selectedId
+                    );
+
+
+                if (
+                    !selectedActivity
+                ) {
+
+                    clearActivityDetails(
+                        row
+                    );
+
+                    return;
+
+                }
+
+
+                // Store master activity ID
+                row.dataset.activityId =
+                    selectedActivity.id;
+
+
+                // Planned quantity
+                if (plannedInput) {
+
+                    plannedInput.value =
+                        Number(
+                            selectedActivity.plannedQuantity || 0
+                        );
+
+                }
+
+
+                // Unit
+                if (unitInput) {
+
+                    unitInput.value =
+                        selectedActivity.unit ||
+                        "";
+
+                }
+
+
+                // Reset actual
+                if (quantityInput) {
+
+                    quantityInput.value =
+                        "";
+
+                }
+
+
+                // Reset progress
+                if (progressInput) {
+
+                    progressInput.value =
+                        "0";
+
+                }
+
+
+                // Store weight
+                row.dataset.weight =
+                    Number(
+                        selectedActivity.weight || 0
+                    );
+
+            }
+        );
+
+
+        // =================================================
+        // ACTUAL TODAY → DAILY PROGRESS
+        // =================================================
+
+        if (quantityInput) {
+
+            quantityInput.addEventListener(
+                "input",
+                function () {
+
+                    calculateDailyProgress(
+                        row
+                    );
+
+                }
+            );
+
+        }
+
+    }
+
+
+    // =====================================================
+    // CLEAR ACTIVITY DETAILS
+    // =====================================================
+
+    function clearActivityDetails(row) {
+
+        const activitySelect =
+            row.querySelector(
+                ".activity-name"
+            );
+
+
+        const plannedInput =
+            row.querySelector(
+                ".activity-planned"
+            );
+
+
+        const quantityInput =
+            row.querySelector(
+                ".activity-quantity"
+            );
+
+
+        const unitInput =
+            row.querySelector(
+                ".activity-unit"
+            );
+
+
+        const progressInput =
+            row.querySelector(
+                ".activity-progress"
+            );
+
+
+        if (activitySelect) {
+
+            activitySelect.value =
+                "";
+
+        }
+
+
+        if (plannedInput) {
+
+            plannedInput.value =
+                "";
+
+        }
+
+
+        if (quantityInput) {
+
+            quantityInput.value =
+                "";
+
+        }
+
+
+        if (unitInput) {
+
+            unitInput.value =
+                "";
+
+        }
+
+
+        if (progressInput) {
+
+            progressInput.value =
+                "0";
+
+        }
+
+
+        delete row.dataset.activityId;
+        delete row.dataset.weight;
+
+    }
+
+
+    // =====================================================
+    // CALCULATE DAILY PROGRESS
+    // =====================================================
+
+    function calculateDailyProgress(row) {
+
+        const plannedInput =
+            row.querySelector(
+                ".activity-planned"
+            );
+
+
+        const quantityInput =
+            row.querySelector(
+                ".activity-quantity"
+            );
+
+
+        const progressInput =
+            row.querySelector(
+                ".activity-progress"
+            );
+
+
+        if (
+            !plannedInput ||
+            !quantityInput ||
+            !progressInput
+        ) {
+            return;
+        }
+
+
+        const planned =
+            Number(
+                plannedInput.value || 0
+            );
+
+
+        const actualToday =
+            Number(
+                quantityInput.value || 0
+            );
+
+
+        if (
+            planned <= 0 ||
+            actualToday <= 0
+        ) {
+
+            progressInput.value =
+                "0";
+
+            return;
+
+        }
+
+
+        let progress =
+            (
+                actualToday /
+                planned
+            ) *
+            100;
+
+
+        // Do not allow more than 100%
+        progress =
+            Math.min(
+                progress,
+                100
+            );
+
+
+        progressInput.value =
+            progress.toFixed(2);
 
     }
 
@@ -696,10 +1254,35 @@ document.addEventListener("DOMContentLoaded", function () {
 
         rows.forEach(function (row) {
 
-            const name =
+            const workPackage =
+                row.querySelector(
+                    ".activity-work-package"
+                )?.value || "";
+
+
+            const activitySelect =
                 row.querySelector(
                     ".activity-name"
-                )?.value.trim() || "";
+                );
+
+
+            const activityId =
+                activitySelect?.value ||
+                row.dataset.activityId ||
+                "";
+
+
+            const activityName =
+                activitySelect?.selectedOptions?.[0]
+                    ?.textContent.trim() || "";
+
+
+            const plannedQuantity =
+                Number(
+                    row.querySelector(
+                        ".activity-planned"
+                    )?.value || 0
+                );
 
 
             const quantity =
@@ -730,11 +1313,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 )?.value || "";
 
 
+            const weight =
+                Number(
+                    row.dataset.weight || 0
+                );
+
+
             if (
-                !name &&
+                !workPackage &&
+                !activityId &&
                 !quantity &&
-                !unit &&
-                !dailyProgress &&
                 !status
             ) {
                 return;
@@ -743,8 +1331,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
             activities.push({
 
+                activityId:
+                    activityId,
+
+                workPackage:
+                    workPackage,
+
                 name:
-                    name,
+                    activityName,
+
+                plannedQuantity:
+                    plannedQuantity,
 
                 quantity:
                     quantity,
@@ -754,6 +1351,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 dailyProgress:
                     dailyProgress,
+
+                weight:
+                    weight,
 
                 status:
                     status
@@ -969,7 +1569,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
             // =================================================
-            // VALIDATION
+            // BASIC VALIDATION
             // =================================================
 
             if (!reportDate) {
@@ -979,6 +1579,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
 
                 return;
+
             }
 
 
@@ -989,6 +1590,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
 
                 return;
+
             }
 
 
@@ -999,6 +1601,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
 
                 return;
+
             }
 
 
@@ -1009,6 +1612,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
 
                 return;
+
             }
 
 
@@ -1019,6 +1623,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
 
                 return;
+
             }
 
 
@@ -1036,23 +1641,62 @@ document.addEventListener("DOMContentLoaded", function () {
                     activities[i];
 
 
-                if (!activity.name) {
+                if (!activity.activityId) {
 
                     alert(
-                        `Please enter activity name for row ${i + 1}.`
+                        `Please select activity for row ${i + 1}.`
                     );
 
                     return;
+
+                }
+
+
+                if (!activity.workPackage) {
+
+                    alert(
+                        `Please select work package for row ${i + 1}.`
+                    );
+
+                    return;
+
+                }
+
+
+                if (
+                    activity.plannedQuantity <= 0
+                ) {
+
+                    alert(
+                        `Planned quantity for activity row ${i + 1} is invalid.`
+                    );
+
+                    return;
+
                 }
 
 
                 if (!activity.unit) {
 
                     alert(
-                        `Please select unit for activity row ${i + 1}.`
+                        `Unit for activity row ${i + 1} is invalid.`
                     );
 
                     return;
+
+                }
+
+
+                if (
+                    activity.quantity < 0
+                ) {
+
+                    alert(
+                        `Actual quantity for activity row ${i + 1} cannot be negative.`
+                    );
+
+                    return;
+
                 }
 
 
@@ -1063,6 +1707,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     );
 
                     return;
+
                 }
 
 
@@ -1076,6 +1721,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     );
 
                     return;
+
                 }
 
             }
@@ -1118,7 +1764,9 @@ document.addEventListener("DOMContentLoaded", function () {
             const activitySummary =
                 activities
                     .map(function (item) {
+
                         return item.name;
+
                     })
                     .join("; ");
 
@@ -1402,5 +2050,21 @@ document.addEventListener("DOMContentLoaded", function () {
     // =====================================================
 
     updateProjects();
+
+
+    // =====================================================
+    // INITIAL ACTIVITY ROW
+    // =====================================================
+
+    if (
+        activityContainer &&
+        activityContainer.querySelectorAll(
+            ".activity-row"
+        ).length === 0
+    ) {
+
+        createActivityRow();
+
+    }
 
 });
