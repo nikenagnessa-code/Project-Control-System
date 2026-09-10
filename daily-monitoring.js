@@ -1,400 +1,1313 @@
 /* =========================================================
+   PROJECT CONTROL SYSTEM
    DAILY MONITORING
-   Project Control System
    ========================================================= */
 
-document.addEventListener("DOMContentLoaded", () => {
 
-    /* =====================================================
-       CONFIG
-    ====================================================== */
+/* =========================================================
+   CONFIG
+   ========================================================= */
 
-    const REPORT_STORAGE_KEY = "dailyReports";
-
-
-    /* =====================================================
-       ELEMENTS
-    ====================================================== */
-
-    const dateFilter =
-        document.getElementById("dateFilter");
-
-    const locationFilter =
-        document.getElementById("locationFilter");
-
-    const projectFilter =
-        document.getElementById("projectFilter");
-
-    const unitFilter =
-        document.getElementById("unitFilter");
+const REPORT_STORAGE_KEY = "dailyReports";
 
 
-    const totalManpowerEl =
-        document.getElementById("totalManpower");
+/* =========================================================
+   DOM ELEMENTS
+   ========================================================= */
 
-    const normalManhoursEl =
-        document.getElementById("normalManhours");
+const dateFilter = document.getElementById("dateFilter");
+const locationFilter = document.getElementById("locationFilter");
+const projectFilter = document.getElementById("projectFilter");
+const unitFilter = document.getElementById("unitFilter");
 
-    const overtimeManhoursEl =
-        document.getElementById("overtimeManhours");
+const totalManpower = document.getElementById("totalManpower");
+const normalManhours = document.getElementById("normalManhours");
+const overtimeManhours = document.getElementById("overtimeManhours");
+const totalManhours = document.getElementById("totalManhours");
 
-    const totalManhoursEl =
-        document.getElementById("totalManhours");
+const onProgress = document.getElementById("onProgress");
+const completed = document.getElementById("completed");
 
-    const onProgressEl =
-        document.getElementById("onProgress");
-
-    const completedEl =
-        document.getElementById("completed");
-
-
-    const reportTableBody =
-        document.getElementById("reportTableBody");
-
-    const progressTableBody =
-        document.getElementById("progressTableBody");
-
-    const materialTableBody =
-        document.getElementById("materialTableBody");
+const reportTableBody = document.getElementById("reportTableBody");
+const progressTableBody = document.getElementById("progressTableBody");
+const materialTableBody = document.getElementById("materialTableBody");
 
 
-    /* =====================================================
-       HELPERS
-    ====================================================== */
+/* PROJECT PROGRESS */
 
-    function getReports() {
+const plannedProgressElement =
+    document.getElementById("plannedProgress");
 
-        try {
+const actualProgressElement =
+    document.getElementById("actualProgress");
 
-            const stored =
-                localStorage.getItem(
-                    REPORT_STORAGE_KEY
-                );
+const progressDeviationElement =
+    document.getElementById("progressDeviation");
 
-            if (!stored) {
-                return [];
-            }
+const progressStatusElement =
+    document.getElementById("progressStatus");
 
-            const parsed =
-                JSON.parse(stored);
 
-            return Array.isArray(parsed)
-                ? parsed
-                : [];
+/* =========================================================
+   DATA
+   ========================================================= */
 
-        } catch (error) {
+function getReports() {
 
-            console.error(
-                "Failed to read daily reports:",
-                error
+    try {
+
+        const data =
+            JSON.parse(
+                localStorage.getItem(REPORT_STORAGE_KEY)
             );
 
-            return [];
+        return Array.isArray(data) ? data : [];
 
-        }
+    } catch (error) {
 
-    }
-
-
-    function getMasterSchedule() {
-
-        if (
-            typeof window.masterSchedule !==
-            "undefined" &&
-            Array.isArray(
-                window.masterSchedule
-            )
-        ) {
-
-            return window.masterSchedule;
-
-        }
-
-
-        if (
-            typeof masterSchedule !==
-            "undefined" &&
-            Array.isArray(
-                masterSchedule
-            )
-        ) {
-
-            return masterSchedule;
-
-        }
-
+        console.error(
+            "Failed to read daily reports:",
+            error
+        );
 
         return [];
 
     }
 
-
-    function number(value) {
-
-        const parsed =
-            parseFloat(value);
-
-        return Number.isFinite(parsed)
-            ? parsed
-            : 0;
-
-    }
+}
 
 
-    function formatNumber(
-        value,
-        decimals = 2
+function getMasterSchedule() {
+
+    if (
+        typeof masterSchedule !== "undefined" &&
+        Array.isArray(masterSchedule)
     ) {
 
-        return number(value).toLocaleString(
-            "en-US",
-            {
-                minimumFractionDigits:
-                    decimals,
-
-                maximumFractionDigits:
-                    decimals
-            }
-        );
+        return masterSchedule;
 
     }
 
+    return [];
 
-    function formatQuantity(value) {
-
-        return number(value).toLocaleString(
-            "id-ID",
-            {
-                maximumFractionDigits: 3
-            }
-        );
-
-    }
+}
 
 
-    function formatPercent(value) {
+/* =========================================================
+   NUMBER HELPERS
+   ========================================================= */
 
-        return `${formatNumber(
-            value,
-            2
-        )}%`;
+function number(value) {
 
-    }
+    const parsed =
+        parseFloat(value);
+
+    return Number.isFinite(parsed)
+        ? parsed
+        : 0;
+
+}
 
 
-    function escapeHTML(value) {
+function formatNumber(value, decimals = 0) {
+
+    return number(value).toLocaleString(
+        "en-US",
+        {
+            minimumFractionDigits: decimals,
+            maximumFractionDigits: decimals
+        }
+    );
+
+}
+
+
+function formatQuantity(value) {
+
+    const parsed =
+        number(value);
+
+    return parsed.toLocaleString(
+        "id-ID",
+        {
+            maximumFractionDigits: 3
+        }
+    );
+
+}
+
+
+function formatPercent(value) {
+
+    return number(value).toLocaleString(
+        "en-US",
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }
+    ) + "%";
+
+}
+
+
+/* =========================================================
+   TEXT HELPERS
+   ========================================================= */
+
+function escapeHTML(value) {
+
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+function normalize(value) {
+
+    return String(value ?? "")
+        .trim()
+        .toLowerCase();
+
+}
+
+
+/* =========================================================
+   ACTIVITY GETTERS
+   ========================================================= */
+
+function getActivityId(activity) {
+
+    return String(
+        activity?.activityId ??
+        activity?.id ??
+        ""
+    );
+
+}
+
+
+function getActivityName(activity) {
+
+    return String(
+        activity?.activity ??
+        activity?.activityName ??
+        activity?.name ??
+        ""
+    );
+
+}
+
+
+function getWorkPackage(activity) {
+
+    return String(
+        activity?.workPackage ??
+        activity?.package ??
+        ""
+    );
+
+}
+
+
+function getActivityQuantity(activity) {
+
+    return number(
+        activity?.quantity ??
+        activity?.plannedQuantity ??
+        0
+    );
+
+}
+
+
+function getActivityPlannedQuantity(activity) {
+
+    return number(
+        activity?.plannedQuantity ??
+        activity?.quantity ??
+        0
+    );
+
+}
+
+
+function getActivityUnit(activity) {
+
+    return String(
+        activity?.quantityUnit ??
+        activity?.unit ??
+        ""
+    );
+
+}
+
+
+function getActivityWeight(activity) {
+
+    return number(
+        activity?.weight ??
+        0
+    );
+
+}
+
+
+/* =========================================================
+   REPORT ACTIVITY GETTERS
+   ========================================================= */
+
+function getReportActivityId(activity) {
+
+    return String(
+        activity?.activityId ??
+        activity?.id ??
+        ""
+    );
+
+}
+
+
+function getReportActivityName(activity) {
+
+    return String(
+        activity?.activity ??
+        activity?.activityName ??
+        activity?.name ??
+        ""
+    );
+
+}
+
+
+function getReportWorkPackage(activity) {
+
+    return String(
+        activity?.workPackage ??
+        activity?.package ??
+        ""
+    );
+
+}
+
+
+function getReportQuantity(activity) {
+
+    return number(
+        activity?.quantity ??
+        activity?.actualQuantity ??
+        0
+    );
+
+}
+
+
+/* =========================================================
+   SCHEDULE MAP
+   ========================================================= */
+
+function createScheduleMap() {
+
+    const schedule =
+        getMasterSchedule();
+
+    const map = new Map();
+
+    schedule.forEach(item => {
+
+        const id =
+            getActivityId(item);
+
+        if (!id) {
+            return;
+        }
+
+        map.set(id, item);
+
+    });
+
+    return map;
+
+}
+
+
+/* =========================================================
+   FILTER REPORTS
+   ========================================================= */
+
+function getFilteredReports() {
+
+    const reports =
+        getReports();
+
+    return reports.filter(report => {
+
+        const reportDate =
+            String(report.date ?? "");
+
+        const reportLocation =
+            String(
+                report.location ??
+                ""
+            );
+
+        const reportProject =
+            String(
+                report.project ??
+                ""
+            );
+
+        const reportUnit =
+            String(
+                report.unit ??
+                ""
+            );
+
+
+        /* DATE */
 
         if (
-            value === null ||
-            value === undefined
+            dateFilter?.value &&
+            reportDate !== dateFilter.value
         ) {
 
-            return "";
+            return false;
 
         }
 
 
-        return String(value)
-            .replace(
-                /&/g,
-                "&amp;"
+        /* LOCATION */
+
+        if (
+            locationFilter?.value &&
+            locationFilter.value !== "All" &&
+            reportLocation !== locationFilter.value
+        ) {
+
+            return false;
+
+        }
+
+
+        /* PROJECT */
+
+        if (
+            projectFilter?.value &&
+            projectFilter.value !== "All" &&
+            reportProject !== projectFilter.value
+        ) {
+
+            return false;
+
+        }
+
+
+        /* UNIT */
+
+        if (
+            unitFilter?.value &&
+            unitFilter.value !== "All" &&
+            reportUnit !== unitFilter.value
+        ) {
+
+            return false;
+
+        }
+
+
+        return true;
+
+    });
+
+}
+
+
+/* =========================================================
+   POPULATE FILTERS
+   ========================================================= */
+
+function populateFilters() {
+
+    const reports =
+        getReports();
+
+
+    /* PROJECT */
+
+    const projects =
+        [
+            ...new Set(
+                reports
+                    .map(report => report.project)
+                    .filter(Boolean)
             )
-            .replace(
-                /</g,
-                "&lt;"
+        ];
+
+
+    if (projectFilter) {
+
+        const current =
+            projectFilter.value;
+
+        projectFilter.innerHTML = `
+            <option value="All">
+                All Projects
+            </option>
+        `;
+
+        projects.forEach(project => {
+
+            const option =
+                document.createElement("option");
+
+            option.value = project;
+            option.textContent = project;
+
+            projectFilter.appendChild(option);
+
+        });
+
+        if (
+            projects.includes(current)
+        ) {
+
+            projectFilter.value = current;
+
+        }
+
+    }
+
+
+    /* UNIT */
+
+    const units =
+        [
+            ...new Set(
+                reports
+                    .map(report => report.unit)
+                    .filter(Boolean)
             )
-            .replace(
-                />/g,
-                "&gt;"
-            )
-            .replace(
-                /"/g,
-                "&quot;"
-            )
-            .replace(
-                /'/g,
-                "&#039;"
+        ];
+
+
+    if (unitFilter) {
+
+        const current =
+            unitFilter.value;
+
+        unitFilter.innerHTML = `
+            <option value="All">
+                All Units
+            </option>
+        `;
+
+        units.forEach(unit => {
+
+            const option =
+                document.createElement("option");
+
+            option.value = unit;
+            option.textContent = unit;
+
+            unitFilter.appendChild(option);
+
+        });
+
+        if (
+            units.includes(current)
+        ) {
+
+            unitFilter.value = current;
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   MANPOWER KPI
+   ========================================================= */
+
+function updateManpowerKPI(reports) {
+
+    let manpower = 0;
+    let normalHours = 0;
+    let overtimeHours = 0;
+
+
+    reports.forEach(report => {
+
+        const foreman =
+            number(report.foreman);
+
+        const headWorker =
+            number(report.headWorker);
+
+        const skilledWorker =
+            number(report.skilledWorker);
+
+        const staffOffice =
+            number(report.staffOffice);
+
+
+        manpower +=
+            foreman +
+            headWorker +
+            skilledWorker +
+            staffOffice;
+
+
+        const totalPeople =
+            foreman +
+            headWorker +
+            skilledWorker +
+            staffOffice;
+
+
+        normalHours +=
+            totalPeople *
+            number(report.normalHours);
+
+
+        overtimeHours +=
+            totalPeople *
+            number(report.overtimeHours);
+
+    });
+
+
+    if (totalManpower) {
+
+        totalManpower.textContent =
+            formatNumber(manpower);
+
+    }
+
+
+    if (normalManhours) {
+
+        normalManhours.textContent =
+            formatNumber(normalHours);
+
+    }
+
+
+    if (overtimeManhours) {
+
+        overtimeManhours.textContent =
+            formatNumber(overtimeHours);
+
+    }
+
+
+    if (totalManhours) {
+
+        totalManhours.textContent =
+            formatNumber(
+                normalHours +
+                overtimeHours
             );
 
     }
 
-
-    function normalize(value) {
-
-        return String(value || "")
-            .trim()
-            .toLowerCase();
-
-    }
+}
 
 
-    function getActivityId(activity) {
+/* =========================================================
+   ACTIVITY DATA
+   ========================================================= */
 
-        return (
-            activity?.activityId ||
-            activity?.id ||
-            ""
-        );
+function buildActivityData(reports) {
 
-    }
+    const scheduleMap =
+        createScheduleMap();
 
-
-    function getActivityName(activity) {
-
-        return (
-            activity?.name ||
-            activity?.activity ||
-            activity?.activityName ||
-            "-"
-        );
-
-    }
+    const activityMap =
+        new Map();
 
 
-    function getWorkPackage(activity) {
+    reports.forEach(report => {
 
-        return (
-            activity?.workPackage ||
-            activity?.category ||
-            activity?.wbs ||
-            "-"
-        );
+        const project =
+            String(
+                report.project ??
+                ""
+            );
 
-    }
-
-
-    function getQuantity(activity) {
-
-        return number(
-            activity?.quantity ??
-            activity?.actualQuantity ??
-            activity?.actualToday ??
-            0
-        );
-
-    }
+        const unit =
+            String(
+                report.unit ??
+                ""
+            );
 
 
-    function getPlannedQuantity(activity) {
-
-        return number(
-            activity?.plannedQuantity ??
-            activity?.planned ??
-            0
-        );
-
-    }
+        const activities =
+            Array.isArray(report.activities)
+                ? report.activities
+                : [];
 
 
-    function getUnit(activity) {
+        activities.forEach(activity => {
 
-        return (
-            activity?.unit ||
-            activity?.quantityUnit ||
-            "-"
-        );
+            const activityId =
+                getReportActivityId(activity);
 
-    }
-
-
-    function getWeight(activity) {
-
-        return number(
-            activity?.weight ??
-            activity?.bobot ??
-            0
-        );
-
-    }
-
-
-    /* =====================================================
-       MASTER SCHEDULE MAP
-    ====================================================== */
-
-    function createScheduleMap() {
-
-        const schedule =
-            getMasterSchedule();
-
-        const map =
-            new Map();
-
-
-        schedule.forEach(item => {
-
-            const id =
-                getActivityId(item);
-
-
-            if (!id) {
+            if (!activityId) {
                 return;
             }
 
 
-            map.set(
-                String(id),
-                item
-            );
+            const key =
+                [
+                    normalize(project),
+                    normalize(unit),
+                    activityId
+                ].join("|");
+
+
+            if (!activityMap.has(key)) {
+
+                const master =
+                    scheduleMap.get(activityId);
+
+
+                activityMap.set(
+                    key,
+                    {
+                        project,
+                        unit,
+                        activityId,
+                        activity:
+                            getReportActivityName(activity) ||
+                            getActivityName(master),
+
+                        workPackage:
+                            getReportWorkPackage(activity) ||
+                            getWorkPackage(master),
+
+                        plannedQuantity:
+                            getActivityPlannedQuantity(master),
+
+                        quantityUnit:
+                            getActivityUnit(master),
+
+                        weight:
+                            getActivityWeight(master),
+
+                        dailyQuantity: 0,
+
+                        status:
+                            activity.status ||
+                            "On Progress"
+                    }
+                );
+
+            }
+
+
+            const item =
+                activityMap.get(key);
+
+
+            item.dailyQuantity +=
+                getReportQuantity(activity);
+
+
+            if (
+                normalize(activity.status) ===
+                "completed"
+            ) {
+
+                item.status =
+                    "Completed";
+
+            }
 
         });
 
+    });
 
-        return map;
+
+    return [
+        ...activityMap.values()
+    ];
+
+}
+
+
+/* =========================================================
+   GET ALL REPORTS FOR ACTIVITY
+   ========================================================= */
+
+function getAllReportsForActivity(
+    activityId,
+    project,
+    unitProject,
+    untilDate = ""
+) {
+
+    const reports =
+        getReports();
+
+
+    let total =
+        0;
+
+
+    reports.forEach(report => {
+
+        if (
+            String(report.project ?? "") !==
+            String(project ?? "")
+        ) {
+
+            return;
+
+        }
+
+
+        if (
+            String(report.unit ?? "") !==
+            String(unitProject ?? "")
+        ) {
+
+            return;
+
+        }
+
+
+        if (
+            untilDate &&
+            String(report.date ?? "") >
+            untilDate
+        ) {
+
+            return;
+
+        }
+
+
+        const activities =
+            Array.isArray(report.activities)
+                ? report.activities
+                : [];
+
+
+        activities.forEach(activity => {
+
+            if (
+                getReportActivityId(activity) !==
+                String(activityId)
+            ) {
+
+                return;
+
+            }
+
+
+            total +=
+                getReportQuantity(activity);
+
+        });
+
+    });
+
+
+    return total;
+
+}
+
+
+/* =========================================================
+   CALCULATE ACTIVITY PROGRESS
+   ========================================================= */
+
+function calculateProgress(
+    item,
+    untilDate = ""
+) {
+
+    const planned =
+        number(
+            item.plannedQuantity
+        );
+
+
+    if (
+        planned <= 0
+    ) {
+
+        return {
+            progress: 0,
+            weightedProgress: 0
+        };
 
     }
 
 
-    /* =====================================================
-       REPORT FILTERING
-    ====================================================== */
-
-    function getFilteredReports() {
-
-        const reports =
-            getReports();
-
-
-        const selectedDate =
-            dateFilter?.value || "All";
-
-        const selectedLocation =
-            locationFilter?.value || "All";
-
-        const selectedProject =
-            projectFilter?.value || "All";
-
-        const selectedUnit =
-            unitFilter?.value || "All";
+    const actual =
+        getAllReportsForActivity(
+            item.activityId,
+            item.project,
+            item.unit,
+            untilDate
+        );
 
 
-        return reports.filter(report => {
-
-            const reportDate =
-                report.reportDate ||
-                report.date ||
-                "";
-
-
-            const reportLocation =
-                report.location ||
-                "";
+    const progress =
+        Math.min(
+            100,
+            (actual / planned) * 100
+        );
 
 
-            const reportProject =
-                report.project ||
-                "";
+    const weight =
+        number(item.weight);
 
 
-            const reportUnit =
-                report.unit ||
-                "";
+    const weightedProgress =
+        (progress / 100) *
+        weight;
 
+
+    return {
+        progress,
+        weightedProgress
+    };
+
+}
+
+
+/* =========================================================
+   UPDATE ACTIVITY KPI
+   ========================================================= */
+
+function updateActivityKPI(
+    reports
+) {
+
+    const activityData =
+        buildActivityData(reports);
+
+
+    let progressCount = 0;
+    let completedCount = 0;
+
+
+    activityData.forEach(item => {
+
+        if (
+            normalize(item.status) ===
+            "completed"
+        ) {
+
+            completedCount++;
+
+        } else {
+
+            progressCount++;
+
+        }
+
+    });
+
+
+    if (onProgress) {
+
+        onProgress.textContent =
+            formatNumber(progressCount);
+
+    }
+
+
+    if (completed) {
+
+        completed.textContent =
+            formatNumber(completedCount);
+
+    }
+
+}
+
+
+/* =========================================================
+   PROJECT PROGRESS
+   ========================================================= */
+
+/*
+    MASTER SCHEDULE YANG KITA PAKAI SEKARANG:
+
+    Kalimantan
+        → Tipe 200
+            → DANREM
+
+    Planned progress dihitung berdasarkan:
+
+    Activity Weight
+          ×
+    Planned completion percentage
+          =
+    Weighted Planned Progress
+
+
+    Actual progress:
+
+    Cumulative Actual Quantity
+          ÷
+    Planned Quantity
+          ×
+    Activity Weight
+          =
+    Weighted Actual Progress
+*/
+
+
+function isDANREMProjectSelected() {
+
+    const location =
+        locationFilter?.value || "All";
+
+    const project =
+        projectFilter?.value || "All";
+
+    const unit =
+        unitFilter?.value || "All";
+
+
+    /*
+        Kalau user sedang memilih Tasikmalaya,
+        jangan pakai master schedule DANREM.
+    */
+
+    if (
+        location === "Tasikmalaya"
+    ) {
+
+        return false;
+
+    }
+
+
+    /*
+        Kalau project/unit tertentu dipilih,
+        kita hanya gunakan master schedule
+        untuk DANREM / Tipe 200.
+    */
+
+    if (
+        project !== "All" &&
+        !normalize(project).includes("tipe 200")
+    ) {
+
+        return false;
+
+    }
+
+
+    if (
+        unit !== "All" &&
+        normalize(unit) !== "danrem"
+    ) {
+
+        return false;
+
+    }
+
+
+    return true;
+
+}
+
+
+/* =========================================================
+   GET REPORT END DATE
+   ========================================================= */
+
+function getProgressDate() {
+
+    /*
+        Jika user memilih tanggal,
+        progress dihitung sampai tanggal tersebut.
+    */
+
+    if (
+        dateFilter?.value
+    ) {
+
+        return dateFilter.value;
+
+    }
+
+
+    /*
+        Jika tidak ada tanggal filter,
+        gunakan tanggal laporan terakhir.
+    */
+
+    const reports =
+        getReports()
+            .filter(report => report.date);
+
+
+    if (!reports.length) {
+
+        return "";
+
+    }
+
+
+    return reports
+        .map(report => report.date)
+        .sort()
+        .at(-1);
+
+}
+
+
+/* =========================================================
+   PLANNED ACTIVITY PROGRESS
+   ========================================================= */
+
+function calculatePlannedActivityProgress(
+    activity,
+    targetDate
+) {
+
+    const start =
+        activity.plannedStart;
+
+    const finish =
+        activity.plannedFinish;
+
+
+    if (
+        !start ||
+        !finish ||
+        !targetDate
+    ) {
+
+        return 0;
+
+    }
+
+
+    /*
+        Sebelum mulai
+    */
+
+    if (
+        targetDate < start
+    ) {
+
+        return 0;
+
+    }
+
+
+    /*
+        Setelah selesai
+    */
+
+    if (
+        targetDate >= finish
+    ) {
+
+        return 100;
+
+    }
+
+
+    const startDate =
+        new Date(start + "T00:00:00");
+
+    const finishDate =
+        new Date(finish + "T00:00:00");
+
+    const currentDate =
+        new Date(targetDate + "T00:00:00");
+
+
+    const totalDuration =
+        finishDate -
+        startDate;
+
+
+    const elapsed =
+        currentDate -
+        startDate;
+
+
+    if (
+        totalDuration <= 0
+    ) {
+
+        return 0;
+
+    }
+
+
+    return Math.max(
+        0,
+        Math.min(
+            100,
+            (elapsed / totalDuration) *
+            100
+        )
+    );
+
+}
+
+
+/* =========================================================
+   CALCULATE PLANNED PROJECT PROGRESS
+   ========================================================= */
+
+function calculatePlannedProjectProgress(
+    targetDate
+) {
+
+    const schedule =
+        getMasterSchedule();
+
+
+    if (
+        !schedule.length ||
+        !targetDate
+    ) {
+
+        return 0;
+
+    }
+
+
+    /*
+        Master Schedule hanya untuk DANREM.
+    */
+
+    let totalWeight =
+        0;
+
+    let plannedProgress =
+        0;
+
+
+    schedule.forEach(activity => {
+
+        const weight =
+            getActivityWeight(activity);
+
+
+        if (
+            weight <= 0
+        ) {
+
+            return;
+
+        }
+
+
+        const activityProgress =
+            calculatePlannedActivityProgress(
+                activity,
+                targetDate
+            );
+
+
+        plannedProgress +=
+            (
+                activityProgress /
+                100
+            ) *
+            weight;
+
+
+        totalWeight +=
+            weight;
+
+    });
+
+
+    if (
+        totalWeight <= 0
+    ) {
+
+        return 0;
+
+    }
+
+
+    /*
+        Karena bobot master schedule
+        adalah bobot terhadap keseluruhan proyek,
+        kita tidak membagi lagi dengan totalWeight.
+    */
+
+    return Math.min(
+        100,
+        plannedProgress
+    );
+
+}
+
+
+/* =========================================================
+   CALCULATE ACTUAL PROJECT PROGRESS
+   ========================================================= */
+
+function calculateActualProjectProgress(
+    untilDate
+) {
+
+    const schedule =
+        getMasterSchedule();
+
+
+    if (
+        !schedule.length
+    ) {
+
+        return 0;
+
+    }
+
+
+    /*
+        Tentukan project/unit dari filter.
+
+        Kalau All, gunakan laporan DANREM
+        yang memiliki activity ID di master schedule.
+    */
+
+    const reports =
+        getReports();
+
+
+    let selectedReports =
+        reports;
+
+
+    const selectedLocation =
+        locationFilter?.value || "All";
+
+    const selectedProject =
+        projectFilter?.value || "All";
+
+    const selectedUnit =
+        unitFilter?.value || "All";
+
+
+    selectedReports =
+        selectedReports.filter(report => {
 
             if (
-                selectedDate !== "All" &&
-                selectedDate !== "" &&
-                reportDate !== selectedDate
+                untilDate &&
+                String(report.date ?? "") >
+                untilDate
             ) {
 
                 return false;
@@ -404,12 +1317,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (
                 selectedLocation !== "All" &&
-                normalize(
-                    reportLocation
-                ) !==
-                normalize(
-                    selectedLocation
-                )
+                String(report.location ?? "") !==
+                selectedLocation
             ) {
 
                 return false;
@@ -419,12 +1328,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (
                 selectedProject !== "All" &&
-                normalize(
-                    reportProject
-                ) !==
-                normalize(
-                    selectedProject
-                )
+                String(report.project ?? "") !==
+                selectedProject
             ) {
 
                 return false;
@@ -434,12 +1339,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (
                 selectedUnit !== "All" &&
-                normalize(
-                    reportUnit
-                ) !==
-                normalize(
-                    selectedUnit
-                )
+                String(report.unit ?? "") !==
+                selectedUnit
             ) {
 
                 return false;
@@ -451,525 +1352,71 @@ document.addEventListener("DOMContentLoaded", () => {
 
         });
 
-    }
+
+    let actualProgress =
+        0;
 
 
-    /* =====================================================
-       FILTER OPTIONS
-    ====================================================== */
+    /*
+        Kita hitung activity satu per satu
+        menggunakan bobot master schedule.
+    */
 
-    function populateFilters() {
+    schedule.forEach(activity => {
 
-        const reports =
-            getReports();
-
-
-        const currentProject =
-            projectFilter?.value ||
-            "All";
-
-        const currentUnit =
-            unitFilter?.value ||
-            "All";
+        const activityId =
+            getActivityId(activity);
 
 
-        if (projectFilter) {
-
-            const projects = [
-                ...new Set(
-                    reports
-                        .map(
-                            report =>
-                                report.project
-                        )
-                        .filter(Boolean)
-                )
-            ];
+        const weight =
+            getActivityWeight(activity);
 
 
-            projectFilter.innerHTML = `
-                <option value="All">
-                    All Projects
-                </option>
-            `;
+        const plannedQuantity =
+            getActivityPlannedQuantity(activity);
 
 
-            projects.forEach(project => {
+        if (
+            !activityId ||
+            weight <= 0 ||
+            plannedQuantity <= 0
+        ) {
 
-                const option =
-                    document.createElement(
-                        "option"
-                    );
-
-
-                option.value =
-                    project;
-
-                option.textContent =
-                    project;
-
-
-                projectFilter.appendChild(
-                    option
-                );
-
-            });
-
-
-            if (
-                projects.includes(
-                    currentProject
-                )
-            ) {
-
-                projectFilter.value =
-                    currentProject;
-
-            }
+            return;
 
         }
 
 
-        if (unitFilter) {
+        let actualQuantity =
+            0;
 
-            const units = [
-                ...new Set(
-                    reports
-                        .map(
-                            report =>
-                                report.unit
-                        )
-                        .filter(Boolean)
-                )
-            ];
 
-
-            unitFilter.innerHTML = `
-                <option value="All">
-                    All Units
-                </option>
-            `;
-
-
-            units.forEach(unit => {
-
-                const option =
-                    document.createElement(
-                        "option"
-                    );
-
-
-                option.value =
-                    unit;
-
-                option.textContent =
-                    unit;
-
-
-                unitFilter.appendChild(
-                    option
-                );
-
-            });
-
-
-            if (
-                units.includes(
-                    currentUnit
-                )
-            ) {
-
-                unitFilter.value =
-                    currentUnit;
-
-            }
-
-        }
-
-    }
-
-
-    /* =====================================================
-       KPI - MANPOWER
-    ====================================================== */
-
-    function updateManpowerKPI(
-        reports
-    ) {
-
-        let totalManpower = 0;
-
-        let normalManhours = 0;
-
-        let overtimeManhours = 0;
-
-
-        reports.forEach(report => {
-
-            const foreman =
-                number(
-                    report.foreman
-                );
-
-            const headWorker =
-                number(
-                    report.headWorker
-                );
-
-            const skilledWorker =
-                number(
-                    report.skilledWorker
-                );
-
-            const staffOffice =
-                number(
-                    report.staffOffice
-                );
-
-
-            const manpower =
-                number(
-                    report.manpower
-                ) ||
-                (
-                    foreman +
-                    headWorker +
-                    skilledWorker +
-                    staffOffice
-                );
-
-
-            const normalHours =
-                number(
-                    report.normalHours
-                );
-
-
-            const overtimeHours =
-                number(
-                    report.overtimeHours
-                );
-
-
-            totalManpower +=
-                manpower;
-
-
-            normalManhours +=
-                manpower *
-                normalHours;
-
-
-            overtimeManhours +=
-                manpower *
-                overtimeHours;
-
-        });
-
-
-        const totalManhours =
-            normalManhours +
-            overtimeManhours;
-
-
-        if (totalManpowerEl) {
-
-            totalManpowerEl.textContent =
-                formatNumber(
-                    totalManpower,
-                    0
-                );
-
-        }
-
-
-        if (normalManhoursEl) {
-
-            normalManhoursEl.textContent =
-                formatNumber(
-                    normalManhours,
-                    2
-                );
-
-        }
-
-
-        if (overtimeManhoursEl) {
-
-            overtimeManhoursEl.textContent =
-                formatNumber(
-                    overtimeManhours,
-                    2
-                );
-
-        }
-
-
-        if (totalManhoursEl) {
-
-            totalManhoursEl.textContent =
-                formatNumber(
-                    totalManhours,
-                    2
-                );
-
-        }
-
-    }
-
-
-    /* =====================================================
-       ACTIVITY DATA
-    ====================================================== */
-
-    function buildActivityData(
-        reports
-    ) {
-
-        const scheduleMap =
-            createScheduleMap();
-
-
-        const activityMap =
-            new Map();
-
-
-        reports.forEach(report => {
+        selectedReports.forEach(report => {
 
             const activities =
-                Array.isArray(
-                    report.activities
-                )
-                    ? report.activities
-                    : [];
-
-
-            activities.forEach(activity => {
-
-                const activityId =
-                    getActivityId(
-                        activity
-                    );
-
-
-                const key =
-                    activityId
-                        ? `${normalize(
-                              report.project
-                          )}|${normalize(
-                              report.unit
-                          )}|${String(
-                              activityId
-                          )}`
-                        : `${normalize(
-                              report.project
-                          )}|${normalize(
-                              report.unit
-                          )}|${normalize(
-                              getActivityName(
-                                  activity
-                              )
-                          )}`;
-
-
-                if (
-                    !activityMap.has(key)
-                ) {
-
-                    const scheduleItem =
-                        scheduleMap.get(
-                            String(
-                                activityId
-                            )
-                        );
-
-
-                    activityMap.set(
-                        key,
-                        {
-
-                            activityId,
-
-                            project:
-                                report.project ||
-                                "",
-
-                            unitProject:
-                                report.unit ||
-                                "",
-
-                            workPackage:
-                                getWorkPackage(
-                                    activity
-                                ),
-
-                            activity:
-                                getActivityName(
-                                    activity
-                                ),
-
-                            plannedQuantity:
-                                getPlannedQuantity(
-                                    activity
-                                ) ||
-                                number(
-                                    scheduleItem
-                                        ?.plannedQuantity
-                                ),
-
-                            quantityUnit:
-                                getUnit(
-                                    activity
-                                ) ||
-                                scheduleItem
-                                    ?.unit ||
-                                "-",
-
-                            weight:
-                                getWeight(
-                                    activity
-                                ) ||
-                                number(
-                                    scheduleItem
-                                        ?.weight
-                                ),
-
-                            actualToday:
-                                0,
-
-                            dates: [],
-
-                            statuses: []
-
-                        }
-                    );
-
-                }
-
-
-                const item =
-                    activityMap.get(
-                        key
-                    );
-
-
-                item.actualToday +=
-                    getQuantity(
-                        activity
-                    );
-
-
-                if (
-                    report.reportDate
-                ) {
-
-                    item.dates.push(
-                        report.reportDate
-                    );
-
-                }
-
-
-                if (
-                    activity.status
-                ) {
-
-                    item.statuses.push(
-                        activity.status
-                    );
-
-                }
-
-            });
-
-        });
-
-
-        return [
-            ...activityMap.values()
-        ];
-
-    }
-
-
-    /* =====================================================
-       CUMULATIVE ACTUAL
-    ====================================================== */
-
-    function getAllReportsForActivity(
-        activityId,
-        project,
-        unitProject
-    ) {
-
-        const reports =
-            getReports();
-
-
-        let total = 0;
-
-
-        reports.forEach(report => {
-
-            if (
-                project &&
-                normalize(
-                    report.project
-                ) !==
-                normalize(
-                    project
-                )
-            ) {
-
-                return;
-
-            }
-
-
-            if (
-                unitProject &&
-                normalize(
-                    report.unit
-                ) !==
-                normalize(
-                    unitProject
-                )
-            ) {
-
-                return;
-
-            }
-
-
-            const activities =
-                Array.isArray(
-                    report.activities
-                )
+                Array.isArray(report.activities)
                     ? report.activities
                     : [];
 
 
             activities.forEach(
-                activity => {
+                reportActivity => {
 
                     if (
-                        activityId &&
-                        String(
-                            getActivityId(
-                                activity
-                            )
-                        ) ===
-                        String(
-                            activityId
-                        )
+                        getReportActivityId(
+                            reportActivity
+                        ) !== activityId
                     ) {
 
-                        total +=
-                            getQuantity(
-                                activity
-                            );
+                        return;
 
                     }
+
+
+                    actualQuantity +=
+                        getReportQuantity(
+                            reportActivity
+                        );
 
                 }
             );
@@ -977,753 +1424,658 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
 
-        return total;
+        const completion =
+            Math.min(
+                1,
+                actualQuantity /
+                plannedQuantity
+            );
+
+
+        actualProgress +=
+            completion *
+            weight;
+
+    });
+
+
+    return Math.min(
+        100,
+        actualProgress
+    );
+
+}
+
+
+/* =========================================================
+   PROJECT STATUS
+   ========================================================= */
+
+function getProjectStatus(
+    deviation
+) {
+
+    /*
+        Tidak ada actual data
+    */
+
+    if (
+        !getReports().length
+    ) {
+
+        return "No Data";
 
     }
 
 
-    /* =====================================================
-       CUMULATIVE PROGRESS
-    ====================================================== */
+    /*
+        Toleransi kecil supaya
+        -0.01% tidak langsung dianggap behind.
+    */
 
-    function calculateProgress(
-        item
+    if (
+        deviation >= -1
     ) {
 
-        const cumulativeActual =
-            getAllReportsForActivity(
-                item.activityId,
-                item.project,
-                item.unitProject
-            );
-
-
-        const planned =
-            number(
-                item.plannedQuantity
-            );
-
-
-        let progress = 0;
-
-
-        if (planned > 0) {
-
-            progress =
-                (
-                    cumulativeActual /
-                    planned
-                ) *
-                100;
-
-        }
-
-
-        progress =
-            Math.max(
-                0,
-                Math.min(
-                    100,
-                    progress
-                )
-            );
-
-
-        const weightedProgress =
-            (
-                progress *
-                number(item.weight)
-            ) /
-            100;
-
-
-        return {
-
-            cumulativeActual,
-
-            progress,
-
-            weightedProgress
-
-        };
+        return "On Schedule";
 
     }
 
 
-    /* =====================================================
-       OVERALL PROJECT PROGRESS
-    ====================================================== */
-
-    function calculateOverallProgress(
-        reports
+    if (
+        deviation >= -5
     ) {
 
-        const activities =
-            buildActivityData(
-                reports
-            );
-
-
-        let totalWeightedProgress =
-            0;
-
-        let totalWeight =
-            0;
-
-
-        activities.forEach(item => {
-
-            const result =
-                calculateProgress(
-                    item
-                );
-
-
-            totalWeightedProgress +=
-                result.weightedProgress;
-
-
-            totalWeight +=
-                number(
-                    item.weight
-                );
-
-        });
-
-
-        if (
-            totalWeight <= 0
-        ) {
-
-            return 0;
-
-        }
-
-
-        return (
-            totalWeightedProgress /
-            totalWeight
-        ) *
-        100;
+        return "Slightly Behind";
 
     }
 
 
-    /* =====================================================
-       ACTIVITY STATUS KPI
-    ====================================================== */
+    return "Behind Schedule";
 
-    function updateActivityKPI(
-        reports
+}
+
+
+/* =========================================================
+   UPDATE PROJECT PROGRESS OVERVIEW
+   ========================================================= */
+
+function updateProjectProgressOverview() {
+
+    /*
+        Master schedule kita saat ini hanya
+        untuk Kalimantan → Tipe 200 → DANREM.
+    */
+
+    if (
+        !isDANREMProjectSelected()
     ) {
 
-        const activities =
-            buildActivityData(
-                reports
-            );
+        if (plannedProgressElement) {
 
-
-        let onProgress = 0;
-
-        let completed = 0;
-
-
-        activities.forEach(item => {
-
-            const result =
-                calculateProgress(
-                    item
-                );
-
-
-            if (
-                result.progress >= 100
-            ) {
-
-                completed++;
-
-            } else if (
-                result.cumulativeActual > 0
-            ) {
-
-                onProgress++;
-
-            }
-
-        });
-
-
-        if (onProgressEl) {
-
-            onProgressEl.textContent =
-                onProgress;
+            plannedProgressElement.textContent =
+                "—";
 
         }
 
+        if (actualProgressElement) {
 
-        if (completedEl) {
-
-            completedEl.textContent =
-                completed;
+            actualProgressElement.textContent =
+                "—";
 
         }
+
+        if (progressDeviationElement) {
+
+            progressDeviationElement.textContent =
+                "—";
+
+        }
+
+        if (progressStatusElement) {
+
+            progressStatusElement.textContent =
+                "Not Available";
+
+        }
+
+        return;
 
     }
 
 
-    /* =====================================================
-       RECENT DAILY REPORTS
-    ====================================================== */
+    const progressDate =
+        getProgressDate();
 
-    function renderReports(
-        reports
+
+    if (
+        !progressDate
     ) {
 
-        if (!reportTableBody) {
-            return;
-        }
+        if (plannedProgressElement) {
 
-
-        reportTableBody.innerHTML =
-            "";
-
-
-        if (
-            reports.length === 0
-        ) {
-
-            reportTableBody.innerHTML = `
-                <tr>
-                    <td colspan="9"
-                        style="text-align:center;">
-                        No daily reports recorded.
-                    </td>
-                </tr>
-            `;
-
-            return;
+            plannedProgressElement.textContent =
+                "0.00%";
 
         }
 
+        if (actualProgressElement) {
 
-        const sortedReports =
-            [...reports].sort(
+            actualProgressElement.textContent =
+                "0.00%";
+
+        }
+
+        if (progressDeviationElement) {
+
+            progressDeviationElement.textContent =
+                "0.00%";
+
+        }
+
+        if (progressStatusElement) {
+
+            progressStatusElement.textContent =
+                "No Data";
+
+        }
+
+        return;
+
+    }
+
+
+    const planned =
+        calculatePlannedProjectProgress(
+            progressDate
+        );
+
+
+    const actual =
+        calculateActualProjectProgress(
+            progressDate
+        );
+
+
+    const deviation =
+        actual -
+        planned;
+
+
+    const status =
+        getProjectStatus(
+            deviation
+        );
+
+
+    if (plannedProgressElement) {
+
+        plannedProgressElement.textContent =
+            formatPercent(planned);
+
+    }
+
+
+    if (actualProgressElement) {
+
+        actualProgressElement.textContent =
+            formatPercent(actual);
+
+    }
+
+
+    if (progressDeviationElement) {
+
+        progressDeviationElement.textContent =
+            formatPercent(deviation);
+
+    }
+
+
+    if (progressStatusElement) {
+
+        progressStatusElement.textContent =
+            status;
+
+    }
+
+}
+
+
+/* =========================================================
+   RECENT DAILY REPORTS TABLE
+   ========================================================= */
+
+function renderReports(
+    reports
+) {
+
+    if (!reportTableBody) {
+        return;
+    }
+
+
+    if (!reports.length) {
+
+        reportTableBody.innerHTML = `
+            <tr>
+                <td colspan="9">
+                    No daily reports found.
+                </td>
+            </tr>
+        `;
+
+        return;
+
+    }
+
+
+    const sortedReports =
+        [...reports]
+            .sort(
                 (a, b) =>
-                    String(
-                        b.reportDate ||
-                        b.date ||
-                        ""
-                    ).localeCompare(
-                        String(
-                            a.reportDate ||
-                            a.date ||
-                            ""
+                    String(b.date ?? "")
+                        .localeCompare(
+                            String(a.date ?? "")
                         )
-                    )
             );
 
 
-        sortedReports.forEach(
-            report => {
+    reportTableBody.innerHTML =
+        sortedReports
+            .map(report => {
+
+                const manpower =
+                    number(report.foreman) +
+                    number(report.headWorker) +
+                    number(report.skilledWorker) +
+                    number(report.staffOffice);
+
+
+                const manhours =
+                    (
+                        manpower *
+                        (
+                            number(report.normalHours) +
+                            number(report.overtimeHours)
+                        )
+                    );
+
 
                 const activities =
-                    Array.isArray(
-                        report.activities
-                    )
+                    Array.isArray(report.activities)
                         ? report.activities
                         : [];
 
 
-                const manpower =
-                    number(
-                        report.manpower
-                    ) ||
-                    (
-                        number(
-                            report.foreman
-                        ) +
-                        number(
-                            report.headWorker
-                        ) +
-                        number(
-                            report.skilledWorker
-                        ) +
-                        number(
-                            report.staffOffice
-                        )
-                    );
-
-
-                const normalHours =
-                    number(
-                        report.normalHours
-                    );
-
-
-                const overtimeHours =
-                    number(
-                        report.overtimeHours
-                    );
-
-
-                const manhours =
-                    manpower *
-                    (
-                        normalHours +
-                        overtimeHours
-                    );
+                const activityCount =
+                    activities.length;
 
 
                 const statuses =
                     activities.map(
                         activity =>
-                            activity.status
+                            normalize(activity.status)
                     );
 
 
-                let status = "—";
+                let status =
+                    "On Progress";
 
 
                 if (
-                    statuses.includes(
-                        "Completed"
+                    activityCount > 0 &&
+                    statuses.every(
+                        value =>
+                            value === "completed"
                     )
                 ) {
 
                     status =
                         "Completed";
 
-                } else if (
-                    statuses.includes(
-                        "On Progress"
-                    )
-                ) {
-
-                    status =
-                        "On Progress";
-
-                } else if (
-                    statuses.length > 0
-                ) {
-
-                    status =
-                        statuses[0] ||
-                        "—";
-
                 }
 
 
-                const row =
-                    document.createElement(
-                        "tr"
-                    );
+                return `
+                    <tr>
 
+                        <td>
+                            ${escapeHTML(report.date)}
+                        </td>
 
-                row.innerHTML = `
+                        <td>
+                            ${escapeHTML(report.location)}
+                        </td>
 
-                    <td>
-                        ${escapeHTML(
-                            report.reportDate ||
-                            report.date ||
-                            "-"
-                        )}
-                    </td>
+                        <td>
+                            ${escapeHTML(report.project)}
+                        </td>
 
-                    <td>
-                        ${escapeHTML(
-                            report.location ||
-                            "-"
-                        )}
-                    </td>
+                        <td>
+                            ${escapeHTML(report.unit)}
+                        </td>
 
-                    <td>
-                        ${escapeHTML(
-                            report.project ||
-                            "-"
-                        )}
-                    </td>
+                        <td>
+                            ${escapeHTML(report.weather)}
+                        </td>
 
-                    <td>
-                        ${escapeHTML(
-                            report.unit ||
-                            "-"
-                        )}
-                    </td>
+                        <td>
+                            ${formatNumber(manpower)}
+                        </td>
 
-                    <td>
-                        ${escapeHTML(
-                            report.weather ||
-                            "-"
-                        )}
-                    </td>
+                        <td>
+                            ${formatNumber(manhours)}
+                        </td>
 
-                    <td>
-                        ${formatNumber(
-                            manpower,
-                            0
-                        )}
-                    </td>
+                        <td>
+                            ${formatNumber(activityCount)}
+                        </td>
 
-                    <td>
-                        ${formatNumber(
-                            manhours,
-                            2
-                        )}
-                    </td>
+                        <td>
+                            ${escapeHTML(status)}
+                        </td>
 
-                    <td>
-                        ${activities.length}
-                    </td>
-
-                    <td>
-                        ${escapeHTML(
-                            status
-                        )}
-                    </td>
-
+                    </tr>
                 `;
 
+            })
+            .join("");
 
-                reportTableBody.appendChild(
-                    row
+}
+
+
+/* =========================================================
+   DAILY PROGRESS TABLE
+   ========================================================= */
+
+function renderProgressTable(
+    reports
+) {
+
+    if (!progressTableBody) {
+        return;
+    }
+
+
+    const scheduleMap =
+        createScheduleMap();
+
+
+    const rows = [];
+
+
+    reports.forEach(report => {
+
+        const activities =
+            Array.isArray(report.activities)
+                ? report.activities
+                : [];
+
+
+        activities.forEach(activity => {
+
+            const activityId =
+                getReportActivityId(activity);
+
+
+            const master =
+                scheduleMap.get(
+                    activityId
+                );
+
+
+            const plannedQuantity =
+                getActivityPlannedQuantity(
+                    master
+                );
+
+
+            const actualQuantity =
+                getReportQuantity(
+                    activity
+                );
+
+
+            let progress =
+                0;
+
+
+            if (
+                plannedQuantity > 0
+            ) {
+
+                progress =
+                    (
+                        actualQuantity /
+                        plannedQuantity
+                    ) *
+                    100;
+
+            }
+
+
+            rows.push({
+
+                date:
+                    report.date,
+
+                project:
+                    report.project,
+
+                unit:
+                    report.unit,
+
+                activity:
+                    getReportActivityName(
+                        activity
+                    ) ||
+                    getActivityName(
+                        master
+                    ),
+
+                quantity:
+                    actualQuantity,
+
+                quantityUnit:
+                    getActivityUnit(
+                        master
+                    ),
+
+                plannedQuantity,
+
+                progress
+
+            });
+
+        });
+
+    });
+
+
+    if (!rows.length) {
+
+        progressTableBody.innerHTML = `
+            <tr>
+                <td colspan="8">
+                    No progress data found.
+                </td>
+            </tr>
+        `;
+
+        return;
+
+    }
+
+
+    rows.sort(
+        (a, b) =>
+            String(b.date)
+                .localeCompare(
+                    String(a.date)
+                )
+    );
+
+
+    progressTableBody.innerHTML =
+        rows.map(row => {
+
+            return `
+                <tr>
+
+                    <td>
+                        ${escapeHTML(row.date)}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(row.project)}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(row.unit)}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(row.activity)}
+                    </td>
+
+                    <td>
+                        ${formatQuantity(row.quantity)}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(row.quantityUnit)}
+                    </td>
+
+                    <td>
+                        ${formatQuantity(row.plannedQuantity)}
+                    </td>
+
+                    <td>
+                        ${formatPercent(row.progress)}
+                    </td>
+
+                </tr>
+            `;
+
+        })
+        .join("");
+
+}
+
+
+/* =========================================================
+   MATERIAL SUMMARY
+   ========================================================= */
+
+function renderMaterials(
+    reports
+) {
+
+    if (!materialTableBody) {
+        return;
+    }
+
+
+    const materialMap =
+        new Map();
+
+
+    reports.forEach(report => {
+
+        const materials =
+            Array.isArray(report.materials)
+                ? report.materials
+                : [];
+
+
+        materials.forEach(material => {
+
+            const name =
+                String(
+                    material.name ??
+                    material.materialName ??
+                    ""
+                ).trim();
+
+
+            const unit =
+                String(
+                    material.unit ??
+                    ""
+                ).trim();
+
+
+            const quantity =
+                number(
+                    material.quantity
+                );
+
+
+            if (!name) {
+                return;
+            }
+
+
+            const key =
+                [
+                    normalize(name),
+                    normalize(unit)
+                ].join("|");
+
+
+            if (!materialMap.has(key)) {
+
+                materialMap.set(
+                    key,
+                    {
+                        name,
+                        quantity: 0,
+                        unit
+                    }
                 );
 
             }
-        );
+
+
+            materialMap.get(
+                key
+            ).quantity += quantity;
+
+        });
+
+    });
+
+
+    const materials =
+        [
+            ...materialMap.values()
+        ];
+
+
+    if (!materials.length) {
+
+        materialTableBody.innerHTML = `
+            <tr>
+                <td colspan="3">
+                    No material data found.
+                </td>
+            </tr>
+        `;
+
+        return;
 
     }
 
 
-    /* =====================================================
-       DAILY PROGRESS TABLE
-    ====================================================== */
+    materialTableBody.innerHTML =
+        materials.map(material => {
 
-    function renderProgressTable(
-        reports
-    ) {
-
-        if (!progressTableBody) {
-            return;
-        }
-
-
-        progressTableBody.innerHTML =
-            "";
-
-
-        if (
-            reports.length === 0
-        ) {
-
-            progressTableBody.innerHTML = `
+            return `
                 <tr>
-                    <td colspan="8"
-                        style="text-align:center;">
-                        No progress data recorded.
-                    </td>
-                </tr>
-            `;
-
-            return;
-
-        }
-
-
-        const rows = [];
-
-
-        reports.forEach(report => {
-
-            const activities =
-                Array.isArray(
-                    report.activities
-                )
-                    ? report.activities
-                    : [];
-
-
-            activities.forEach(activity => {
-
-                const planned =
-                    getPlannedQuantity(
-                        activity
-                    );
-
-
-                const actual =
-                    getQuantity(
-                        activity
-                    );
-
-
-                let progress = 0;
-
-
-                if (
-                    planned > 0
-                ) {
-
-                    progress =
-                        (
-                            actual /
-                            planned
-                        ) *
-                        100;
-
-                }
-
-
-                progress =
-                    Math.max(
-                        0,
-                        Math.min(
-                            100,
-                            progress
-                        )
-                    );
-
-
-                rows.push({
-
-                    date:
-                        report.reportDate ||
-                        report.date ||
-                        "-",
-
-                    project:
-                        report.project ||
-                        "-",
-
-                    unit:
-                        report.unit ||
-                        "-",
-
-                    activity:
-                        getActivityName(
-                            activity
-                        ),
-
-                    quantity:
-                        actual,
-
-                    quantityUnit:
-                        getUnit(
-                            activity
-                        ),
-
-                    plannedQuantity:
-                        planned,
-
-                    progress
-
-                });
-
-            });
-
-        });
-
-
-        rows.sort(
-            (a, b) =>
-                String(b.date)
-                    .localeCompare(
-                        String(a.date)
-                    )
-        );
-
-
-        rows.forEach(item => {
-
-            const row =
-                document.createElement(
-                    "tr"
-                );
-
-
-            row.innerHTML = `
-
-                <td>
-                    ${escapeHTML(
-                        item.date
-                    )}
-                </td>
-
-                <td>
-                    ${escapeHTML(
-                        item.project
-                    )}
-                </td>
-
-                <td>
-                    ${escapeHTML(
-                        item.unit
-                    )}
-                </td>
-
-                <td>
-                    ${escapeHTML(
-                        item.activity
-                    )}
-                </td>
-
-                <td>
-                    ${formatQuantity(
-                        item.quantity
-                    )}
-                </td>
-
-                <td>
-                    ${escapeHTML(
-                        item.quantityUnit
-                    )}
-                </td>
-
-                <td>
-                    ${formatQuantity(
-                        item.plannedQuantity
-                    )}
-                </td>
-
-                <td>
-                    ${formatPercent(
-                        item.progress
-                    )}
-                </td>
-
-            `;
-
-
-            progressTableBody.appendChild(
-                row
-            );
-
-        });
-
-    }
-
-
-    /* =====================================================
-       MATERIAL SUMMARY
-    ====================================================== */
-
-    function renderMaterials(
-        reports
-    ) {
-
-        if (!materialTableBody) {
-            return;
-        }
-
-
-        materialTableBody.innerHTML =
-            "";
-
-
-        const materialMap =
-            new Map();
-
-
-        reports.forEach(report => {
-
-            const materials =
-                Array.isArray(
-                    report.materials
-                )
-                    ? report.materials
-                    : [];
-
-
-            materials.forEach(material => {
-
-                const name =
-                    material.name ||
-                    material.materialName ||
-                    "-";
-
-
-                const unit =
-                    material.unit ||
-                    "-";
-
-
-                const quantity =
-                    number(
-                        material.quantity
-                    );
-
-
-                const key =
-                    `${normalize(name)}|${normalize(unit)}`;
-
-
-                if (
-                    !materialMap.has(key)
-                ) {
-
-                    materialMap.set(
-                        key,
-                        {
-
-                            name,
-
-                            quantity: 0,
-
-                            unit
-
-                        }
-                    );
-
-                }
-
-
-                materialMap.get(key)
-                    .quantity +=
-                    quantity;
-
-            });
-
-        });
-
-
-        const materials =
-            [
-                ...materialMap.values()
-            ];
-
-
-        if (
-            materials.length === 0
-        ) {
-
-            materialTableBody.innerHTML = `
-                <tr>
-                    <td colspan="3"
-                        style="text-align:center;">
-                        No material data recorded.
-                    </td>
-                </tr>
-            `;
-
-            return;
-
-        }
-
-
-        materials.forEach(
-            material => {
-
-                const row =
-                    document.createElement(
-                        "tr"
-                    );
-
-
-                row.innerHTML = `
 
                     <td>
-                        ${escapeHTML(
-                            material.name
-                        )}
+                        ${escapeHTML(material.name)}
                     </td>
 
                     <td>
@@ -1733,140 +2085,109 @@ document.addEventListener("DOMContentLoaded", () => {
                     </td>
 
                     <td>
-                        ${escapeHTML(
-                            material.unit
-                        )}
+                        ${escapeHTML(material.unit)}
                     </td>
 
-                `;
+                </tr>
+            `;
+
+        })
+        .join("");
+
+}
 
 
-                materialTableBody.appendChild(
-                    row
-                );
+/* =========================================================
+   RENDER DASHBOARD
+   ========================================================= */
 
-            }
-        );
+function renderDashboard() {
 
-    }
-
-
-    /* =====================================================
-       MAIN RENDER
-    ====================================================== */
-
-    function renderDashboard() {
-
-        const filteredReports =
-            getFilteredReports();
+    const reports =
+        getFilteredReports();
 
 
-        updateManpowerKPI(
-            filteredReports
-        );
-
-
-        updateActivityKPI(
-            filteredReports
-        );
-
-
-        renderReports(
-            filteredReports
-        );
-
-
-        renderProgressTable(
-            filteredReports
-        );
-
-
-        renderMaterials(
-            filteredReports
-        );
-
-    }
-
-
-    /* =====================================================
-       FILTER EVENTS
-    ====================================================== */
-
-    if (dateFilter) {
-
-        dateFilter.addEventListener(
-            "change",
-            renderDashboard
-        );
-
-    }
-
-
-    if (locationFilter) {
-
-        locationFilter.addEventListener(
-            "change",
-            () => {
-
-                populateFilters();
-
-                renderDashboard();
-
-            }
-        );
-
-    }
-
-
-    if (projectFilter) {
-
-        projectFilter.addEventListener(
-            "change",
-            renderDashboard
-        );
-
-    }
-
-
-    if (unitFilter) {
-
-        unitFilter.addEventListener(
-            "change",
-            renderDashboard
-        );
-
-    }
-
-
-    /* =====================================================
-       STORAGE UPDATE
-    ====================================================== */
-
-    window.addEventListener(
-        "storage",
-        event => {
-
-            if (
-                event.key ===
-                REPORT_STORAGE_KEY
-            ) {
-
-                populateFilters();
-
-                renderDashboard();
-
-            }
-
-        }
+    updateManpowerKPI(
+        reports
     );
 
 
-    /* =====================================================
-       INITIAL LOAD
-    ====================================================== */
+    updateActivityKPI(
+        reports
+    );
 
-    populateFilters();
 
-    renderDashboard();
+    renderReports(
+        reports
+    );
+
+
+    renderProgressTable(
+        reports
+    );
+
+
+    renderMaterials(
+        reports
+    );
+
+
+    updateProjectProgressOverview();
+
+}
+
+
+/* =========================================================
+   FILTER EVENTS
+   ========================================================= */
+
+[
+    dateFilter,
+    locationFilter,
+    projectFilter,
+    unitFilter
+].forEach(element => {
+
+    if (!element) {
+        return;
+    }
+
+
+    element.addEventListener(
+        "change",
+        renderDashboard
+    );
 
 });
+
+
+/* =========================================================
+   STORAGE EVENT
+   ========================================================= */
+
+window.addEventListener(
+    "storage",
+    event => {
+
+        if (
+            event.key ===
+            REPORT_STORAGE_KEY
+        ) {
+
+            populateFilters();
+
+            renderDashboard();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   INITIAL LOAD
+   ========================================================= */
+
+populateFilters();
+
+renderDashboard();
