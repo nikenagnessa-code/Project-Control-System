@@ -529,3 +529,86 @@ const masterSchedule = [
         unit: "m'",
         weightPercent: 0.717231
     },
+    // =========================
+    // FINISHING LANTAI & KERAMIK DINDING
+    // =========================
+
+    {
+        id: "ARS-LAN-001",
+        category: "Arsitektur",
+        workPackage: "Finishing Lantai",
+        activity: "Urugan Pasir Bawah Keramik",
+        plannedQuantity: 10,
+        unit: "m³",
+        weightPercent: 0.252758
+    },
+
+    {
+        id: "ARS-LAN-002",
+        category: "Arsitektur",
+        workPackage: "Finishing Lantai",
+        activity: "H.Tile 60x60 Polished",
+        plannedQuantity: 176.84,
+        unit: "m²",
+        weightPercent: 4.169659
+    },
+
+    {
+        id: "ARS-LAN-003",
+        category: "Arsitektur",
+        workPackage: "Finishing Lantai",
+        activity: "H.Tile 60x60 Unpolished",
+        plannedQuantity: 20.52,
+        unit: "m²",
+        weightPercent: 0.483835
+    },
+
+    {
+        id: "ARS-LAN-004",
+        category: "Arsitektur",
+        workPackage: "Finishing Lantai",
+        activity: "Keramik Kamar Mandi",
+        plannedQuantity: 11.64,
+        unit: "m²",
+        weightPercent: 0.274456
+    },
+
+    {
+        id: "ARS-LAN-005",
+        category: "Arsitektur",
+        workPackage: "Keramik Dinding",
+        activity: "Dinding Keramik Kamar Mandi",
+        plannedQuantity: 42.2,
+        unit: "m²",
+        weightPercent: 0.995021
+    },
+
+    {
+        id: "ARS-LAN-006",
+        category: "Arsitektur",
+        workPackage: "Finishing Lantai",
+        activity: "Plint",
+        plannedQuantity: 167.85,
+        unit: "m'",
+        weightPercent: 0.841124
+    },
+
+    {
+        id: "ARS-LAN-007",
+        category: "Arsitektur",
+        workPackage: "Keramik Dinding",
+        activity: "Dinding Keramik Motif Batu Alam",
+        plannedQuantity: 30.465,
+        unit: "m²",
+        weightPercent: 0.768475
+    },
+
+    {
+        id: "ARS-LAN-008",
+        category: "Arsitektur",
+        workPackage: "Finishing Lantai",
+        activity: "Ban-banan",
+        plannedQuantity: 40.62,
+        unit: "m'",
+        weightPercent: 0.164450
+    },
