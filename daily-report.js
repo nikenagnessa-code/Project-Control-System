@@ -260,13 +260,14 @@ document.addEventListener("DOMContentLoaded", function () {
         Struktur yang digunakan:
 
         {
-            id,
-            category,
+            activityId,
             workPackage,
             activity,
             plannedQuantity,
-            unit,
-            weight
+            quantityUnit,
+            weight,
+            plannedStart,
+            plannedFinish
         }
     */
 
@@ -274,6 +275,7 @@ document.addEventListener("DOMContentLoaded", function () {
         Array.isArray(window.masterSchedule)
             ? window.masterSchedule
             : (
+                typeof masterSchedule !== "undefined" &&
                 Array.isArray(masterSchedule)
                     ? masterSchedule
                     : []
@@ -383,8 +385,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
         return schedule.find(function (item) {
 
-            return String(item.id) ===
-                String(activityId);
+            return String(
+                item.activityId
+            ) === String(
+                activityId
+            );
 
         }) || null;
 
@@ -534,7 +539,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     Status
                 </label>
 
-                <select class="activity-status">
+                <select
+                    class="activity-status"
+                >
 
                     <option value="">
                         Select Status
@@ -651,13 +658,15 @@ document.addEventListener("DOMContentLoaded", function () {
                     true;
 
 
+                clearActivityDetails(
+                    row
+                );
+
+
                 if (!selectedPackage) {
 
-                    clearActivityDetails(
-                        row
-                    );
-
                     return;
+
                 }
 
 
@@ -683,8 +692,14 @@ document.addEventListener("DOMContentLoaded", function () {
                             );
 
 
+                        /*
+                            IMPORTANT:
+                            Gunakan activityId,
+                            bukan id.
+                        */
+
                         option.value =
-                            item.id;
+                            item.activityId;
 
 
                         option.textContent =
@@ -699,17 +714,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
 
 
-                if (activities.length > 0) {
+                if (
+                    activities.length > 0
+                ) {
 
                     activitySelect.disabled =
                         false;
 
                 }
-
-
-                clearActivityDetails(
-                    row
-                );
 
             }
         );
@@ -746,12 +758,18 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
 
-                // Store master activity ID
+                // -----------------------------------------
+                // STORE MASTER ACTIVITY ID
+                // -----------------------------------------
+
                 row.dataset.activityId =
-                    selectedActivity.id;
+                    selectedActivity.activityId;
 
 
-                // Planned quantity
+                // -----------------------------------------
+                // PLANNED QUANTITY
+                // -----------------------------------------
+
                 if (plannedInput) {
 
                     plannedInput.value =
@@ -762,17 +780,23 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
 
-                // Unit
+                // -----------------------------------------
+                // UNIT
+                // -----------------------------------------
+
                 if (unitInput) {
 
                     unitInput.value =
-                        selectedActivity.unit ||
+                        selectedActivity.quantityUnit ||
                         "";
 
                 }
 
 
-                // Reset actual
+                // -----------------------------------------
+                // RESET ACTUAL
+                // -----------------------------------------
+
                 if (quantityInput) {
 
                     quantityInput.value =
@@ -781,7 +805,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
 
-                // Reset progress
+                // -----------------------------------------
+                // RESET DAILY PROGRESS
+                // -----------------------------------------
+
                 if (progressInput) {
 
                     progressInput.value =
@@ -790,11 +817,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
 
-                // Store weight
+                // -----------------------------------------
+                // STORE WEIGHT
+                // -----------------------------------------
+
                 row.dataset.weight =
                     Number(
                         selectedActivity.weight || 0
                     );
+
+
+                console.log(
+                    "SELECTED ACTIVITY:",
+                    selectedActivity
+                );
 
             }
         );
@@ -899,6 +935,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         delete row.dataset.activityId;
+
         delete row.dataset.weight;
 
     }
@@ -970,7 +1007,7 @@ document.addEventListener("DOMContentLoaded", function () {
             100;
 
 
-        // Do not allow more than 100%
+        // Maximum daily progress = 100%
         progress =
             Math.min(
                 progress,
@@ -1020,7 +1057,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         );
 
 
-                    if (rows.length > 1) {
+                    if (
+                        rows.length > 1
+                    ) {
 
                         event.target
                             .closest(".activity-row")
@@ -1079,8 +1118,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                 return `
-                    <option value="${unit}">
-                        ${unit}
+                    <option value="${escapeHtml(unit)}">
+                        ${escapeHtml(unit)}
                     </option>
                 `;
 
@@ -1147,7 +1186,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     Unit
                 </label>
 
-                <select class="material-unit">
+                <select
+                    class="material-unit"
+                >
 
                     ${materialUnitOptions}
 
@@ -1210,7 +1251,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         );
 
 
-                    if (rows.length > 1) {
+                    if (
+                        rows.length > 1
+                    ) {
 
                         event.target
                             .closest(".material-row")
@@ -1273,8 +1316,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
             const activityName =
-                activitySelect?.selectedOptions?.[0]
-                    ?.textContent.trim() || "";
+                activitySelect
+                    ?.selectedOptions?.[0]
+                    ?.textContent
+                    .trim() || "";
 
 
             const plannedQuantity =
@@ -1616,7 +1661,9 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
 
-            if (activities.length === 0) {
+            if (
+                activities.length === 0
+            ) {
 
                 alert(
                     "Please add at least one work activity."
@@ -1641,7 +1688,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     activities[i];
 
 
-                if (!activity.activityId) {
+                if (
+                    !activity.activityId
+                ) {
 
                     alert(
                         `Please select activity for row ${i + 1}.`
@@ -1652,7 +1701,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
 
-                if (!activity.workPackage) {
+                if (
+                    !activity.workPackage
+                ) {
 
                     alert(
                         `Please select work package for row ${i + 1}.`
@@ -1676,7 +1727,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
 
-                if (!activity.unit) {
+                if (
+                    !activity.unit
+                ) {
 
                     alert(
                         `Unit for activity row ${i + 1} is invalid.`
@@ -1700,7 +1753,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
 
-                if (!activity.status) {
+                if (
+                    !activity.status
+                ) {
 
                     alert(
                         `Please select status for activity row ${i + 1}.`
