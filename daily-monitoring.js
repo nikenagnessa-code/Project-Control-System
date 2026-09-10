@@ -16,21 +16,46 @@ document.addEventListener("DOMContentLoaded", () => {
        ELEMENTS
     ====================================================== */
 
-    const dateFilter = document.getElementById("dateFilter");
-    const locationFilter = document.getElementById("locationFilter");
-    const projectFilter = document.getElementById("projectFilter");
-    const unitFilter = document.getElementById("unitFilter");
+    const dateFilter =
+        document.getElementById("dateFilter");
 
-    const totalManpowerEl = document.getElementById("totalManpower");
-    const normalManhoursEl = document.getElementById("normalManhours");
-    const overtimeManhoursEl = document.getElementById("overtimeManhours");
-    const totalManhoursEl = document.getElementById("totalManhours");
-    const onProgressEl = document.getElementById("onProgress");
-    const completedEl = document.getElementById("completed");
+    const locationFilter =
+        document.getElementById("locationFilter");
 
-    const reportTableBody = document.getElementById("reportTableBody");
-    const progressTableBody = document.getElementById("progressTableBody");
-    const materialTableBody = document.getElementById("materialTableBody");
+    const projectFilter =
+        document.getElementById("projectFilter");
+
+    const unitFilter =
+        document.getElementById("unitFilter");
+
+
+    const totalManpowerEl =
+        document.getElementById("totalManpower");
+
+    const normalManhoursEl =
+        document.getElementById("normalManhours");
+
+    const overtimeManhoursEl =
+        document.getElementById("overtimeManhours");
+
+    const totalManhoursEl =
+        document.getElementById("totalManhours");
+
+    const onProgressEl =
+        document.getElementById("onProgress");
+
+    const completedEl =
+        document.getElementById("completed");
+
+
+    const reportTableBody =
+        document.getElementById("reportTableBody");
+
+    const progressTableBody =
+        document.getElementById("progressTableBody");
+
+    const materialTableBody =
+        document.getElementById("materialTableBody");
 
 
     /* =====================================================
@@ -41,15 +66,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
 
-            const stored = localStorage.getItem(REPORT_STORAGE_KEY);
+            const stored =
+                localStorage.getItem(
+                    REPORT_STORAGE_KEY
+                );
 
             if (!stored) {
                 return [];
             }
 
-            const parsed = JSON.parse(stored);
+            const parsed =
+                JSON.parse(stored);
 
-            return Array.isArray(parsed) ? parsed : [];
+            return Array.isArray(parsed)
+                ? parsed
+                : [];
 
         } catch (error) {
 
@@ -68,18 +99,30 @@ document.addEventListener("DOMContentLoaded", () => {
     function getMasterSchedule() {
 
         if (
-            typeof window.masterSchedule !== "undefined" &&
-            Array.isArray(window.masterSchedule)
+            typeof window.masterSchedule !==
+            "undefined" &&
+            Array.isArray(
+                window.masterSchedule
+            )
         ) {
+
             return window.masterSchedule;
+
         }
 
+
         if (
-            typeof masterSchedule !== "undefined" &&
-            Array.isArray(masterSchedule)
+            typeof masterSchedule !==
+            "undefined" &&
+            Array.isArray(
+                masterSchedule
+            )
         ) {
+
             return masterSchedule;
+
         }
+
 
         return [];
 
@@ -88,7 +131,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function number(value) {
 
-        const parsed = parseFloat(value);
+        const parsed =
+            parseFloat(value);
 
         return Number.isFinite(parsed)
             ? parsed
@@ -97,13 +141,31 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    function formatNumber(value, decimals = 2) {
+    function formatNumber(
+        value,
+        decimals = 2
+    ) {
 
         return number(value).toLocaleString(
             "en-US",
             {
-                minimumFractionDigits: decimals,
-                maximumFractionDigits: decimals
+                minimumFractionDigits:
+                    decimals,
+
+                maximumFractionDigits:
+                    decimals
+            }
+        );
+
+    }
+
+
+    function formatQuantity(value) {
+
+        return number(value).toLocaleString(
+            "id-ID",
+            {
+                maximumFractionDigits: 3
             }
         );
 
@@ -112,23 +174,47 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function formatPercent(value) {
 
-        return `${formatNumber(value, 2)}%`;
+        return `${formatNumber(
+            value,
+            2
+        )}%`;
 
     }
 
 
     function escapeHTML(value) {
 
-        if (value === null || value === undefined) {
+        if (
+            value === null ||
+            value === undefined
+        ) {
+
             return "";
+
         }
 
+
         return String(value)
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+            .replace(
+                /</g,
+                "&lt;"
+            )
+            .replace(
+                />/g,
+                "&gt;"
+            )
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+            .replace(
+                /'/g,
+                "&#039;"
+            );
 
     }
 
@@ -228,21 +314,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function createScheduleMap() {
 
-        const schedule = getMasterSchedule();
+        const schedule =
+            getMasterSchedule();
 
-        const map = new Map();
+        const map =
+            new Map();
+
 
         schedule.forEach(item => {
 
-            const id = getActivityId(item);
+            const id =
+                getActivityId(item);
+
 
             if (!id) {
                 return;
             }
 
-            map.set(String(id), item);
+
+            map.set(
+                String(id),
+                item
+            );
 
         });
+
 
         return map;
 
@@ -255,7 +351,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function getFilteredReports() {
 
-        const reports = getReports();
+        const reports =
+            getReports();
+
 
         const selectedDate =
             dateFilter?.value || "All";
@@ -298,34 +396,54 @@ document.addEventListener("DOMContentLoaded", () => {
                 selectedDate !== "" &&
                 reportDate !== selectedDate
             ) {
+
                 return false;
+
             }
 
 
             if (
                 selectedLocation !== "All" &&
-                normalize(reportLocation) !==
-                normalize(selectedLocation)
+                normalize(
+                    reportLocation
+                ) !==
+                normalize(
+                    selectedLocation
+                )
             ) {
+
                 return false;
+
             }
 
 
             if (
                 selectedProject !== "All" &&
-                normalize(reportProject) !==
-                normalize(selectedProject)
+                normalize(
+                    reportProject
+                ) !==
+                normalize(
+                    selectedProject
+                )
             ) {
+
                 return false;
+
             }
 
 
             if (
                 selectedUnit !== "All" &&
-                normalize(reportUnit) !==
-                normalize(selectedUnit)
+                normalize(
+                    reportUnit
+                ) !==
+                normalize(
+                    selectedUnit
+                )
             ) {
+
                 return false;
+
             }
 
 
@@ -342,13 +460,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function populateFilters() {
 
-        const reports = getReports();
+        const reports =
+            getReports();
+
 
         const currentProject =
-            projectFilter?.value || "All";
+            projectFilter?.value ||
+            "All";
 
         const currentUnit =
-            unitFilter?.value || "All";
+            unitFilter?.value ||
+            "All";
 
 
         if (projectFilter) {
@@ -356,10 +478,14 @@ document.addEventListener("DOMContentLoaded", () => {
             const projects = [
                 ...new Set(
                     reports
-                        .map(report => report.project)
+                        .map(
+                            report =>
+                                report.project
+                        )
                         .filter(Boolean)
                 )
             ];
+
 
             projectFilter.innerHTML = `
                 <option value="All">
@@ -367,24 +493,38 @@ document.addEventListener("DOMContentLoaded", () => {
                 </option>
             `;
 
+
             projects.forEach(project => {
 
                 const option =
-                    document.createElement("option");
+                    document.createElement(
+                        "option"
+                    );
 
-                option.value = project;
-                option.textContent = project;
 
-                projectFilter.appendChild(option);
+                option.value =
+                    project;
+
+                option.textContent =
+                    project;
+
+
+                projectFilter.appendChild(
+                    option
+                );
 
             });
 
 
             if (
-                projects.includes(currentProject)
+                projects.includes(
+                    currentProject
+                )
             ) {
+
                 projectFilter.value =
                     currentProject;
+
             }
 
         }
@@ -395,10 +535,14 @@ document.addEventListener("DOMContentLoaded", () => {
             const units = [
                 ...new Set(
                     reports
-                        .map(report => report.unit)
+                        .map(
+                            report =>
+                                report.unit
+                        )
                         .filter(Boolean)
                 )
             ];
+
 
             unitFilter.innerHTML = `
                 <option value="All">
@@ -406,24 +550,38 @@ document.addEventListener("DOMContentLoaded", () => {
                 </option>
             `;
 
+
             units.forEach(unit => {
 
                 const option =
-                    document.createElement("option");
+                    document.createElement(
+                        "option"
+                    );
 
-                option.value = unit;
-                option.textContent = unit;
 
-                unitFilter.appendChild(option);
+                option.value =
+                    unit;
+
+                option.textContent =
+                    unit;
+
+
+                unitFilter.appendChild(
+                    option
+                );
 
             });
 
 
             if (
-                units.includes(currentUnit)
+                units.includes(
+                    currentUnit
+                )
             ) {
+
                 unitFilter.value =
                     currentUnit;
+
             }
 
         }
@@ -435,26 +593,38 @@ document.addEventListener("DOMContentLoaded", () => {
        KPI - MANPOWER
     ====================================================== */
 
-    function updateManpowerKPI(reports) {
+    function updateManpowerKPI(
+        reports
+    ) {
 
         let totalManpower = 0;
+
         let normalManhours = 0;
+
         let overtimeManhours = 0;
 
 
         reports.forEach(report => {
 
             const foreman =
-                number(report.foreman);
+                number(
+                    report.foreman
+                );
 
             const headWorker =
-                number(report.headWorker);
+                number(
+                    report.headWorker
+                );
 
             const skilledWorker =
-                number(report.skilledWorker);
+                number(
+                    report.skilledWorker
+                );
 
             const staffOffice =
-                number(report.staffOffice);
+                number(
+                    report.staffOffice
+                );
 
 
             const manpower =
@@ -481,13 +651,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
 
 
-            totalManpower += manpower;
+            totalManpower +=
+                manpower;
+
 
             normalManhours +=
-                manpower * normalHours;
+                manpower *
+                normalHours;
+
 
             overtimeManhours +=
-                manpower * overtimeHours;
+                manpower *
+                overtimeHours;
 
         });
 
@@ -498,26 +673,46 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         if (totalManpowerEl) {
+
             totalManpowerEl.textContent =
-                formatNumber(totalManpower, 0);
+                formatNumber(
+                    totalManpower,
+                    0
+                );
+
         }
 
 
         if (normalManhoursEl) {
+
             normalManhoursEl.textContent =
-                formatNumber(normalManhours, 2);
+                formatNumber(
+                    normalManhours,
+                    2
+                );
+
         }
 
 
         if (overtimeManhoursEl) {
+
             overtimeManhoursEl.textContent =
-                formatNumber(overtimeManhours, 2);
+                formatNumber(
+                    overtimeManhours,
+                    2
+                );
+
         }
 
 
         if (totalManhoursEl) {
+
             totalManhoursEl.textContent =
-                formatNumber(totalManhours, 2);
+                formatNumber(
+                    totalManhours,
+                    2
+                );
+
         }
 
     }
@@ -527,7 +722,9 @@ document.addEventListener("DOMContentLoaded", () => {
        ACTIVITY DATA
     ====================================================== */
 
-    function buildActivityData(reports) {
+    function buildActivityData(
+        reports
+    ) {
 
         const scheduleMap =
             createScheduleMap();
@@ -540,7 +737,9 @@ document.addEventListener("DOMContentLoaded", () => {
         reports.forEach(report => {
 
             const activities =
-                Array.isArray(report.activities)
+                Array.isArray(
+                    report.activities
+                )
                     ? report.activities
                     : [];
 
@@ -548,21 +747,40 @@ document.addEventListener("DOMContentLoaded", () => {
             activities.forEach(activity => {
 
                 const activityId =
-                    getActivityId(activity);
+                    getActivityId(
+                        activity
+                    );
 
 
                 const key =
-                    activityId ||
-                    `${normalize(report.project)}|
-                     ${normalize(report.unit)}|
-                     ${normalize(getActivityName(activity))}`;
+                    activityId
+                        ? `${normalize(
+                              report.project
+                          )}|${normalize(
+                              report.unit
+                          )}|${String(
+                              activityId
+                          )}`
+                        : `${normalize(
+                              report.project
+                          )}|${normalize(
+                              report.unit
+                          )}|${normalize(
+                              getActivityName(
+                                  activity
+                              )
+                          )}`;
 
 
-                if (!activityMap.has(key)) {
+                if (
+                    !activityMap.has(key)
+                ) {
 
                     const scheduleItem =
                         scheduleMap.get(
-                            String(activityId)
+                            String(
+                                activityId
+                            )
                         );
 
 
@@ -573,10 +791,12 @@ document.addEventListener("DOMContentLoaded", () => {
                             activityId,
 
                             project:
-                                report.project || "",
+                                report.project ||
+                                "",
 
                             unitProject:
-                                report.unit || "",
+                                report.unit ||
+                                "",
 
                             workPackage:
                                 getWorkPackage(
@@ -593,14 +813,16 @@ document.addEventListener("DOMContentLoaded", () => {
                                     activity
                                 ) ||
                                 number(
-                                    scheduleItem?.plannedQuantity
+                                    scheduleItem
+                                        ?.plannedQuantity
                                 ),
 
                             quantityUnit:
                                 getUnit(
                                     activity
                                 ) ||
-                                scheduleItem?.unit ||
+                                scheduleItem
+                                    ?.unit ||
                                 "-",
 
                             weight:
@@ -608,10 +830,12 @@ document.addEventListener("DOMContentLoaded", () => {
                                     activity
                                 ) ||
                                 number(
-                                    scheduleItem?.weight
+                                    scheduleItem
+                                        ?.weight
                                 ),
 
-                            actualToday: 0,
+                            actualToday:
+                                0,
 
                             dates: [],
 
@@ -624,14 +848,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
                 const item =
-                    activityMap.get(key);
+                    activityMap.get(
+                        key
+                    );
 
 
                 item.actualToday +=
-                    getQuantity(activity);
+                    getQuantity(
+                        activity
+                    );
 
 
-                if (report.reportDate) {
+                if (
+                    report.reportDate
+                ) {
 
                     item.dates.push(
                         report.reportDate
@@ -640,7 +870,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
 
-                if (activity.status) {
+                if (
+                    activity.status
+                ) {
 
                     item.statuses.push(
                         activity.status
@@ -653,7 +885,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
 
-        return [...activityMap.values()];
+        return [
+            ...activityMap.values()
+        ];
 
     }
 
@@ -679,43 +913,66 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (
                 project &&
-                normalize(report.project) !==
-                normalize(project)
+                normalize(
+                    report.project
+                ) !==
+                normalize(
+                    project
+                )
             ) {
+
                 return;
+
             }
 
 
             if (
                 unitProject &&
-                normalize(report.unit) !==
-                normalize(unitProject)
+                normalize(
+                    report.unit
+                ) !==
+                normalize(
+                    unitProject
+                )
             ) {
+
                 return;
+
             }
 
 
             const activities =
-                Array.isArray(report.activities)
+                Array.isArray(
+                    report.activities
+                )
                     ? report.activities
                     : [];
 
 
-            activities.forEach(activity => {
+            activities.forEach(
+                activity => {
 
-                if (
-                    activityId &&
-                    String(
-                        getActivityId(activity)
-                    ) === String(activityId)
-                ) {
+                    if (
+                        activityId &&
+                        String(
+                            getActivityId(
+                                activity
+                            )
+                        ) ===
+                        String(
+                            activityId
+                        )
+                    ) {
 
-                    total +=
-                        getQuantity(activity);
+                        total +=
+                            getQuantity(
+                                activity
+                            );
+
+                    }
 
                 }
-
-            });
+            );
 
         });
 
@@ -726,10 +983,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =====================================================
-       PROGRESS CALCULATION
+       CUMULATIVE PROGRESS
     ====================================================== */
 
-    function calculateProgress(item) {
+    function calculateProgress(
+        item
+    ) {
 
         const cumulativeActual =
             getAllReportsForActivity(
@@ -754,7 +1013,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 (
                     cumulativeActual /
                     planned
-                ) * 100;
+                ) *
+                100;
 
         }
 
@@ -773,7 +1033,8 @@ document.addEventListener("DOMContentLoaded", () => {
             (
                 progress *
                 number(item.weight)
-            ) / 100;
+            ) /
+            100;
 
 
         return {
@@ -790,7 +1051,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =====================================================
-       OVERALL PROGRESS
+       OVERALL PROJECT PROGRESS
     ====================================================== */
 
     function calculateOverallProgress(
@@ -798,18 +1059,24 @@ document.addEventListener("DOMContentLoaded", () => {
     ) {
 
         const activities =
-            buildActivityData(reports);
+            buildActivityData(
+                reports
+            );
 
 
-        let totalWeightedProgress = 0;
+        let totalWeightedProgress =
+            0;
 
-        let totalWeight = 0;
+        let totalWeight =
+            0;
 
 
         activities.forEach(item => {
 
             const result =
-                calculateProgress(item);
+                calculateProgress(
+                    item
+                );
 
 
             totalWeightedProgress +=
@@ -817,19 +1084,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
             totalWeight +=
-                number(item.weight);
+                number(
+                    item.weight
+                );
 
         });
 
 
-        /*
-         * Because the selected reports can represent
-         * only part of the project, we calculate
-         * weighted progress against the schedule
-         * represented by the activities.
-         */
-
-        if (totalWeight <= 0) {
+        if (
+            totalWeight <= 0
+        ) {
 
             return 0;
 
@@ -839,7 +1103,8 @@ document.addEventListener("DOMContentLoaded", () => {
         return (
             totalWeightedProgress /
             totalWeight
-        ) * 100;
+        ) *
+        100;
 
     }
 
@@ -848,23 +1113,32 @@ document.addEventListener("DOMContentLoaded", () => {
        ACTIVITY STATUS KPI
     ====================================================== */
 
-    function updateActivityKPI(reports) {
+    function updateActivityKPI(
+        reports
+    ) {
 
         const activities =
-            buildActivityData(reports);
+            buildActivityData(
+                reports
+            );
 
 
         let onProgress = 0;
+
         let completed = 0;
 
 
         activities.forEach(item => {
 
             const result =
-                calculateProgress(item);
+                calculateProgress(
+                    item
+                );
 
 
-            if (result.progress >= 100) {
+            if (
+                result.progress >= 100
+            ) {
 
                 completed++;
 
@@ -901,17 +1175,22 @@ document.addEventListener("DOMContentLoaded", () => {
        RECENT DAILY REPORTS
     ====================================================== */
 
-    function renderReports(reports) {
+    function renderReports(
+        reports
+    ) {
 
         if (!reportTableBody) {
             return;
         }
 
 
-        reportTableBody.innerHTML = "";
+        reportTableBody.innerHTML =
+            "";
 
 
-        if (reports.length === 0) {
+        if (
+            reports.length === 0
+        ) {
 
             reportTableBody.innerHTML = `
                 <tr>
@@ -944,144 +1223,173 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
 
-        sortedReports.forEach(report => {
+        sortedReports.forEach(
+            report => {
 
-            const activities =
-                Array.isArray(report.activities)
-                    ? report.activities
-                    : [];
+                const activities =
+                    Array.isArray(
+                        report.activities
+                    )
+                        ? report.activities
+                        : [];
 
 
-            const manpower =
-                number(
-                    report.manpower
-                ) ||
-                (
-                    number(report.foreman) +
-                    number(report.headWorker) +
-                    number(report.skilledWorker) +
-                    number(report.staffOffice)
+                const manpower =
+                    number(
+                        report.manpower
+                    ) ||
+                    (
+                        number(
+                            report.foreman
+                        ) +
+                        number(
+                            report.headWorker
+                        ) +
+                        number(
+                            report.skilledWorker
+                        ) +
+                        number(
+                            report.staffOffice
+                        )
+                    );
+
+
+                const normalHours =
+                    number(
+                        report.normalHours
+                    );
+
+
+                const overtimeHours =
+                    number(
+                        report.overtimeHours
+                    );
+
+
+                const manhours =
+                    manpower *
+                    (
+                        normalHours +
+                        overtimeHours
+                    );
+
+
+                const statuses =
+                    activities.map(
+                        activity =>
+                            activity.status
+                    );
+
+
+                let status = "—";
+
+
+                if (
+                    statuses.includes(
+                        "Completed"
+                    )
+                ) {
+
+                    status =
+                        "Completed";
+
+                } else if (
+                    statuses.includes(
+                        "On Progress"
+                    )
+                ) {
+
+                    status =
+                        "On Progress";
+
+                } else if (
+                    statuses.length > 0
+                ) {
+
+                    status =
+                        statuses[0] ||
+                        "—";
+
+                }
+
+
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
+
+
+                row.innerHTML = `
+
+                    <td>
+                        ${escapeHTML(
+                            report.reportDate ||
+                            report.date ||
+                            "-"
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(
+                            report.location ||
+                            "-"
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(
+                            report.project ||
+                            "-"
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(
+                            report.unit ||
+                            "-"
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(
+                            report.weather ||
+                            "-"
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatNumber(
+                            manpower,
+                            0
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatNumber(
+                            manhours,
+                            2
+                        )}
+                    </td>
+
+                    <td>
+                        ${activities.length}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(
+                            status
+                        )}
+                    </td>
+
+                `;
+
+
+                reportTableBody.appendChild(
+                    row
                 );
-
-
-            const normalHours =
-                number(
-                    report.normalHours
-                );
-
-
-            const overtimeHours =
-                number(
-                    report.overtimeHours
-                );
-
-
-            const manhours =
-                manpower *
-                (
-                    normalHours +
-                    overtimeHours
-                );
-
-
-            const statuses =
-                activities.map(
-                    activity =>
-                        activity.status
-                );
-
-
-            let status = "—";
-
-
-            if (
-                statuses.includes("Completed")
-            ) {
-
-                status = "Completed";
-
-            } else if (
-                statuses.includes("On Progress")
-            ) {
-
-                status = "On Progress";
-
-            } else if (
-                statuses.length > 0
-            ) {
-
-                status =
-                    statuses[0] || "—";
 
             }
-
-
-            const row =
-                document.createElement("tr");
-
-
-            row.innerHTML = `
-
-                <td>
-                    ${escapeHTML(
-                        report.reportDate ||
-                        report.date ||
-                        "-"
-                    )}
-                </td>
-
-                <td>
-                    ${escapeHTML(
-                        report.location || "-"
-                    )}
-                </td>
-
-                <td>
-                    ${escapeHTML(
-                        report.project || "-"
-                    )}
-                </td>
-
-                <td>
-                    ${escapeHTML(
-                        report.unit || "-"
-                    )}
-                </td>
-
-                <td>
-                    ${escapeHTML(
-                        report.weather || "-"
-                    )}
-                </td>
-
-                <td>
-                    ${formatNumber(
-                        manpower,
-                        0
-                    )}
-                </td>
-
-                <td>
-                    ${formatNumber(
-                        manhours,
-                        2
-                    )}
-                </td>
-
-                <td>
-                    ${activities.length}
-                </td>
-
-                <td>
-                    ${escapeHTML(status)}
-                </td>
-
-            `;
-
-
-            reportTableBody.appendChild(row);
-
-        });
+        );
 
     }
 
@@ -1090,17 +1398,22 @@ document.addEventListener("DOMContentLoaded", () => {
        DAILY PROGRESS TABLE
     ====================================================== */
 
-    function renderProgressTable(reports) {
+    function renderProgressTable(
+        reports
+    ) {
 
         if (!progressTableBody) {
             return;
         }
 
 
-        progressTableBody.innerHTML = "";
+        progressTableBody.innerHTML =
+            "";
 
 
-        if (reports.length === 0) {
+        if (
+            reports.length === 0
+        ) {
 
             progressTableBody.innerHTML = `
                 <tr>
@@ -1122,7 +1435,9 @@ document.addEventListener("DOMContentLoaded", () => {
         reports.forEach(report => {
 
             const activities =
-                Array.isArray(report.activities)
+                Array.isArray(
+                    report.activities
+                )
                     ? report.activities
                     : [];
 
@@ -1144,13 +1459,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 let progress = 0;
 
 
-                if (planned > 0) {
+                if (
+                    planned > 0
+                ) {
 
                     progress =
                         (
                             actual /
                             planned
-                        ) * 100;
+                        ) *
+                        100;
 
                 }
 
@@ -1217,7 +1535,9 @@ document.addEventListener("DOMContentLoaded", () => {
         rows.forEach(item => {
 
             const row =
-                document.createElement("tr");
+                document.createElement(
+                    "tr"
+                );
 
 
             row.innerHTML = `
@@ -1247,9 +1567,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 </td>
 
                 <td>
-                    ${formatNumber(
-                        item.quantity,
-                        3
+                    ${formatQuantity(
+                        item.quantity
                     )}
                 </td>
 
@@ -1260,9 +1579,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 </td>
 
                 <td>
-                    ${formatNumber(
-                        item.plannedQuantity,
-                        3
+                    ${formatQuantity(
+                        item.plannedQuantity
                     )}
                 </td>
 
@@ -1275,7 +1593,9 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
 
 
-            progressTableBody.appendChild(row);
+            progressTableBody.appendChild(
+                row
+            );
 
         });
 
@@ -1286,14 +1606,17 @@ document.addEventListener("DOMContentLoaded", () => {
        MATERIAL SUMMARY
     ====================================================== */
 
-    function renderMaterials(reports) {
+    function renderMaterials(
+        reports
+    ) {
 
         if (!materialTableBody) {
             return;
         }
 
 
-        materialTableBody.innerHTML = "";
+        materialTableBody.innerHTML =
+            "";
 
 
         const materialMap =
@@ -1303,7 +1626,9 @@ document.addEventListener("DOMContentLoaded", () => {
         reports.forEach(report => {
 
             const materials =
-                Array.isArray(report.materials)
+                Array.isArray(
+                    report.materials
+                )
                     ? report.materials
                     : [];
 
@@ -1328,11 +1653,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
                 const key =
-                    `${normalize(name)}|
-                     ${normalize(unit)}`;
+                    `${normalize(name)}|${normalize(unit)}`;
 
 
-                if (!materialMap.has(key)) {
+                if (
+                    !materialMap.has(key)
+                ) {
 
                     materialMap.set(
                         key,
@@ -1351,7 +1677,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
                 materialMap.get(key)
-                    .quantity += quantity;
+                    .quantity +=
+                    quantity;
 
             });
 
@@ -1359,10 +1686,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         const materials =
-            [...materialMap.values()];
+            [
+                ...materialMap.values()
+            ];
 
 
-        if (materials.length === 0) {
+        if (
+            materials.length === 0
+        ) {
 
             materialTableBody.innerHTML = `
                 <tr>
@@ -1378,38 +1709,44 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
-        materials.forEach(material => {
+        materials.forEach(
+            material => {
 
-            const row =
-                document.createElement("tr");
-
-
-            row.innerHTML = `
-
-                <td>
-                    ${escapeHTML(
-                        material.name
-                    )}
-                </td>
-
-                <td>
-                    ${Number(material.quantity).toLocaleString("id-ID", {
-                        maximumFractionDigits: 3
-                    })} 
-                </td>
-
-                <td>
-                    ${escapeHTML(
-                        material.unit
-                    )}
-                </td>
-
-            `;
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
 
 
-            materialTableBody.appendChild(row);
+                row.innerHTML = `
 
-        });
+                    <td>
+                        ${escapeHTML(
+                            material.name
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatQuantity(
+                            material.quantity
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(
+                            material.unit
+                        )}
+                    </td>
+
+                `;
+
+
+                materialTableBody.appendChild(
+                    row
+                );
+
+            }
+        );
 
     }
 
@@ -1531,6 +1868,5 @@ document.addEventListener("DOMContentLoaded", () => {
     populateFilters();
 
     renderDashboard();
-
 
 });
