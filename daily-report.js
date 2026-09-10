@@ -5,56 +5,105 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!form) return;
 
 
-    // ==============================
-    // BASIC INFORMATION
-    // ==============================
+    // =====================================================
+    // PROJECT & UNIT DATA
+    // =====================================================
+
+    const projectData = {
+
+        Kalimantan: {
+
+            "Tipe 200": [
+                "Unit DANREM"
+            ],
+
+            "Tipe 175": [
+                "Unit KASREM"
+            ],
+
+            "Tipe 175": [
+                "Unit KASI 01",
+                "Unit KASI 02",
+                "Unit KASI 03",
+                "Unit KASI 04",
+                "Unit KASI 05",
+                "Unit KASI 06"
+            ]
+
+        },
+
+
+        Tasikmalaya: {
+
+            "Casa Sabrina": [
+
+                "Tipe 95 - Rumah No. 09",
+                "Tipe 95 - Rumah No. 10",
+                "Tipe 95 - Rumah No. 14",
+                "Tipe 95 - Rumah No. 15",
+
+                "Tipe 128 - Rumah No. 38",
+
+                "Tipe 150 - Rumah No. 19",
+                "Tipe 150 - Rumah No. 21",
+                "Tipe 150 - Rumah No. 23",
+
+                "Tipe Custom - Rumah No. 12",
+                "Tipe Custom - Rumah No. 9-11",
+                "Tipe Custom - Rumah No. 18-20",
+
+            ],
+
+
+            "Buana Royale Residence": [
+
+                "Tipe 45 - Y-7",
+
+                "Tipe 95 - D3",
+                "Tipe 95 - D5"
+
+            ],
+
+
+            "Andalusia": [
+
+                "Tipe Custom - Boulevard 1-2 E"
+
+            ]
+
+        }
+
+    };
+
+
+    // =====================================================
+    // ELEMENTS
+    // =====================================================
 
     const locationSelect = document.getElementById("location");
     const projectSelect = document.getElementById("project");
     const unitSelect = document.getElementById("unit");
 
 
-    // Project berdasarkan lokasi
-    const projectOptions = {
-
-        Kalimantan: [
-            "Rumah Dinas Type 200"
-        ],
-
-        Tasikmalaya: [
-            "Tasikmalaya Project"
-        ]
-
-    };
-
-
-    // ==============================
+    // =====================================================
     // UPDATE PROJECT
-    // ==============================
+    // =====================================================
 
     function updateProjects() {
 
         const location = locationSelect.value;
 
-        projectSelect.innerHTML = `
-            <option value="">
-                Select Project
-            </option>
-        `;
+        projectSelect.innerHTML =
+            `<option value="">Select Project</option>`;
 
-        unitSelect.innerHTML = `
-            <option value="">
-                Select Unit
-            </option>
-        `;
+        unitSelect.innerHTML =
+            `<option value="">Select Unit</option>`;
 
-
-        if (!location || !projectOptions[location]) {
+        if (!location || !projectData[location]) {
             return;
         }
 
-
-        projectOptions[location].forEach(function (project) {
+        Object.keys(projectData[location]).forEach(function (project) {
 
             const option = document.createElement("option");
 
@@ -68,66 +117,55 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // ==============================
+    // =====================================================
     // UPDATE UNIT
-    // ==============================
+    // =====================================================
 
     function updateUnits() {
 
         const location = locationSelect.value;
+        const project = projectSelect.value;
 
-        unitSelect.innerHTML = `
-            <option value="">
-                Select Unit
-            </option>
-        `;
+        unitSelect.innerHTML =
+            `<option value="">Select Unit</option>`;
 
-
-        let unitCount = 0;
-
-
-        if (location === "Kalimantan") {
-
-            unitCount = 8;
-
-        } else if (location === "Tasikmalaya") {
-
-            unitCount = 15;
-
+        if (
+            !location ||
+            !project ||
+            !projectData[location] ||
+            !projectData[location][project]
+        ) {
+            return;
         }
 
-
-        for (let i = 1; i <= unitCount; i++) {
-
-            const unitNumber = String(i).padStart(2, "0");
+        projectData[location][project].forEach(function (unit) {
 
             const option = document.createElement("option");
 
-            option.value = `Unit ${unitNumber}`;
-            option.textContent = `Unit ${unitNumber}`;
+            option.value = unit;
+            option.textContent = unit;
 
             unitSelect.appendChild(option);
 
-        }
+        });
 
     }
 
 
-    // ==============================
+    // =====================================================
     // LOCATION CHANGE
-    // ==============================
+    // =====================================================
 
     locationSelect.addEventListener("change", function () {
 
         updateProjects();
-        updateUnits();
 
     });
 
 
-    // ==============================
+    // =====================================================
     // PROJECT CHANGE
-    // ==============================
+    // =====================================================
 
     projectSelect.addEventListener("change", function () {
 
@@ -136,9 +174,9 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 
-    // ==============================
-    // MATERIAL
-    // ==============================
+    // =====================================================
+    // MATERIAL SECTION
+    // =====================================================
 
     const materialContainer =
         document.getElementById("materialContainer");
@@ -156,7 +194,6 @@ document.addEventListener("DOMContentLoaded", function () {
         row.innerHTML = `
 
             <div class="form-group">
-
                 <label>Material</label>
 
                 <input
@@ -164,12 +201,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     class="material-name"
                     placeholder="Example: Cement, sand, rebar..."
                 >
-
             </div>
 
 
             <div class="form-group">
-
                 <label>Quantity</label>
 
                 <input
@@ -179,29 +214,25 @@ document.addEventListener("DOMContentLoaded", function () {
                     step="0.01"
                     placeholder="Quantity"
                 >
-
             </div>
 
 
             <div class="form-group">
-
                 <label>Unit</label>
 
                 <select class="material-unit">
 
-                    <option value="">
-                        Select Unit
-                    </option>
+                    <option value="">Select Unit</option>
 
-                    <option>kg</option>
-                    <option>ton</option>
-                    <option>m³</option>
-                    <option>m²</option>
-                    <option>pcs</option>
-                    <option>batang</option>
-                    <option>sak</option>
-                    <option>lembar</option>
-                    <option>rit</option>
+                    <option value="kg">kg</option>
+                    <option value="ton">ton</option>
+                    <option value="m³">m³</option>
+                    <option value="m²">m²</option>
+                    <option value="pcs">pcs</option>
+                    <option value="batang">batang</option>
+                    <option value="sak">sak</option>
+                    <option value="lembar">lembar</option>
+                    <option value="rit">rit</option>
 
                 </select>
 
@@ -217,7 +248,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         `;
 
-
         materialContainer.appendChild(row);
 
     }
@@ -229,10 +259,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     });
 
-
-    // ==============================
-    // REMOVE MATERIAL
-    // ==============================
 
     materialContainer.addEventListener("click", function (event) {
 
@@ -247,8 +273,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     ".material-row"
                 );
 
-
-            // Minimal satu baris material tetap tersedia
             if (rows.length > 1) {
 
                 event.target
@@ -262,18 +286,18 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 
-    // ==============================
-    // SAVE DAILY REPORT
-    // ==============================
+    // =====================================================
+    // FORM SUBMIT
+    // =====================================================
 
     form.addEventListener("submit", function (event) {
 
         event.preventDefault();
 
 
-        // ------------------------------
-        // Basic Information
-        // ------------------------------
+        // -----------------------------
+        // BASIC INFORMATION
+        // -----------------------------
 
         const date =
             document.getElementById("reportDate").value;
@@ -291,9 +315,9 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("weather").value;
 
 
-        // ------------------------------
-        // Manpower
-        // ------------------------------
+        // -----------------------------
+        // MANPOWER
+        // -----------------------------
 
         const foreman =
             Number(
@@ -327,6 +351,10 @@ document.addEventListener("DOMContentLoaded", function () {
             ) || 0;
 
 
+        // -----------------------------
+        // MANPOWER CALCULATION
+        // -----------------------------
+
         const totalManpower =
             foreman +
             headWorker +
@@ -335,19 +363,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         const normalManhours =
-            totalManpower * normalHours;
+            totalManpower *
+            normalHours;
+
 
         const overtimeManhours =
-            totalManpower * overtimeHours;
+            totalManpower *
+            overtimeHours;
+
 
         const totalManhours =
             normalManhours +
             overtimeManhours;
 
 
-        // ------------------------------
-        // Work Activity
-        // ------------------------------
+        // -----------------------------
+        // WORK ACTIVITY
+        // -----------------------------
 
         const activity =
             document.getElementById("activity").value;
@@ -356,15 +388,14 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("status").value;
 
 
-        // ------------------------------
-        // Materials
-        // ------------------------------
+        // -----------------------------
+        // MATERIALS
+        // -----------------------------
 
         const materialRows =
             materialContainer.querySelectorAll(
                 ".material-row"
             );
-
 
         const materials = [];
 
@@ -372,27 +403,26 @@ document.addEventListener("DOMContentLoaded", function () {
         materialRows.forEach(function (row) {
 
             const name =
-                row.querySelector(
-                    ".material-name"
-                ).value.trim();
+                row
+                    .querySelector(".material-name")
+                    .value
+                    .trim();
 
 
             const quantity =
                 Number(
-                    row.querySelector(
-                        ".material-quantity"
-                    ).value
+                    row
+                        .querySelector(".material-quantity")
+                        .value
                 ) || 0;
 
 
             const materialUnit =
-                row.querySelector(
-                    ".material-unit"
-                ).value;
+                row
+                    .querySelector(".material-unit")
+                    .value;
 
 
-            // Hanya simpan material
-            // yang memiliki nama
             if (name !== "") {
 
                 materials.push({
@@ -410,17 +440,17 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
 
-        // ------------------------------
-        // Notes
-        // ------------------------------
+        // -----------------------------
+        // NOTES
+        // -----------------------------
 
         const notes =
             document.getElementById("notes").value;
 
 
-        // ==============================
+        // =================================================
         // REPORT OBJECT
-        // ==============================
+        // =================================================
 
         const report = {
 
@@ -471,15 +501,13 @@ document.addEventListener("DOMContentLoaded", function () {
         };
 
 
-        // ==============================
-        // LOCAL STORAGE
-        // ==============================
+        // =================================================
+        // SAVE TO LOCAL STORAGE
+        // =================================================
 
         let reports =
             JSON.parse(
-                localStorage.getItem(
-                    "dailyReports"
-                )
+                localStorage.getItem("dailyReports")
             ) || [];
 
 
@@ -492,14 +520,11 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-        // ==============================
-        // SUCCESS
-        // ==============================
+        // =================================================
+        // REDIRECT
+        // =================================================
 
-        alert(
-            "Daily Report berhasil disimpan!"
-        );
-
+        alert("Daily Report berhasil disimpan!");
 
         window.location.assign(
             "./daily-monitoring.html"
