@@ -1,3 +1,6 @@
+console.log("DAILY REPORT JS LOADED");
+console.log("FORM:", document.querySelector(".report-form"));
+
 // ===============================
 // PROJECT DATA
 // ===============================
