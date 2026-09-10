@@ -1,3 +1,7 @@
+/* ========================================
+   GLOBAL
+======================================== */
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -5,10 +9,15 @@
 }
 
 body {
-    font-family: Arial, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
     background: #f4f6f8;
-    color: #1f2937;
+    color: #172033;
 }
+
+
+/* ========================================
+   GENERAL HEADER
+======================================== */
 
 header {
     background: #111827;
@@ -25,80 +34,11 @@ header p {
     color: #9ca3af;
 }
 
-.container {
-    padding: 30px 40px;
-}
 
-.project-card {
-    background: white;
-    padding: 24px;
-    border-radius: 12px;
-    margin-bottom: 24px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
+/* ========================================
+   TOP HEADER
+======================================== */
 
-.project-card h2 {
-    margin-bottom: 10px;
-}
-
-.kpi-container {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    margin-bottom: 24px;
-}
-
-.kpi {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-.kpi h3 {
-    font-size: 14px;
-    color: #6b7280;
-    margin-bottom: 10px;
-}
-
-.kpi p {
-    font-size: 26px;
-    font-weight: bold;
-}
-
-.module-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-}
-
-.module {
-    background: white;
-    padding: 22px;
-    border-radius: 12px;
-    border: 1px solid #e5e7eb;
-}
-
-.module h3 {
-    margin-bottom: 8px;
-}
-
-.module p {
-    font-size: 14px;
-    color: #6b7280;
-}
-/* =========================
-   DAILY MONITORING
-   ========================= */
-
-body {
-    margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    background: #f4f6f8;
-    color: #172033;
-}
-
-/* HEADER */
 .top-header {
     background: #111827;
     color: white;
@@ -133,14 +73,105 @@ body {
     background: #1f2937;
 }
 
-/* MAIN CONTAINER */
+
+/* ========================================
+   CONTAINER
+======================================== */
+
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 32px;
 }
 
-/* PAGE HEADER */
+
+/* ========================================
+   DASHBOARD PROJECT CARD
+======================================== */
+
+.project-card {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.project-card h2 {
+    margin-bottom: 10px;
+}
+
+
+/* ========================================
+   DASHBOARD KPI
+======================================== */
+
+.kpi-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.kpi {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.kpi h3 {
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 10px;
+}
+
+.kpi p {
+    font-size: 26px;
+    font-weight: bold;
+}
+
+
+/* ========================================
+   DASHBOARD MODULE
+======================================== */
+
+.module-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.module {
+    display: block;
+    background: white;
+    padding: 22px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    text-decoration: none;
+    color: inherit;
+    transition: 0.2s ease;
+}
+
+.module:hover {
+    border-color: #2563eb;
+    transform: translateY(-2px);
+}
+
+.module h3 {
+    margin-bottom: 8px;
+}
+
+.module p {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+
+/* ========================================
+   PAGE HEADER
+======================================== */
+
 .page-header {
     display: flex;
     justify-content: space-between;
@@ -160,7 +191,11 @@ body {
     line-height: 1.5;
 }
 
-/* BUTTON */
+
+/* ========================================
+   BUTTONS
+======================================== */
+
 .primary-button {
     background: #2563eb;
     color: white;
@@ -170,13 +205,35 @@ body {
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
+    text-decoration: none;
 }
 
 .primary-button:hover {
     background: #1d4ed8;
 }
 
-/* KPI */
+.secondary-button {
+    display: inline-block;
+    padding: 11px 20px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    background: white;
+    color: #374151;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.secondary-button:hover {
+    background: #f3f4f6;
+}
+
+
+/* ========================================
+   DAILY MONITORING KPI
+======================================== */
+
 .kpi-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -212,7 +269,11 @@ body {
     font-size: 12px;
 }
 
-/* CONTENT CARD */
+
+/* ========================================
+   CONTENT CARD
+======================================== */
+
 .content-card {
     background: white;
     border: 1px solid #e5e7eb;
@@ -221,7 +282,11 @@ body {
     box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
 }
 
-/* SECTION TITLE */
+
+/* ========================================
+   SECTION TITLE
+======================================== */
+
 .section-title {
     margin-bottom: 20px;
 }
@@ -238,7 +303,11 @@ body {
     font-size: 13px;
 }
 
-/* TABLE */
+
+/* ========================================
+   TABLE
+======================================== */
+
 .table-wrapper {
     overflow-x: auto;
 }
@@ -272,7 +341,11 @@ tbody tr:hover {
     background: #f9fafb;
 }
 
-/* STATUS */
+
+/* ========================================
+   STATUS BADGES
+======================================== */
+
 .status-progress,
 .status-completed,
 .status-delayed {
@@ -298,142 +371,10 @@ tbody tr:hover {
     color: #b91c1c;
 }
 
-/* MOBILE */
-@media (max-width: 800px) {
 
-    .top-header {
-        padding: 20px;
-    }
-
-    .container {
-        padding: 20px;
-    }
-
-    .kpi-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .page-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 16px;
-    }
-}
-
-@media (max-width: 500px) {
-
-    .kpi-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .top-header {
-        flex-direction: column;
-        gap: 15px;
-    }
-}
-/* =========================
-   ADD DAILY REPORT
-   ========================= */
-
-.report-form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.form-group label {
-    font-size: 14px;
-    font-weight: 600;
-    color: #374151;
-}
-
-.form-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 18px;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-    width: 100%;
-    padding: 11px 13px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    font-size: 14px;
-    font-family: inherit;
-    box-sizing: border-box;
-    background: #ffffff;
-}
-
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-    outline: none;
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
-
-.form-group textarea {
-    resize: vertical;
-}
-
-.form-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    margin-bottom: 30px;
-}
-
-.secondary-button {
-    display: inline-block;
-    padding: 11px 20px;
-    border-radius: 8px;
-    border: 1px solid #d1d5db;
-    background: white;
-    color: #374151;
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.secondary-button:hover {
-    background: #f3f4f6;
-}
-
-.report-form .primary-button {
-    border: none;
-    cursor: pointer;
-}
-
-@media (max-width: 700px) {
-
-    .form-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .form-actions {
-        flex-direction: column-reverse;
-    }
-
-    .form-actions a,
-    .form-actions button {
-        width: 100%;
-        text-align: center;
-        box-sizing: border-box;
-    }
-
-}
-/* =========================
+/* ========================================
    DAILY MONITORING FILTER
-   ========================= */
+======================================== */
 
 .filter-card {
     margin-bottom: 20px;
@@ -460,13 +401,14 @@ tbody tr:hover {
 .filter-grid input,
 .filter-grid select {
     width: 100%;
-    padding: 11px 13px;
+    height: 44px;
+    padding: 10px 13px;
     border: 1px solid #d1d5db;
     border-radius: 8px;
     font-size: 14px;
     font-family: inherit;
     background: #fff;
-    box-sizing: border-box;
+    color: #111827;
 }
 
 .filter-grid input:focus,
@@ -476,93 +418,273 @@ tbody tr:hover {
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-@media (max-width: 700px) {
-    .filter-grid {
-        grid-template-columns: 1fr;
-    }
+
+/* ========================================
+   ADD DAILY REPORT - FORM
+======================================== */
+
+.report-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
-/* =========================================
-   WORK ACTIVITIES - DAILY REPORT
-   ========================================= */
 
 .report-form .content-card {
-    margin-bottom: 24px;
-}
-
-.report-form .content-card h3 {
-    margin-bottom: 20px;
-}
-
-.report-form .form-group {
-    margin-bottom: 18px;
-}
-
-.report-form .form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-}
-
-.report-form .form-group textarea,
-.report-form .form-group input,
-.report-form .form-group select {
-    width: 100%;
-    box-sizing: border-box;
-}
-
-/* Activity textarea */
-.report-form #activity {
-    min-height: 110px;
-    resize: vertical;
-}
-
-/* Quantity + Unit + Daily Progress */
-.report-form .form-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 18px;
-    margin-bottom: 18px;
-}
-
-/* Make sure each field stays inside its column */
-.report-form .form-grid .form-group {
-    min-width: 0;
     margin-bottom: 0;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .report-form .form-grid {
-        grid-template-columns: 1fr;
-    }
+.report-form .content-card h3 {
+    margin-bottom: 24px;
+    font-size: 18px;
+    color: #172033;
 }
-/* FIX DROPDOWN - DAILY REPORT */
-.report-form select {
-    display: block;
+
+
+/* ========================================
+   FORM GROUP
+======================================== */
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+}
+
+
+/* ========================================
+   FORM INPUT
+======================================== */
+
+.form-group input,
+.form-group select,
+.form-group textarea {
     width: 100%;
-    height: 44px;
-    padding: 10px 12px;
+    padding: 11px 13px;
     border: 1px solid #d1d5db;
     border-radius: 8px;
-    background: #ffffff;
-    color: #111827;
     font-size: 14px;
     font-family: inherit;
-    box-sizing: border-box;
-    appearance: auto;
-    -webkit-appearance: auto;
-}
-
-.report-form select option {
-    display: block;
-    padding: 8px;
     background: #ffffff;
     color: #111827;
 }
 
-.report-form textarea,
-.report-form input[type="number"] {
-    display: block;
+.form-group input,
+.form-group select {
+    height: 44px;
+}
+
+.form-group textarea {
+    min-height: 110px;
+    resize: vertical;
+    line-height: 1.5;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: #9ca3af;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+
+/* ========================================
+   GENERAL FORM GRID
+======================================== */
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+
+/* ========================================
+   WORK ACTIVITIES
+======================================== */
+
+.work-activities-card {
     width: 100%;
-    box-sizing: border-box;
+}
+
+.work-activities-card h3 {
+    margin-bottom: 24px;
+}
+
+
+/* Activity description */
+
+.work-activities-card #activity {
+    width: 100%;
+    min-height: 115px;
+    resize: vertical;
+}
+
+
+/* Quantity / Unit / Progress */
+
+.activity-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 20px;
+}
+
+.activity-grid .form-group {
+    min-width: 0;
+}
+
+
+/* Status */
+
+.work-activities-card .status-group {
+    width: calc((100% - 36px) / 3);
+    margin-top: 20px;
+}
+
+
+/* ========================================
+   MATERIALS
+======================================== */
+
+.material-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.material-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr auto;
+    gap: 12px;
+    align-items: end;
+}
+
+.material-row .form-group {
+    margin-bottom: 0;
+}
+
+
+/* ========================================
+   FORM ACTIONS
+======================================== */
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-bottom: 30px;
+}
+
+.report-form .primary-button {
+    border: none;
+    cursor: pointer;
+}
+
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 800px) {
+
+    .top-header {
+        padding: 20px;
+    }
+
+    .container {
+        padding: 20px;
+    }
+
+    .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .module-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .kpi-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+
+@media (max-width: 768px) {
+
+    .activity-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .work-activities-card .status-group {
+        width: 100%;
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .form-actions a,
+    .form-actions button {
+        width: 100%;
+        text-align: center;
+    }
+
+    .material-row {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+@media (max-width: 500px) {
+
+    .kpi-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .kpi-container {
+        grid-template-columns: 1fr;
+    }
+
+    .module-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .top-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+
 }
