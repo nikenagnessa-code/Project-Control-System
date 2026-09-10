@@ -1394,8 +1394,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 <td>
                     ${formatNumber(
-                        material.quantity,
-                        3
+                        material.quantity
                     )}
                 </td>
 
