@@ -1,5 +1,6 @@
 // =====================================================
 // DAILY REPORT SYSTEM
+// PROJECT CONTROL SYSTEM
 // =====================================================
 
 console.log("DAILY REPORT JS LOADED");
@@ -69,7 +70,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         },
 
-
         Tasikmalaya: {
 
             "Casa Sabrina": [
@@ -114,18 +114,14 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-
         const location =
             locationSelect.value;
-
 
         projectSelect.innerHTML =
             '<option value="">Select Project</option>';
 
-
         unitSelect.innerHTML =
             '<option value="">Select Unit</option>';
-
 
         if (
             !location ||
@@ -134,7 +130,6 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-
         Object.keys(
             projectData[location]
         ).forEach(function (project) {
@@ -142,14 +137,11 @@ document.addEventListener("DOMContentLoaded", function () {
             const option =
                 document.createElement("option");
 
-
             option.value =
                 project;
 
-
             option.textContent =
                 project;
-
 
             projectSelect.appendChild(
                 option
@@ -174,18 +166,14 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-
         const location =
             locationSelect.value;
-
 
         const project =
             projectSelect.value;
 
-
         unitSelect.innerHTML =
             '<option value="">Select Unit</option>';
-
 
         if (
             !location ||
@@ -196,21 +184,17 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-
         projectData[location][project]
             .forEach(function (unit) {
 
                 const option =
                     document.createElement("option");
 
-
                 option.value =
                     unit;
 
-
                 option.textContent =
                     unit;
-
 
                 unitSelect.appendChild(
                     option
@@ -253,24 +237,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // MASTER SCHEDULE
     // =====================================================
 
-    /*
-        masterSchedule berasal dari:
-        ./master-schedule.js
-
-        Struktur yang digunakan:
-
-        {
-            activityId,
-            workPackage,
-            activity,
-            plannedQuantity,
-            quantityUnit,
-            weight,
-            plannedStart,
-            plannedFinish
-        }
-    */
-
     const schedule =
         Array.isArray(window.masterSchedule)
             ? window.masterSchedule
@@ -297,7 +263,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const packages = [];
 
-
         schedule.forEach(function (item) {
 
             if (
@@ -306,7 +271,6 @@ document.addEventListener("DOMContentLoaded", function () {
             ) {
                 return;
             }
-
 
             if (
                 !packages.includes(
@@ -322,7 +286,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         });
 
-
         return packages;
 
     }
@@ -337,13 +300,11 @@ document.addEventListener("DOMContentLoaded", function () {
         const packages =
             getWorkPackages();
 
-
         let html = `
             <option value="">
                 Select Work Package
             </option>
         `;
-
 
         packages.forEach(function (workPackage) {
 
@@ -354,7 +315,6 @@ document.addEventListener("DOMContentLoaded", function () {
             `;
 
         });
-
 
         return html;
 
@@ -385,11 +345,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
         return schedule.find(function (item) {
 
-            return String(
-                item.activityId
-            ) === String(
-                activityId
-            );
+            return String(item.activityId) ===
+                String(activityId);
 
         }) || null;
 
@@ -406,14 +363,11 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-
         const row =
             document.createElement("div");
 
-
         row.className =
             "activity-row";
-
 
         row.innerHTML = `
 
@@ -539,9 +493,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     Status
                 </label>
 
-                <select
-                    class="activity-status"
-                >
+                <select class="activity-status">
 
                     <option value="">
                         Select Status
@@ -572,11 +524,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
         `;
 
-
         activityContainer.appendChild(
             row
         );
-
 
         setupActivityRow(
             row
@@ -596,30 +546,25 @@ document.addEventListener("DOMContentLoaded", function () {
                 ".activity-work-package"
             );
 
-
         const activitySelect =
             row.querySelector(
                 ".activity-name"
             );
-
 
         const plannedInput =
             row.querySelector(
                 ".activity-planned"
             );
 
-
         const quantityInput =
             row.querySelector(
                 ".activity-quantity"
             );
 
-
         const unitInput =
             row.querySelector(
                 ".activity-unit"
             );
-
 
         const progressInput =
             row.querySelector(
@@ -646,17 +591,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 const selectedPackage =
                     workPackageSelect.value;
 
-
                 activitySelect.innerHTML = `
                     <option value="">
                         Select Activity
                     </option>
                 `;
 
-
                 activitySelect.disabled =
                     true;
-
 
                 clearActivityDetails(
                     row
@@ -664,9 +606,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                 if (!selectedPackage) {
-
                     return;
-
                 }
 
 
@@ -692,11 +632,9 @@ document.addEventListener("DOMContentLoaded", function () {
                             );
 
 
-                        /*
-                            IMPORTANT:
-                            Gunakan activityId,
-                            bukan id.
-                        */
+                        // IMPORTANT:
+                        // master-schedule menggunakan
+                        // activityId, bukan id
 
                         option.value =
                             item.activityId;
@@ -714,9 +652,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
 
 
-                if (
-                    activities.length > 0
-                ) {
+                if (activities.length > 0) {
 
                     activitySelect.disabled =
                         false;
@@ -759,7 +695,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                 // -----------------------------------------
-                // STORE MASTER ACTIVITY ID
+                // STORE ACTIVITY ID
                 // -----------------------------------------
 
                 row.dataset.activityId =
@@ -783,6 +719,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 // -----------------------------------------
                 // UNIT
                 // -----------------------------------------
+                // master-schedule menggunakan quantityUnit
 
                 if (unitInput) {
 
@@ -806,7 +743,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                 // -----------------------------------------
-                // RESET DAILY PROGRESS
+                // RESET PROGRESS
                 // -----------------------------------------
 
                 if (progressInput) {
@@ -828,7 +765,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                 console.log(
-                    "SELECTED ACTIVITY:",
+                    "ACTIVITY SELECTED:",
                     selectedActivity
                 );
 
@@ -869,24 +806,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 ".activity-name"
             );
 
-
         const plannedInput =
             row.querySelector(
                 ".activity-planned"
             );
-
 
         const quantityInput =
             row.querySelector(
                 ".activity-quantity"
             );
 
-
         const unitInput =
             row.querySelector(
                 ".activity-unit"
             );
-
 
         const progressInput =
             row.querySelector(
@@ -935,7 +868,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         delete row.dataset.activityId;
-
         delete row.dataset.weight;
 
     }
@@ -952,12 +884,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 ".activity-planned"
             );
 
-
         const quantityInput =
             row.querySelector(
                 ".activity-quantity"
             );
-
 
         const progressInput =
             row.querySelector(
@@ -1007,7 +937,8 @@ document.addEventListener("DOMContentLoaded", function () {
             100;
 
 
-        // Maximum daily progress = 100%
+        // Maximum 100%
+
         progress =
             Math.min(
                 progress,
@@ -1057,9 +988,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         );
 
 
-                    if (
-                        rows.length > 1
-                    ) {
+                    if (rows.length > 1) {
 
                         event.target
                             .closest(".activity-row")
@@ -1091,13 +1020,18 @@ document.addEventListener("DOMContentLoaded", function () {
         "m³",
         "m²",
         "m¹",
+        "m",
         "kg",
         "ton",
         "pcs",
         "batang",
         "rit",
         "zak",
-        "unit"
+        "bh",
+        "buah",
+        "titik",
+        "unit",
+        "ls"
 
     ];
 
@@ -1116,10 +1050,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 }
 
-
                 return `
-                    <option value="${escapeHtml(unit)}">
-                        ${escapeHtml(unit)}
+                    <option value="${unit}">
+                        ${unit}
                     </option>
                 `;
 
@@ -1137,14 +1070,11 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-
         const row =
             document.createElement("div");
 
-
         row.className =
             "material-row";
-
 
         row.innerHTML = `
 
@@ -1186,9 +1116,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     Unit
                 </label>
 
-                <select
-                    class="material-unit"
-                >
+                <select class="material-unit">
 
                     ${materialUnitOptions}
 
@@ -1206,7 +1134,6 @@ document.addEventListener("DOMContentLoaded", function () {
             </button>
 
         `;
-
 
         materialContainer.appendChild(
             row
@@ -1251,9 +1178,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         );
 
 
-                    if (
-                        rows.length > 1
-                    ) {
+                    if (rows.length > 1) {
 
                         event.target
                             .closest(".material-row")
@@ -1661,9 +1586,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
 
-            if (
-                activities.length === 0
-            ) {
+            if (activities.length === 0) {
 
                 alert(
                     "Please add at least one work activity."
@@ -1688,9 +1611,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     activities[i];
 
 
-                if (
-                    !activity.activityId
-                ) {
+                if (!activity.activityId) {
 
                     alert(
                         `Please select activity for row ${i + 1}.`
@@ -1701,9 +1622,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
 
-                if (
-                    !activity.workPackage
-                ) {
+                if (!activity.workPackage) {
 
                     alert(
                         `Please select work package for row ${i + 1}.`
@@ -1727,9 +1646,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
 
-                if (
-                    !activity.unit
-                ) {
+                if (!activity.unit) {
 
                     alert(
                         `Unit for activity row ${i + 1} is invalid.`
@@ -1753,9 +1670,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
 
-                if (
-                    !activity.status
-                ) {
+                if (!activity.status) {
 
                     alert(
                         `Please select status for activity row ${i + 1}.`
@@ -2067,7 +1982,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert(
                     "Data gagal tersimpan."
                 );
-
 
                 return;
 
