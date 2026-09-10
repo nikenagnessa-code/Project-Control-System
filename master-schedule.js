@@ -33,6 +33,45 @@ const masterSchedule = [
         unit: "Bh",
         weightPercent: 0.872940
     },
+        {
+        id: "STR-GAL-004",
+        category: "Struktur",
+        workPackage: "Galian & Pondasi",
+        activity: "Urugan Pasir Bawah Pondasi dan Sloof",
+        plannedQuantity: 6.22,
+        unit: "m³",
+        weightPercent: 0.127344
+    },
+
+    {
+        id: "STR-GAL-005",
+        category: "Struktur",
+        workPackage: "Galian & Pondasi",
+        activity: "Lantai Kerja Bawah Pondasi dan Sloof",
+        plannedQuantity: 3.11,
+        unit: "m³",
+        weightPercent: 0.166656
+    },
+
+    {
+        id: "STR-GAL-006",
+        category: "Struktur",
+        workPackage: "Galian & Pondasi",
+        activity: "Urugan Tanah Peninggian Bangunan",
+        plannedQuantity: 100,
+        unit: "m³",
+        weightPercent: 1.018705
+    },
+
+    {
+        id: "STR-GAL-007",
+        category: "Struktur",
+        workPackage: "Galian & Pondasi",
+        activity: "Pondasi Batu Kali",
+        plannedQuantity: 18.5045,
+        unit: "m³",
+        weightPercent: 0.882653
+    },
 
     {
         id: "STR-PC1-001",
