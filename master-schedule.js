@@ -1,10 +1,17 @@
 const masterSchedule = [
 
-    // =====================================================
-    // STRUKTUR
-    // =====================================================
+    // =========================================================
+    // KALIMANTAN - TIPE 200 - DANREM
+    // BASELINE SCHEDULE 2026
+    // =========================================================
 
-    // Galian & Pondasi
+
+    // =========================================================
+    // 1. GALIAN & PONDASI
+    // M-1 s/d M-6
+    // 13 APRIL 2026 - 24 MEI 2026
+    // =========================================================
+
     {
         id: "STR-GAL-001",
         category: "Struktur",
@@ -75,7 +82,12 @@ const masterSchedule = [
         weightPercent: 0.882653
     },
 
-    // Pilecap P1
+
+    // =========================================================
+    // 2. PILECAP P1
+    // M-3 s/d M-10
+    // =========================================================
+
     {
         id: "STR-PC1-001",
         category: "Struktur",
@@ -106,7 +118,12 @@ const masterSchedule = [
         weightPercent: 0.879695
     },
 
-    // Sloof S1
+
+    // =========================================================
+    // 3. SLOOF S1
+    // M-3 s/d M-10
+    // =========================================================
+
     {
         id: "STR-SL1-001",
         category: "Struktur",
@@ -137,7 +154,11 @@ const masterSchedule = [
         weightPercent: 0.759102
     },
 
-    // Kolom K1
+
+    // =========================================================
+    // 4. KOLOM K1
+    // =========================================================
+
     {
         id: "STR-K1-001",
         category: "Struktur",
@@ -168,7 +189,11 @@ const masterSchedule = [
         weightPercent: 0.195537
     },
 
-    // Kolom K2
+
+    // =========================================================
+    // 5. KOLOM K2
+    // =========================================================
+
     {
         id: "STR-K2-001",
         category: "Struktur",
@@ -199,7 +224,11 @@ const masterSchedule = [
         weightPercent: 0.478866
     },
 
-    // Kolom K3
+
+    // =========================================================
+    // 6. KOLOM K3
+    // =========================================================
+
     {
         id: "STR-K3-001",
         category: "Struktur",
@@ -230,7 +259,11 @@ const masterSchedule = [
         weightPercent: 0.332546
     },
 
-    // Kolom Kp
+
+    // =========================================================
+    // 7. KOLOM KP
+    // =========================================================
+
     {
         id: "STR-KP-001",
         category: "Struktur",
@@ -261,7 +294,11 @@ const masterSchedule = [
         weightPercent: 0.329220
     },
 
-    // Plat Lantai
+
+    // =========================================================
+    // 8. PLAT LANTAI
+    // =========================================================
+
     {
         id: "STR-PL-001",
         category: "Struktur",
@@ -312,7 +349,12 @@ const masterSchedule = [
         weightPercent: 2.305651
     },
 
-    // Ring Balok RB1
+
+    // =========================================================
+    // 9. STRUKTUR BETON ATAP
+    // M-7 s/d M-14
+    // =========================================================
+
     {
         id: "STR-RB1-001",
         category: "Struktur",
@@ -343,7 +385,6 @@ const masterSchedule = [
         weightPercent: 0.713710
     },
 
-    // Ring Balok RB2
     {
         id: "STR-RB2-001",
         category: "Struktur",
@@ -374,7 +415,6 @@ const masterSchedule = [
         weightPercent: 0.126090
     },
 
-    // Plat Dak Atap
     {
         id: "STR-DAK-001",
         category: "Struktur",
@@ -415,7 +455,12 @@ const masterSchedule = [
         weightPercent: 0.398679
     },
 
-    // Rangka Atap
+
+    // =========================================================
+    // 10. RANGKA ATAP
+    // M-9 s/d M-16
+    // =========================================================
+
     {
         id: "STR-ATAP-001",
         category: "Struktur",
@@ -457,12 +502,13 @@ const masterSchedule = [
     },
 
 
-    // =====================================================
-    // PASANGAN
-    // =====================================================
+    // =========================================================
+    // 11. PASANGAN
+    // M-5 s/d M-14
+    // =========================================================
 
     {
-        id: "ARS-DIN-001",
+        id: "ARS-PAS-001",
         category: "Arsitektur",
         workPackage: "Pasangan",
         activity: "Pasangan Dinding Bata",
@@ -472,7 +518,7 @@ const masterSchedule = [
     },
 
     {
-        id: "ARS-DIN-002",
+        id: "ARS-PAS-002",
         category: "Arsitektur",
         workPackage: "Pasangan",
         activity: "Plesteran",
@@ -482,7 +528,7 @@ const masterSchedule = [
     },
 
     {
-        id: "ARS-DIN-003",
+        id: "ARS-PAS-003",
         category: "Arsitektur",
         workPackage: "Pasangan",
         activity: "Acian",
@@ -492,7 +538,7 @@ const masterSchedule = [
     },
 
     {
-        id: "ARS-DIN-004",
+        id: "ARS-PAS-004",
         category: "Arsitektur",
         workPackage: "Pasangan",
         activity: "Balok Praktis",
@@ -502,7 +548,7 @@ const masterSchedule = [
     },
 
     {
-        id: "ARS-DIN-005",
+        id: "ARS-PAS-005",
         category: "Arsitektur",
         workPackage: "Pasangan",
         activity: "Kolom Praktis",
@@ -512,14 +558,15 @@ const masterSchedule = [
     },
 
 
-    // =====================================================
-    // FINISHING LANTAI & KERAMIK DINDING
-    // =====================================================
+    // =========================================================
+    // 12. FINISHING LANTAI & KERAMIK DINDING
+    // M-12 s/d M-19
+    // =========================================================
 
     {
         id: "ARS-LAN-001",
         category: "Arsitektur",
-        workPackage: "Finishing Lantai",
+        workPackage: "Finishing Lantai & Keramik Dinding",
         activity: "Urugan Pasir Bawah Keramik",
         plannedQuantity: 10,
         unit: "m³",
@@ -529,7 +576,7 @@ const masterSchedule = [
     {
         id: "ARS-LAN-002",
         category: "Arsitektur",
-        workPackage: "Finishing Lantai",
+        workPackage: "Finishing Lantai & Keramik Dinding",
         activity: "H.Tile 60x60 Polished",
         plannedQuantity: 176.84,
         unit: "m²",
@@ -539,7 +586,7 @@ const masterSchedule = [
     {
         id: "ARS-LAN-003",
         category: "Arsitektur",
-        workPackage: "Finishing Lantai",
+        workPackage: "Finishing Lantai & Keramik Dinding",
         activity: "H.Tile 60x60 Unpolished",
         plannedQuantity: 20.52,
         unit: "m²",
@@ -549,7 +596,7 @@ const masterSchedule = [
     {
         id: "ARS-LAN-004",
         category: "Arsitektur",
-        workPackage: "Finishing Lantai",
+        workPackage: "Finishing Lantai & Keramik Dinding",
         activity: "Keramik Kamar Mandi",
         plannedQuantity: 11.64,
         unit: "m²",
@@ -559,7 +606,7 @@ const masterSchedule = [
     {
         id: "ARS-LAN-005",
         category: "Arsitektur",
-        workPackage: "Keramik Dinding",
+        workPackage: "Finishing Lantai & Keramik Dinding",
         activity: "Dinding Keramik Kamar Mandi",
         plannedQuantity: 42.2,
         unit: "m²",
@@ -569,7 +616,7 @@ const masterSchedule = [
     {
         id: "ARS-LAN-006",
         category: "Arsitektur",
-        workPackage: "Finishing Lantai",
+        workPackage: "Finishing Lantai & Keramik Dinding",
         activity: "Plint",
         plannedQuantity: 167.85,
         unit: "m'",
@@ -579,7 +626,7 @@ const masterSchedule = [
     {
         id: "ARS-LAN-007",
         category: "Arsitektur",
-        workPackage: "Keramik Dinding",
+        workPackage: "Finishing Lantai & Keramik Dinding",
         activity: "Dinding Keramik Motif Batu Alam",
         plannedQuantity: 30.465,
         unit: "m²",
@@ -589,7 +636,7 @@ const masterSchedule = [
     {
         id: "ARS-LAN-008",
         category: "Arsitektur",
-        workPackage: "Finishing Lantai",
+        workPackage: "Finishing Lantai & Keramik Dinding",
         activity: "Ban-banan",
         plannedQuantity: 40.62,
         unit: "m'",
@@ -597,9 +644,10 @@ const masterSchedule = [
     },
 
 
-    // =====================================================
-    // PLAFOND
-    // =====================================================
+    // =========================================================
+    // 13. PLAFOND
+    // M-16 s/d M-19
+    // =========================================================
 
     {
         id: "ARS-PLF-001",
@@ -622,14 +670,31 @@ const masterSchedule = [
     },
 
 
-    // =====================================================
-    // PINTU & JENDELA
-    // =====================================================
+    // =========================================================
+    // 14. INTERIOR
+    // M-19 s/d M-20
+    // =========================================================
 
     {
-        id: "ARS-PJ-001",
+        id: "ARS-INT-001",
         category: "Arsitektur",
-        workPackage: "Pintu & Jendela",
+        workPackage: "Interior",
+        activity: "Kitchen Set",
+        plannedQuantity: 1,
+        unit: "ls",
+        weightPercent: 2.610452
+    },
+
+
+    // =========================================================
+    // 15. KUSEN, PINTU & JENDELA
+    // M-8 s/d M-16
+    // =========================================================
+
+    {
+        id: "ARS-KPJ-001",
+        category: "Arsitektur",
+        workPackage: "Kusen, Pintu & Jendela",
         activity: "Pintu P1",
         plannedQuantity: 9,
         unit: "unit",
@@ -637,9 +702,9 @@ const masterSchedule = [
     },
 
     {
-        id: "ARS-PJ-002",
+        id: "ARS-KPJ-002",
         category: "Arsitektur",
-        workPackage: "Pintu & Jendela",
+        workPackage: "Kusen, Pintu & Jendela",
         activity: "Pintu PD",
         plannedQuantity: 4,
         unit: "unit",
@@ -647,9 +712,9 @@ const masterSchedule = [
     },
 
     {
-        id: "ARS-PJ-003",
+        id: "ARS-KPJ-003",
         category: "Arsitektur",
-        workPackage: "Pintu & Jendela",
+        workPackage: "Kusen, Pintu & Jendela",
         activity: "Pintu PJ3",
         plannedQuantity: 3,
         unit: "unit",
@@ -657,9 +722,9 @@ const masterSchedule = [
     },
 
     {
-        id: "ARS-PJ-004",
+        id: "ARS-KPJ-004",
         category: "Arsitektur",
-        workPackage: "Pintu & Jendela",
+        workPackage: "Kusen, Pintu & Jendela",
         activity: "Jendela J1",
         plannedQuantity: 7,
         unit: "unit",
@@ -667,9 +732,9 @@ const masterSchedule = [
     },
 
     {
-        id: "ARS-PJ-005",
+        id: "ARS-KPJ-005",
         category: "Arsitektur",
-        workPackage: "Pintu & Jendela",
+        workPackage: "Kusen, Pintu & Jendela",
         activity: "Jendela J2",
         plannedQuantity: 14,
         unit: "unit",
@@ -677,9 +742,9 @@ const masterSchedule = [
     },
 
     {
-        id: "ARS-PJ-006",
+        id: "ARS-KPJ-006",
         category: "Arsitektur",
-        workPackage: "Pintu & Jendela",
+        workPackage: "Kusen, Pintu & Jendela",
         activity: "Bouvenligh BV1",
         plannedQuantity: 3,
         unit: "unit",
@@ -687,9 +752,10 @@ const masterSchedule = [
     },
 
 
-    // =====================================================
-    // PENGECATAN
-    // =====================================================
+    // =========================================================
+    // 16. PENGECATAN
+    // M-15 s/d M-20
+    // =========================================================
 
     {
         id: "ARS-CAT-001",
@@ -712,29 +778,15 @@ const masterSchedule = [
     },
 
 
-    // =====================================================
-    // FURNITURE
-    // =====================================================
-
-    {
-        id: "ARS-FUR-001",
-        category: "Arsitektur",
-        workPackage: "Furniture",
-        activity: "Kitchen Set",
-        plannedQuantity: 1,
-        unit: "ls",
-        weightPercent: 2.610452
-    },
-
-
-    // =====================================================
-    // SANITARY
-    // =====================================================
+    // =========================================================
+    // 17. SANITAIR
+    // M-18 s/d M-20
+    // =========================================================
 
     {
         id: "PLB-SAN-001",
         category: "Plumbing",
-        workPackage: "Sanitary",
+        workPackage: "Sanitair",
         activity: "Closet Duduk",
         plannedQuantity: 3,
         unit: "unit",
@@ -744,17 +796,17 @@ const masterSchedule = [
     {
         id: "PLB-SAN-002",
         category: "Plumbing",
-        workPackage: "Sanitary",
+        workPackage: "Sanitair",
         activity: "Kran Stainless",
         plannedQuantity: 6,
-        unit: "unit",
+        unit: "bh",
         weightPercent: 0.041475
     },
 
     {
         id: "PLB-SAN-003",
         category: "Plumbing",
-        workPackage: "Sanitary",
+        workPackage: "Sanitair",
         activity: "Shower",
         plannedQuantity: 3,
         unit: "unit",
@@ -764,7 +816,7 @@ const masterSchedule = [
     {
         id: "PLB-SAN-004",
         category: "Plumbing",
-        workPackage: "Sanitary",
+        workPackage: "Sanitair",
         activity: "Jet Shower",
         plannedQuantity: 3,
         unit: "unit",
@@ -774,17 +826,17 @@ const masterSchedule = [
     {
         id: "PLB-SAN-005",
         category: "Plumbing",
-        workPackage: "Sanitary",
+        workPackage: "Sanitair",
         activity: "Floor Drain",
         plannedQuantity: 4,
-        unit: "unit",
+        unit: "bh",
         weightPercent: 0.045212
     },
 
     {
         id: "PLB-SAN-006",
         category: "Plumbing",
-        workPackage: "Sanitary",
+        workPackage: "Sanitair",
         activity: "Wastafel Meja",
         plannedQuantity: 1,
         unit: "unit",
@@ -794,8 +846,8 @@ const masterSchedule = [
     {
         id: "PLB-SAN-007",
         category: "Plumbing",
-        workPackage: "Sanitary",
-        activity: "Meja Beton Wastafel Children - Bekisting",
+        workPackage: "Sanitair",
+        activity: "Meja Beton Wastafel - Bekisting",
         plannedQuantity: 0.29,
         unit: "m²",
         weightPercent: 0.004289
@@ -804,8 +856,8 @@ const masterSchedule = [
     {
         id: "PLB-SAN-008",
         category: "Plumbing",
-        workPackage: "Sanitary",
-        activity: "Meja Beton Wastafel Children - Pembesian",
+        workPackage: "Sanitair",
+        activity: "Meja Beton Wastafel - Pembesian",
         plannedQuantity: 33,
         unit: "kg",
         weightPercent: 0.047093
@@ -814,8 +866,8 @@ const masterSchedule = [
     {
         id: "PLB-SAN-009",
         category: "Plumbing",
-        workPackage: "Sanitary",
-        activity: "Meja Beton Wastafel Children - Cor",
+        workPackage: "Sanitair",
+        activity: "Meja Beton Wastafel - Cor",
         plannedQuantity: 0.17,
         unit: "m³",
         weightPercent: 0.023265
@@ -824,7 +876,7 @@ const masterSchedule = [
     {
         id: "PLB-SAN-010",
         category: "Plumbing",
-        workPackage: "Sanitary",
+        workPackage: "Sanitair",
         activity: "Bak Air",
         plannedQuantity: 0.31,
         unit: "m³",
@@ -834,7 +886,7 @@ const masterSchedule = [
     {
         id: "PLB-SAN-011",
         category: "Plumbing",
-        workPackage: "Sanitary",
+        workPackage: "Sanitair",
         activity: "Kitchen Sink",
         plannedQuantity: 1,
         unit: "bh",
@@ -842,14 +894,15 @@ const masterSchedule = [
     },
 
 
-    // =====================================================
-    // SARPRAS
-    // =====================================================
+    // =========================================================
+    // 18. SARPRAS
+    // M-19 s/d M-20
+    // =========================================================
 
     {
         id: "SAR-001",
         category: "Sarpras",
-        workPackage: "Pekerjaan Eksternal",
+        workPackage: "Sarpras",
         activity: "Rabat Beton Keliling",
         plannedQuantity: 6.13,
         unit: "m³",
@@ -859,7 +912,7 @@ const masterSchedule = [
     {
         id: "SAR-002",
         category: "Sarpras",
-        workPackage: "Pekerjaan Eksternal",
+        workPackage: "Sarpras",
         activity: "Saluran Keliling Buis Beton",
         plannedQuantity: 35.5,
         unit: "m'",
@@ -867,14 +920,15 @@ const masterSchedule = [
     },
 
 
-    // =====================================================
-    // ELEKTRIKAL
-    // =====================================================
+    // =========================================================
+    // 19. ELEKTRIKAL
+    // M-12 s/d M-19
+    // =========================================================
 
     {
         id: "ELK-001",
         category: "Elektrikal",
-        workPackage: "Instalasi Elektrikal",
+        workPackage: "Elektrikal",
         activity: "MCB Box 8 Group",
         plannedQuantity: 1,
         unit: "unit",
@@ -884,27 +938,27 @@ const masterSchedule = [
     {
         id: "ELK-002",
         category: "Elektrikal",
-        workPackage: "Instalasi Elektrikal",
+        workPackage: "Elektrikal",
         activity: "Titik Lampu",
         plannedQuantity: 21,
-        unit: "ttk",
+        unit: "titik",
         weightPercent: 0.422518
     },
 
     {
         id: "ELK-003",
         category: "Elektrikal",
-        workPackage: "Instalasi Elektrikal",
+        workPackage: "Elektrikal",
         activity: "Titik Stop Kontak",
         plannedQuantity: 16,
-        unit: "ttk",
+        unit: "titik",
         weightPercent: 0.464287
     },
 
     {
         id: "ELK-004",
         category: "Elektrikal",
-        workPackage: "Instalasi Elektrikal",
+        workPackage: "Elektrikal",
         activity: "LED 14W",
         plannedQuantity: 7,
         unit: "bh",
@@ -914,7 +968,7 @@ const masterSchedule = [
     {
         id: "ELK-005",
         category: "Elektrikal",
-        workPackage: "Instalasi Elektrikal",
+        workPackage: "Elektrikal",
         activity: "LED 9W Downlight",
         plannedQuantity: 4,
         unit: "bh",
@@ -924,7 +978,7 @@ const masterSchedule = [
     {
         id: "ELK-006",
         category: "Elektrikal",
-        workPackage: "Instalasi Elektrikal",
+        workPackage: "Elektrikal",
         activity: "LED 9W Outbow",
         plannedQuantity: 5,
         unit: "bh",
@@ -934,7 +988,7 @@ const masterSchedule = [
     {
         id: "ELK-007",
         category: "Elektrikal",
-        workPackage: "Instalasi Elektrikal",
+        workPackage: "Elektrikal",
         activity: "LED 6W Ceiling Holder",
         plannedQuantity: 3,
         unit: "bh",
@@ -944,7 +998,7 @@ const masterSchedule = [
     {
         id: "ELK-008",
         category: "Elektrikal",
-        workPackage: "Instalasi Elektrikal",
+        workPackage: "Elektrikal",
         activity: "LED TL 1x16W",
         plannedQuantity: 2,
         unit: "bh",
@@ -954,7 +1008,7 @@ const masterSchedule = [
     {
         id: "ELK-009",
         category: "Elektrikal",
-        workPackage: "Instalasi Elektrikal",
+        workPackage: "Elektrikal",
         activity: "Saklar Tunggal",
         plannedQuantity: 12,
         unit: "bh",
@@ -964,7 +1018,7 @@ const masterSchedule = [
     {
         id: "ELK-010",
         category: "Elektrikal",
-        workPackage: "Instalasi Elektrikal",
+        workPackage: "Elektrikal",
         activity: "Saklar Ganda",
         plannedQuantity: 4,
         unit: "bh",
@@ -974,7 +1028,7 @@ const masterSchedule = [
     {
         id: "ELK-011",
         category: "Elektrikal",
-        workPackage: "Instalasi Elektrikal",
+        workPackage: "Elektrikal",
         activity: "Stop Kontak",
         plannedQuantity: 16,
         unit: "bh",
@@ -984,7 +1038,7 @@ const masterSchedule = [
     {
         id: "ELK-012",
         category: "Elektrikal",
-        workPackage: "Instalasi Elektrikal",
+        workPackage: "Elektrikal",
         activity: "Grounding",
         plannedQuantity: 1,
         unit: "titik",
@@ -992,14 +1046,15 @@ const masterSchedule = [
     },
 
 
-    // =====================================================
-    // TATA UDARA
-    // =====================================================
+    // =========================================================
+    // 20. TATA UDARA
+    // M-15 s/d M-20
+    // =========================================================
 
     {
-        id: "UDR-001",
+        id: "AC-001",
         category: "Tata Udara",
-        workPackage: "Instalasi Tata Udara",
+        workPackage: "Tata Udara",
         activity: "Exhaust Fan Toilet",
         plannedQuantity: 3,
         unit: "buah",
@@ -1007,9 +1062,9 @@ const masterSchedule = [
     },
 
     {
-        id: "UDR-002",
+        id: "AC-002",
         category: "Tata Udara",
-        workPackage: "Instalasi Tata Udara",
+        workPackage: "Tata Udara",
         activity: "AC Split 1 PK",
         plannedQuantity: 6,
         unit: "unit",
@@ -1017,9 +1072,9 @@ const masterSchedule = [
     },
 
     {
-        id: "UDR-003",
+        id: "AC-003",
         category: "Tata Udara",
-        workPackage: "Instalasi Tata Udara",
+        workPackage: "Tata Udara",
         activity: "Pipa Refrigerant",
         plannedQuantity: 30,
         unit: "m",
@@ -1027,9 +1082,9 @@ const masterSchedule = [
     },
 
     {
-        id: "UDR-004",
+        id: "AC-004",
         category: "Tata Udara",
-        workPackage: "Instalasi Tata Udara",
+        workPackage: "Tata Udara",
         activity: "Insulasi",
         plannedQuantity: 30,
         unit: "m",
@@ -1037,9 +1092,9 @@ const masterSchedule = [
     },
 
     {
-        id: "UDR-005",
+        id: "AC-005",
         category: "Tata Udara",
-        workPackage: "Instalasi Tata Udara",
+        workPackage: "Tata Udara",
         activity: "Drain PVC 3/4",
         plannedQuantity: 30,
         unit: "m",
@@ -1047,9 +1102,9 @@ const masterSchedule = [
     },
 
     {
-        id: "UDR-006",
+        id: "AC-006",
         category: "Tata Udara",
-        workPackage: "Instalasi Tata Udara",
+        workPackage: "Tata Udara",
         activity: "Power NYM 3x1.5",
         plannedQuantity: 60,
         unit: "m",
@@ -1057,9 +1112,9 @@ const masterSchedule = [
     },
 
     {
-        id: "UDR-007",
+        id: "AC-007",
         category: "Tata Udara",
-        workPackage: "Instalasi Tata Udara",
+        workPackage: "Tata Udara",
         activity: "Conduit",
         plannedQuantity: 60,
         unit: "m",
@@ -1067,9 +1122,9 @@ const masterSchedule = [
     },
 
     {
-        id: "UDR-008",
+        id: "AC-008",
         category: "Tata Udara",
-        workPackage: "Instalasi Tata Udara",
+        workPackage: "Tata Udara",
         activity: "Stop Kontak AC",
         plannedQuantity: 6,
         unit: "bh",
@@ -1077,15 +1132,15 @@ const masterSchedule = [
     },
 
 
-    // =====================================================
-    // PLUMBING
-    // =====================================================
+    // =========================================================
+    // 21. PLUMBING
+    // M-9 s/d M-20
+    // =========================================================
 
-    // Pompa & Tangki
     {
-        id: "PLB-PT-001",
+        id: "PLB-001",
         category: "Plumbing",
-        workPackage: "Pompa & Tangki",
+        workPackage: "Plumbing",
         activity: "Pompa Transfer Ground ke Roof",
         plannedQuantity: 1,
         unit: "unit",
@@ -1093,20 +1148,19 @@ const masterSchedule = [
     },
 
     {
-        id: "PLB-PT-002",
+        id: "PLB-002",
         category: "Plumbing",
-        workPackage: "Pompa & Tangki",
+        workPackage: "Plumbing",
         activity: "Roof Tank",
         plannedQuantity: 1,
         unit: "unit",
         weightPercent: 0.220657
     },
 
-    // Septictank
     {
-        id: "PLB-ST-001",
+        id: "PLB-003",
         category: "Plumbing",
-        workPackage: "Septictank",
+        workPackage: "Plumbing",
         activity: "Septictank",
         plannedQuantity: 1,
         unit: "unit",
@@ -1114,60 +1168,59 @@ const masterSchedule = [
     },
 
     {
-        id: "PLB-ST-002",
+        id: "PLB-004",
         category: "Plumbing",
-        workPackage: "Septictank",
-        activity: "Galian Septictank",
+        workPackage: "Plumbing",
+        activity: "Galian STP",
         plannedQuantity: 32,
         unit: "m³",
         weightPercent: 0.211716
     },
 
     {
-        id: "PLB-ST-003",
+        id: "PLB-005",
         category: "Plumbing",
-        workPackage: "Septictank",
-        activity: "Pondasi Septictank",
+        workPackage: "Plumbing",
+        activity: "Pondasi STP",
         plannedQuantity: 3.2,
         unit: "m³",
         weightPercent: 0.227710
     },
 
     {
-        id: "PLB-ST-004",
+        id: "PLB-006",
         category: "Plumbing",
-        workPackage: "Septictank",
-        activity: "Urugan Pasir Proteksi Septictank",
+        workPackage: "Plumbing",
+        activity: "Urugan Pasir Proteksi STP",
         plannedQuantity: 3.2,
         unit: "m³",
         weightPercent: 0.080882
     },
 
     {
-        id: "PLB-ST-005",
+        id: "PLB-007",
         category: "Plumbing",
-        workPackage: "Septictank",
-        activity: "Plat Penutup Septictank",
+        workPackage: "Plumbing",
+        activity: "Plat Penutup STP",
         plannedQuantity: 3.2,
         unit: "m³",
         weightPercent: 0.227710
     },
 
     {
-        id: "PLB-ST-006",
+        id: "PLB-008",
         category: "Plumbing",
-        workPackage: "Septictank",
-        activity: "Manhole Septictank",
+        workPackage: "Plumbing",
+        activity: "Manhole STP",
         plannedQuantity: 4,
         unit: "buah",
         weightPercent: 0.070281
     },
 
-    // Sumur Resapan & GWT
     {
-        id: "PLB-GWT-001",
+        id: "PLB-009",
         category: "Plumbing",
-        workPackage: "Sumur Resapan",
+        workPackage: "Plumbing",
         activity: "Sumur Resapan",
         plannedQuantity: 1,
         unit: "unit",
@@ -1175,9 +1228,9 @@ const masterSchedule = [
     },
 
     {
-        id: "PLB-GWT-002",
+        id: "PLB-010",
         category: "Plumbing",
-        workPackage: "GWT",
+        workPackage: "Plumbing",
         activity: "GWT",
         plannedQuantity: 1,
         unit: "unit",
@@ -1185,140 +1238,139 @@ const masterSchedule = [
     },
 
     {
-        id: "PLB-GWT-003",
+        id: "PLB-011",
         category: "Plumbing",
-        workPackage: "GWT",
-        activity: "Galian GWT",
+        workPackage: "Plumbing",
+        activity: "GWT - Galian",
         plannedQuantity: 6.597888,
         unit: "m³",
         weightPercent: 0.035359
     },
 
     {
-        id: "PLB-GWT-004",
+        id: "PLB-012",
         category: "Plumbing",
-        workPackage: "GWT",
-        activity: "Urugan Pasir GWT",
+        workPackage: "Plumbing",
+        activity: "GWT - Urugan Pasir",
         plannedQuantity: 0.0088,
         unit: "m³",
         weightPercent: 0.000180
     },
 
     {
-        id: "PLB-GWT-005",
+        id: "PLB-013",
         category: "Plumbing",
-        workPackage: "GWT",
-        activity: "Lantai Kerja GWT",
+        workPackage: "Plumbing",
+        activity: "GWT - Lantai Kerja",
         plannedQuantity: 0.46464,
         unit: "m³",
         weightPercent: 0.024899
     },
 
     {
-        id: "PLB-GWT-006",
+        id: "PLB-014",
         category: "Plumbing",
-        workPackage: "GWT",
-        activity: "Pasangan Dinding GWT",
+        workPackage: "Plumbing",
+        activity: "GWT - Pasangan Dinding",
         plannedQuantity: 11.5632,
         unit: "m²",
         weightPercent: 0.143137
     },
 
     {
-        id: "PLB-GWT-007",
+        id: "PLB-015",
         category: "Plumbing",
-        workPackage: "GWT",
-        activity: "Kolom GWT",
+        workPackage: "Plumbing",
+        activity: "GWT - Kolom",
         plannedQuantity: 0.1782,
         unit: "m³",
         weightPercent: 0.080833
     },
 
     {
-        id: "PLB-GWT-008",
+        id: "PLB-016",
         category: "Plumbing",
-        workPackage: "GWT",
-        activity: "Urugan Proteksi GWT",
+        workPackage: "Plumbing",
+        activity: "GWT - Urugan Proteksi",
         plannedQuantity: 0.220568,
         unit: "m³",
         weightPercent: 0.004516
     },
 
     {
-        id: "PLB-GWT-009",
+        id: "PLB-017",
         category: "Plumbing",
-        workPackage: "GWT",
-        activity: "Plat Penutup GWT",
+        workPackage: "Plumbing",
+        activity: "GWT - Plat Penutup",
         plannedQuantity: 0.24252,
         unit: "m³",
         weightPercent: 0.013979
     },
 
     {
-        id: "PLB-GWT-010",
+        id: "PLB-018",
         category: "Plumbing",
-        workPackage: "GWT",
-        activity: "Manhole GWT",
+        workPackage: "Plumbing",
+        activity: "GWT - Manhole",
         plannedQuantity: 1,
         unit: "buah",
         weightPercent: 0.014232
     },
 
     {
-        id: "PLB-GWT-011",
+        id: "PLB-019",
         category: "Plumbing",
-        workPackage: "GWT",
-        activity: "Tangga Maintenance GWT",
+        workPackage: "Plumbing",
+        activity: "GWT - Tangga Maintenance",
         plannedQuantity: 1,
         unit: "buah",
         weightPercent: 0.060916
     },
 
-    // Air Bersih
     {
-        id: "PLB-AB-001",
+        id: "PLB-020",
         category: "Plumbing",
-        workPackage: "Air Bersih",
-        activity: "Pipa PVC 32 mm",
+        workPackage: "Plumbing",
+        activity: "PVC Air Bersih 32mm",
         plannedQuantity: 27,
         unit: "m",
         weightPercent: 0.090465
     },
 
     {
-        id: "PLB-AB-002",
+        id: "PLB-021",
         category: "Plumbing",
-        workPackage: "Air Bersih",
-        activity: "Pipa PVC 25 mm",
+        workPackage: "Plumbing",
+        activity: "PVC Air Bersih 25mm",
         plannedQuantity: 59,
         unit: "m",
         weightPercent: 0.188999
     },
 
     {
-        id: "PLB-AB-003",
+        id: "PLB-022",
         category: "Plumbing",
-        workPackage: "Air Bersih",
-        activity: "Pipa PVC 20 mm",
+        workPackage: "Plumbing",
+        activity: "PVC Air Bersih 20mm",
         plannedQuantity: 10,
         unit: "m",
         weightPercent: 0.028857
     },
 
     {
-        id: "PLB-AB-004",
+        id: "PLB-023",
         category: "Plumbing",
-        workPackage: "Air Bersih",
-        activity: "Pipa PVC 15 mm",
+        workPackage: "Plumbing",
+        activity: "PVC Air Bersih 15mm",
         plannedQuantity: 43,
         unit: "m",
         weightPercent: 0.105722
     },
 
     {
-        id: "PLB-AB-005",
+        id: "PLB-024",
         category: "Plumbing",
-        workPackage: "Air Bersih",
+        workPackage: "Plumbing",
         activity: "Gate Valve 32",
         plannedQuantity: 1,
         unit: "bh",
@@ -1326,9 +1378,9 @@ const masterSchedule = [
     },
 
     {
-        id: "PLB-AB-006",
+        id: "PLB-025",
         category: "Plumbing",
-        workPackage: "Air Bersih",
+        workPackage: "Plumbing",
         activity: "Gate Valve 25",
         plannedQuantity: 3,
         unit: "bh",
@@ -1336,9 +1388,9 @@ const masterSchedule = [
     },
 
     {
-        id: "PLB-AB-007",
+        id: "PLB-026",
         category: "Plumbing",
-        workPackage: "Air Bersih",
+        workPackage: "Plumbing",
         activity: "Check Valve 25",
         plannedQuantity: 2,
         unit: "bh",
@@ -1346,9 +1398,9 @@ const masterSchedule = [
     },
 
     {
-        id: "PLB-AB-008",
+        id: "PLB-027",
         category: "Plumbing",
-        workPackage: "Air Bersih",
+        workPackage: "Plumbing",
         activity: "Floating Valve 25",
         plannedQuantity: 1,
         unit: "bh",
@@ -1356,86 +1408,101 @@ const masterSchedule = [
     },
 
     {
-        id: "PLB-AB-009",
+        id: "PLB-028",
         category: "Plumbing",
-        workPackage: "Air Bersih",
+        workPackage: "Plumbing",
         activity: "Foot Valve 25",
         plannedQuantity: 1,
         unit: "bh",
         weightPercent: 0.011400
     },
 
-    // Air Kotor
     {
-        id: "PLB-AK-001",
+        id: "PLB-029",
         category: "Plumbing",
-        workPackage: "Air Kotor",
-        activity: "Pipa PVC AW 100 mm",
+        workPackage: "Plumbing",
+        activity: "PVC AW 100mm Air Kotor",
         plannedQuantity: 36,
         unit: "m",
         weightPercent: 0.324805
     },
 
     {
-        id: "PLB-AK-002",
+        id: "PLB-030",
         category: "Plumbing",
-        workPackage: "Air Kotor",
-        activity: "Pipa PVC AW 65 mm",
+        workPackage: "Plumbing",
+        activity: "PVC AW 65mm Air Kotor",
         plannedQuantity: 6,
         unit: "m",
         weightPercent: 0.026613
     },
 
     {
-        id: "PLB-AK-003",
+        id: "PLB-031",
         category: "Plumbing",
-        workPackage: "Air Kotor",
-        activity: "Pipa PVC AW 50 mm",
+        workPackage: "Plumbing",
+        activity: "PVC AW 50mm Air Kotor",
         plannedQuantity: 44,
         unit: "m",
         weightPercent: 0.177423
     },
 
     {
-        id: "PLB-AK-004",
+        id: "PLB-032",
         category: "Plumbing",
-        workPackage: "Air Kotor",
+        workPackage: "Plumbing",
         activity: "Floor Clean Out",
         plannedQuantity: 1,
         unit: "bh",
         weightPercent: 0.024377
     },
 
-    // Vent
     {
-        id: "PLB-VENT-001",
+        id: "PLB-033",
         category: "Plumbing",
-        workPackage: "Vent",
-        activity: "Pipa PVC Class D 32 mm",
+        workPackage: "Plumbing",
+        activity: "PVC Class D 32mm Vent",
         plannedQuantity: 30,
         unit: "m",
         weightPercent: 0.084152
     },
 
-    // Air Hujan
     {
-        id: "PLB-AH-001",
+        id: "PLB-034",
         category: "Plumbing",
-        workPackage: "Air Hujan",
-        activity: "Pipa PVC AW 100 mm",
+        workPackage: "Plumbing",
+        activity: "PVC AW 100mm Air Hujan",
         plannedQuantity: 30,
         unit: "m",
         weightPercent: 0.270671
     },
 
     {
-        id: "PLB-AH-002",
+        id: "PLB-035",
         category: "Plumbing",
-        workPackage: "Air Hujan",
+        workPackage: "Plumbing",
         activity: "Roof Drain",
         plannedQuantity: 4,
         unit: "bh",
         weightPercent: 0.071174
-    }
+    },
+
+
+    // =========================================================
+    // 22. INSTALASI PEMIPAAN
+    // M-6 s/d M-14
+    // =========================================================
+
+    // Catatan:
+    // Work package ini berasal dari schedule utama Excel.
+    // Detail quantity belum dimasukkan karena pada data
+    // master detail yang kita susun belum ada rincian itemnya.
+
+
+    // =========================================================
+    // BASELINE SCHEDULE
+    // =========================================================
+
+    constScheduleDates: null
 
 ];
