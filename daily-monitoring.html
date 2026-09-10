@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +13,7 @@
 <body>
 
     <header class="top-header">
+
         <div>
             <h1>PROJECT CONTROL SYSTEM</h1>
             <p>Digital Project Monitoring & Reporting Prototype</p>
@@ -20,14 +22,19 @@
         <a href="index.html" class="back-button">
             ← Dashboard
         </a>
+
     </header>
 
 
     <main class="container">
 
+        <!-- PAGE HEADER -->
+
         <section class="page-header">
+
             <div>
                 <h2>Daily Monitoring</h2>
+
                 <p>
                     Daily field monitoring for project activities,
                     manpower, material and site conditions.
@@ -37,6 +44,7 @@
             <a href="add-daily-report.html" class="primary-button">
                 + Add Daily Report
             </a>
+
         </section>
 
 
@@ -50,17 +58,20 @@
                 <small>People today</small>
             </div>
 
+
             <div class="kpi-card">
                 <span>Total Man-hours</span>
                 <strong>192</strong>
                 <small>Hours today</small>
             </div>
 
+
             <div class="kpi-card">
                 <span>On Progress</span>
                 <strong>8</strong>
                 <small>Activities</small>
             </div>
+
 
             <div class="kpi-card">
                 <span>Completed</span>
@@ -76,10 +87,15 @@
         <section class="content-card">
 
             <div class="section-title">
+
                 <div>
                     <h3>Recent Daily Reports</h3>
-                    <p>Latest field monitoring records</p>
+
+                    <p>
+                        Latest field monitoring records
+                    </p>
                 </div>
+
             </div>
 
 
@@ -88,6 +104,7 @@
                 <table>
 
                     <thead>
+
                         <tr>
                             <th>Date</th>
                             <th>Project / Unit</th>
@@ -96,48 +113,11 @@
                             <th>Activities</th>
                             <th>Status</th>
                         </tr>
+
                     </thead>
 
-                    <tbody>
 
-                        <tr>
-                            <td>04 Sep 2026</td>
-                            <td>Rumdin T200 / Unit 01</td>
-                            <td>☀ Clear</td>
-                            <td>24</td>
-                            <td>8</td>
-                            <td>
-                                <span class="status-progress">
-                                    On Progress
-                                </span>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>03 Sep 2026</td>
-                            <td>Rumdin T200 / Unit 01</td>
-                            <td>☁ Cloudy</td>
-                            <td>21</td>
-                            <td>6</td>
-                            <td>
-                                <span class="status-completed">
-                                    Completed
-                                </span>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>02 Sep 2026</td>
-                            <td>Rumdin T200 / Unit 01</td>
-                            <td>☀ Clear</td>
-                            <td>22</td>
-                            <td>7</td>
-                            <td>
-                                <span class="status-progress">
-                                    On Progress
-                                </span>
-                            </td>
-                        </tr>
+                    <tbody id="reportTableBody">
 
                     </tbody>
 
@@ -149,5 +129,11 @@
 
     </main>
 
+
+    <!-- DAILY MONITORING JAVASCRIPT -->
+
+    <script src="daily-monitoring.js"></script>
+
 </body>
+
 </html>
