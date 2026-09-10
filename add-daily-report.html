@@ -1,24 +1,27 @@
 <!-- WORK ACTIVITIES -->
-<section class="content-card">
+<section class="content-card work-activities-card">
+
     <h3>Work Activities</h3>
 
     <div class="form-group">
         <label for="activity">Activity</label>
-        <textarea 
+        <textarea
             id="activity"
+            name="activity"
             rows="4"
             placeholder="Example: Reinforcement installation for ground floor slab..."
             required
         ></textarea>
     </div>
 
-    <div class="form-grid">
+    <div class="activity-grid">
 
         <div class="form-group">
             <label for="quantity">Quantity</label>
             <input
                 type="number"
                 id="quantity"
+                name="quantity"
                 min="0"
                 step="0.01"
                 placeholder="Example: 25"
@@ -27,7 +30,7 @@
 
         <div class="form-group">
             <label for="quantityUnit">Unit</label>
-            <select id="quantityUnit">
+            <select id="quantityUnit" name="quantityUnit">
                 <option value="">Select Unit</option>
                 <option value="m³">m³</option>
                 <option value="m²">m²</option>
@@ -46,6 +49,7 @@
             <input
                 type="number"
                 id="dailyProgress"
+                name="dailyProgress"
                 min="0"
                 max="100"
                 step="0.01"
@@ -55,12 +59,13 @@
 
     </div>
 
-    <div class="form-group">
+    <div class="form-group status-group">
         <label for="status">Status</label>
-        <select id="status" required>
+        <select id="status" name="status" required>
             <option value="">Select Status</option>
             <option value="On Progress">On Progress</option>
             <option value="Completed">Completed</option>
         </select>
     </div>
+
 </section>
