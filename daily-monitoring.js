@@ -1,285 +1,480 @@
 // =====================================================
-// DAILY MONITORING
+// DAILY REPORT SYSTEM
 // =====================================================
 
-// -----------------------------------------------------
-// PROJECT DATA
-// -----------------------------------------------------
+console.log("DAILY REPORT JS LOADED");
 
-const projectData = {
-
-    Kalimantan: {
-
-        "Tipe 200": [
-            "DANREM"
-        ],
-
-        "Tipe 175": [
-            "KASREM",
-            "KASI 01",
-            "KASI 02",
-            "KASI 03",
-            "KASI 04",
-            "KASI 05",
-            "KASI 06"
-        ]
-
-    },
-
-    Tasikmalaya: {
-
-        "Casa Sabrina": [
-            "Tipe 95 - Rumah No. 09",
-            "Tipe 95 - Rumah No. 10",
-            "Tipe 95 - Rumah No. 14",
-            "Tipe 95 - Rumah No. 15",
-            "Tipe 128 - Rumah No. 38",
-            "Tipe 150 - Rumah No. 19",
-            "Tipe 150 - Rumah No. 21",
-            "Tipe 150 - Rumah No. 23",
-            "Tipe Custom - Rumah No. 12",
-            "Tipe Custom - Rumah No. 9-11",
-            "Tipe Custom - Rumah No. 18-20"
-        ],
-
-        "Buana Royale Residence": [
-            "Tipe 45 - Y-7",
-            "Tipe 95 - D3",
-            "Tipe 95 - D5"
-        ],
-
-        "Andalusia": [
-            "Tipe Custom - Boulevard 1-2 E"
-        ]
-
-    }
-
-};
+document.addEventListener("DOMContentLoaded", function () {
 
 
-// -----------------------------------------------------
-// LOAD DAILY REPORTS
-// -----------------------------------------------------
+    // =====================================================
+    // FORM ELEMENTS
+    // =====================================================
 
-let dailyReports = JSON.parse(
-    localStorage.getItem("dailyReports")
-) || [];
+    const form =
+        document.getElementById("dailyReportForm");
 
+    const locationSelect =
+        document.getElementById("location");
 
-// -----------------------------------------------------
-// DOM ELEMENTS
-// -----------------------------------------------------
+    const projectSelect =
+        document.getElementById("project");
 
-const dateFilter = document.getElementById("dateFilter");
-const locationFilter = document.getElementById("locationFilter");
-const projectFilter = document.getElementById("projectFilter");
-const unitFilter = document.getElementById("unitFilter");
+    const unitSelect =
+        document.getElementById("unit");
 
-const reportTableBody =
-    document.getElementById("reportTableBody");
+    const activityContainer =
+        document.getElementById("activityContainer");
 
-const progressTableBody =
-    document.getElementById("progressTableBody");
+    const addActivityBtn =
+        document.getElementById("addActivityBtn");
 
-const materialTableBody =
-    document.getElementById("materialTableBody");
+    const materialContainer =
+        document.getElementById("materialContainer");
 
-
-// KPI
-
-const totalManpower =
-    document.getElementById("totalManpower");
-
-const normalManhours =
-    document.getElementById("normalManhours");
-
-const overtimeManhours =
-    document.getElementById("overtimeManhours");
-
-const totalManhours =
-    document.getElementById("totalManhours");
-
-const onProgress =
-    document.getElementById("onProgress");
-
-const completed =
-    document.getElementById("completed");
+    const addMaterialBtn =
+        document.getElementById("addMaterialBtn");
 
 
-// -----------------------------------------------------
-// UPDATE PROJECT FILTER
-// -----------------------------------------------------
+    if (!form) {
 
-function updateProjectOptions() {
-
-    const location =
-        locationFilter.value;
-
-    projectFilter.innerHTML = "";
-
-    const allOption =
-        document.createElement("option");
-
-    allOption.value = "All";
-    allOption.textContent = "All Projects";
-
-    projectFilter.appendChild(allOption);
-
-
-    if (location === "All") {
-
-        Object.values(projectData).forEach(
-            locationProjects => {
-
-                Object.keys(locationProjects).forEach(
-                    project => {
-
-                        const option =
-                            document.createElement("option");
-
-                        option.value = project;
-                        option.textContent = project;
-
-                        projectFilter.appendChild(option);
-
-                    }
-                );
-
-            }
+        console.error(
+            "dailyReportForm tidak ditemukan."
         );
 
-    } else {
+        return;
+    }
+
+
+    // =====================================================
+    // PROJECT & UNIT DATA
+    // =====================================================
+
+    const projectData = {
+
+        Kalimantan: {
+
+            "Tipe 200": [
+                "DANREM"
+            ],
+
+            "Tipe 175": [
+                "KASREM",
+                "KASI 01",
+                "KASI 02",
+                "KASI 03",
+                "KASI 04",
+                "KASI 05",
+                "KASI 06"
+            ]
+
+        },
+
+
+        Tasikmalaya: {
+
+            "Casa Sabrina": [
+                "Tipe 95 - Rumah No. 09",
+                "Tipe 95 - Rumah No. 10",
+                "Tipe 95 - Rumah No. 14",
+                "Tipe 95 - Rumah No. 15",
+                "Tipe 128 - Rumah No. 38",
+                "Tipe 150 - Rumah No. 19",
+                "Tipe 150 - Rumah No. 21",
+                "Tipe Custom - Rumah No. 12",
+                "Tipe Custom - Rumah No. 9-11",
+                "Tipe Custom - Rumah No. 18-20"
+            ],
+
+
+            "Buana Royale Residence": [
+                "Tipe 45 - Y-7",
+                "Tipe 95 - D3",
+                "Tipe 95 - D5"
+            ],
+
+
+            "Andalusia": [
+                "Tipe Custom - Boulevard 1-2 E"
+            ]
+
+        }
+
+    };
+
+
+    // =====================================================
+    // LOCATION → PROJECT
+    // =====================================================
+
+    function updateProjects() {
+
+        if (
+            !locationSelect ||
+            !projectSelect ||
+            !unitSelect
+        ) {
+            return;
+        }
+
+
+        const location =
+            locationSelect.value;
+
+
+        projectSelect.innerHTML =
+            '<option value="">Select Project</option>';
+
+
+        unitSelect.innerHTML =
+            '<option value="">Select Unit</option>';
+
+
+        if (
+            !location ||
+            !projectData[location]
+        ) {
+            return;
+        }
+
 
         Object.keys(
-            projectData[location] || {}
-        ).forEach(project => {
+            projectData[location]
+        ).forEach(function (project) {
 
             const option =
                 document.createElement("option");
 
-            option.value = project;
-            option.textContent = project;
 
-            projectFilter.appendChild(option);
+            option.value =
+                project;
+
+
+            option.textContent =
+                project;
+
+
+            projectSelect.appendChild(
+                option
+            );
 
         });
 
     }
 
 
-    updateUnitOptions();
+    // =====================================================
+    // PROJECT → UNIT
+    // =====================================================
 
-}
+    function updateUnits() {
 
-
-// -----------------------------------------------------
-// UPDATE UNIT FILTER
-// -----------------------------------------------------
-
-function updateUnitOptions() {
-
-    const location =
-        locationFilter.value;
-
-    const project =
-        projectFilter.value;
-
-    unitFilter.innerHTML = "";
+        if (
+            !locationSelect ||
+            !projectSelect ||
+            !unitSelect
+        ) {
+            return;
+        }
 
 
-    const allOption =
-        document.createElement("option");
-
-    allOption.value = "All";
-    allOption.textContent = "All Units";
-
-    unitFilter.appendChild(allOption);
+        const location =
+            locationSelect.value;
 
 
-    if (
-        location === "All" &&
-        project === "All"
-    ) {
+        const project =
+            projectSelect.value;
 
-        Object.values(projectData).forEach(
-            locationProjects => {
 
-                Object.values(locationProjects).forEach(
-                    units => {
+        unitSelect.innerHTML =
+            '<option value="">Select Unit</option>';
 
-                        units.forEach(unit => {
 
-                            addUnitOption(unit);
+        if (
+            !location ||
+            !project ||
+            !projectData[location] ||
+            !projectData[location][project]
+        ) {
+            return;
+        }
 
-                        });
 
-                    }
+        projectData[location][project]
+            .forEach(function (unit) {
+
+                const option =
+                    document.createElement("option");
+
+
+                option.value =
+                    unit;
+
+
+                option.textContent =
+                    unit;
+
+
+                unitSelect.appendChild(
+                    option
                 );
 
-            }
+            });
+
+    }
+
+
+    // =====================================================
+    // LOCATION EVENT
+    // =====================================================
+
+    if (locationSelect) {
+
+        locationSelect.addEventListener(
+            "change",
+            updateProjects
         );
 
     }
 
-    else if (
-        location !== "All" &&
-        project === "All"
-    ) {
 
-        Object.values(
-            projectData[location] || {}
-        ).forEach(units => {
+    // =====================================================
+    // PROJECT EVENT
+    // =====================================================
 
-            units.forEach(unit => {
+    if (projectSelect) {
 
-                addUnitOption(unit);
-
-            });
-
-        });
+        projectSelect.addEventListener(
+            "change",
+            updateUnits
+        );
 
     }
 
-    else if (
-        location !== "All" &&
-        project !== "All"
-    ) {
 
-        const units =
-            projectData[location]?.[project] || [];
+    // =====================================================
+    // ACTIVITY UNIT OPTIONS
+    // =====================================================
 
-        units.forEach(unit => {
+    const activityUnits = [
 
-            addUnitOption(unit);
+        "",
+        "m³",
+        "m²",
+        "m¹",
+        "kg",
+        "ton",
+        "pcs",
+        "titik",
+        "unit",
+        "lot"
 
-        });
+    ];
+
+
+    const activityUnitOptions =
+        activityUnits
+            .map(function (unit) {
+
+                if (!unit) {
+
+                    return `
+                        <option value="">
+                            Select Unit
+                        </option>
+                    `;
+
+                }
+
+
+                return `
+                    <option value="${unit}">
+                        ${unit}
+                    </option>
+                `;
+
+            })
+            .join("");
+
+
+    // =====================================================
+    // CREATE ACTIVITY ROW
+    // =====================================================
+
+    function createActivityRow() {
+
+        if (!activityContainer) {
+            return;
+        }
+
+
+        const row =
+            document.createElement("div");
+
+
+        row.className =
+            "activity-row";
+
+
+        row.innerHTML = `
+
+            <div class="form-group">
+
+                <label>
+                    Activity
+                </label>
+
+                <input
+                    type="text"
+                    class="activity-name"
+                    placeholder="Activity name"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Quantity
+                </label>
+
+                <input
+                    type="number"
+                    class="activity-quantity"
+                    min="0"
+                    step="0.01"
+                    placeholder="0"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Unit
+                </label>
+
+                <select class="activity-unit">
+
+                    ${activityUnitOptions}
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Daily Progress (%)
+                </label>
+
+                <input
+                    type="number"
+                    class="activity-progress"
+                    min="0"
+                    max="100"
+                    step="0.01"
+                    placeholder="0"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Status
+                </label>
+
+                <select class="activity-status">
+
+                    <option value="">
+                        Select Status
+                    </option>
+
+                    <option value="On Progress">
+                        On Progress
+                    </option>
+
+                    <option value="Completed">
+                        Completed
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="remove-row-btn remove-activity"
+                title="Remove activity"
+            >
+                ×
+            </button>
+
+        `;
+
+
+        activityContainer.appendChild(
+            row
+        );
 
     }
 
-    else {
 
-        Object.values(projectData).forEach(
-            locationProjects => {
+    // =====================================================
+    // ADD ACTIVITY
+    // =====================================================
 
-                if (location === "All") {
+    if (addActivityBtn) {
 
-                    Object.entries(
-                        locationProjects
-                    ).forEach(([projectName, units]) => {
+        addActivityBtn.addEventListener(
+            "click",
+            createActivityRow
+        );
 
-                        if (
-                            projectName === project
-                        ) {
+    }
 
-                            units.forEach(unit => {
 
-                                addUnitOption(unit);
+    // =====================================================
+    // REMOVE ACTIVITY
+    // =====================================================
 
-                            });
+    if (activityContainer) {
 
-                        }
+        activityContainer.addEventListener(
+            "click",
+            function (event) {
 
-                    });
+                if (
+                    event.target.classList.contains(
+                        "remove-activity"
+                    )
+                ) {
+
+                    const rows =
+                        activityContainer.querySelectorAll(
+                            ".activity-row"
+                        );
+
+
+                    if (rows.length > 1) {
+
+                        event.target
+                            .closest(".activity-row")
+                            .remove();
+
+                    } else {
+
+                        alert(
+                            "At least one activity row is required."
+                        );
+
+                    }
 
                 }
 
@@ -288,571 +483,924 @@ function updateUnitOptions() {
 
     }
 
-}
 
+    // =====================================================
+    // MATERIAL UNIT OPTIONS
+    // =====================================================
 
-// -----------------------------------------------------
-// ADD UNIT OPTION
-// -----------------------------------------------------
+    const materialUnits = [
 
-function addUnitOption(unit) {
+        "",
+        "m³",
+        "m²",
+        "m¹",
+        "kg",
+        "ton",
+        "pcs",
+        "batang",
+        "rit",
+        "zak",
+        "unit"
 
-    const exists =
-        [...unitFilter.options]
-            .some(option => option.value === unit);
+    ];
 
-    if (exists) {
-        return;
-    }
 
-    const option =
-        document.createElement("option");
+    const materialUnitOptions =
+        materialUnits
+            .map(function (unit) {
 
-    option.value = unit;
-    option.textContent = unit;
+                if (!unit) {
 
-    unitFilter.appendChild(option);
+                    return `
+                        <option value="">
+                            Select Unit
+                        </option>
+                    `;
 
-}
+                }
 
 
-// -----------------------------------------------------
-// GET FILTERED REPORTS
-// -----------------------------------------------------
+                return `
+                    <option value="${unit}">
+                        ${unit}
+                    </option>
+                `;
 
-function getFilteredReports() {
+            })
+            .join("");
 
-    return dailyReports.filter(report => {
 
-        const dateMatch =
-            !dateFilter.value ||
-            report.date === dateFilter.value;
+    // =====================================================
+    // CREATE MATERIAL ROW
+    // =====================================================
 
+    function createMaterialRow() {
 
-        const locationMatch =
-            locationFilter.value === "All" ||
-            report.location === locationFilter.value;
-
-
-        const projectMatch =
-            projectFilter.value === "All" ||
-            report.project === projectFilter.value;
-
-
-        const unitMatch =
-            unitFilter.value === "All" ||
-            report.unit === unitFilter.value;
-
-
-        return (
-            dateMatch &&
-            locationMatch &&
-            projectMatch &&
-            unitMatch
-        );
-
-    });
-
-}
-
-
-// -----------------------------------------------------
-// UPDATE KPI
-// -----------------------------------------------------
-
-function updateKPI(reports) {
-
-    let manpower = 0;
-
-    let normalHours = 0;
-
-    let overtimeHours = 0;
-
-    let totalHours = 0;
-
-    let progressCount = 0;
-
-    let completedCount = 0;
-
-
-    reports.forEach(report => {
-
-        manpower +=
-            Number(report.totalManpower) || 0;
-
-        normalHours +=
-            Number(report.normalManhours) || 0;
-
-        overtimeHours +=
-            Number(report.overtimeManhours) || 0;
-
-        totalHours +=
-            Number(report.totalManhours) || 0;
-
-
-        if (
-            report.status === "On Progress"
-        ) {
-
-            progressCount++;
-
-        }
-
-
-        if (
-            report.status === "Completed"
-        ) {
-
-            completedCount++;
-
-        }
-
-    });
-
-
-    totalManpower.textContent =
-        manpower;
-
-    normalManhours.textContent =
-        normalHours.toFixed(1);
-
-    overtimeManhours.textContent =
-        overtimeHours.toFixed(1);
-
-    totalManhours.textContent =
-        totalHours.toFixed(1);
-
-    onProgress.textContent =
-        progressCount;
-
-    completed.textContent =
-        completedCount;
-
-}
-
-
-// -----------------------------------------------------
-// UPDATE RECENT DAILY REPORTS TABLE
-// -----------------------------------------------------
-
-function updateReportTable(reports) {
-
-    reportTableBody.innerHTML = "";
-
-
-    if (reports.length === 0) {
-
-        reportTableBody.innerHTML = `
-            <tr>
-                <td colspan="9" style="text-align:center;">
-                    No daily reports found.
-                </td>
-            </tr>
-        `;
-
-        return;
-
-    }
-
-
-    // Sort newest first
-
-    const sortedReports =
-        [...reports].sort(
-            (a, b) =>
-                new Date(b.date) -
-                new Date(a.date)
-        );
-
-
-    sortedReports.forEach(report => {
-
-        const row =
-            document.createElement("tr");
-
-
-        row.innerHTML = `
-
-            <td>
-                ${safeValue(report.date)}
-            </td>
-
-            <td>
-                ${safeValue(report.location)}
-            </td>
-
-            <td>
-                ${safeValue(report.project)}
-            </td>
-
-            <td>
-                ${safeValue(report.unit)}
-            </td>
-
-            <td>
-                ${safeValue(report.weather)}
-            </td>
-
-            <td>
-                ${safeNumber(report.totalManpower)}
-            </td>
-
-            <td>
-                ${safeNumber(report.totalManhours)}
-            </td>
-
-            <td>
-                ${safeValue(report.activity)}
-            </td>
-
-            <td>
-                ${safeValue(report.status)}
-            </td>
-
-        `;
-
-
-        reportTableBody.appendChild(row);
-
-    });
-
-}
-
-
-// -----------------------------------------------------
-// UPDATE PROGRESS & QUANTITY TABLE
-// -----------------------------------------------------
-
-function updateProgressTable(reports) {
-
-    progressTableBody.innerHTML = "";
-
-
-    if (reports.length === 0) {
-
-        progressTableBody.innerHTML = `
-            <tr>
-                <td colspan="8" style="text-align:center;">
-                    No progress records found.
-                </td>
-            </tr>
-        `;
-
-        return;
-
-    }
-
-
-    const sortedReports =
-        [...reports].sort(
-            (a, b) =>
-                new Date(b.date) -
-                new Date(a.date)
-        );
-
-
-    sortedReports.forEach(report => {
-
-        const row =
-            document.createElement("tr");
-
-
-        const dailyQuantity =
-            report.dailyQuantity !== undefined &&
-            report.dailyQuantity !== null &&
-            report.dailyQuantity !== ""
-                ? report.dailyQuantity
-                : "-";
-
-
-        const quantityUnit =
-            report.quantityUnit
-                ? report.quantityUnit
-                : "-";
-
-
-        const plannedQuantity =
-            report.plannedQuantity !== undefined &&
-            report.plannedQuantity !== null &&
-            report.plannedQuantity !== ""
-                ? report.plannedQuantity
-                : "-";
-
-
-        let progress = "-";
-
-
-        if (
-            report.progressPercentage !== undefined &&
-            report.progressPercentage !== null &&
-            report.progressPercentage !== ""
-        ) {
-
-            const value =
-                Number(report.progressPercentage);
-
-            if (!isNaN(value)) {
-
-                progress =
-                    value.toFixed(1) + "%";
-
-            }
-
-        }
-
-
-        row.innerHTML = `
-
-            <td>
-                ${safeValue(report.date)}
-            </td>
-
-            <td>
-                ${safeValue(report.project)}
-            </td>
-
-            <td>
-                ${safeValue(report.unit)}
-            </td>
-
-            <td>
-                ${safeValue(report.activity)}
-            </td>
-
-            <td>
-                ${dailyQuantity}
-            </td>
-
-            <td>
-                ${quantityUnit}
-            </td>
-
-            <td>
-                ${plannedQuantity}
-            </td>
-
-            <td>
-                ${progress}
-            </td>
-
-        `;
-
-
-        progressTableBody.appendChild(row);
-
-    });
-
-}
-
-
-// -----------------------------------------------------
-// UPDATE MATERIAL SUMMARY
-// -----------------------------------------------------
-
-function updateMaterialTable(reports) {
-
-    materialTableBody.innerHTML = "";
-
-
-    const materialSummary = {};
-
-
-    reports.forEach(report => {
-
-        if (!Array.isArray(report.materials)) {
+        if (!materialContainer) {
             return;
         }
 
 
-        report.materials.forEach(material => {
-
-            const name =
-                material.name?.trim();
-
-            const unit =
-                material.unit?.trim();
-
-            const quantity =
-                Number(material.quantity) || 0;
-
-
-            if (!name) {
-                return;
-            }
-
-
-            const key =
-                `${name}||${unit}`;
-
-
-            if (!materialSummary[key]) {
-
-                materialSummary[key] = {
-                    name: name,
-                    quantity: 0,
-                    unit: unit || "-"
-                };
-
-            }
-
-
-            materialSummary[key].quantity +=
-                quantity;
-
-        });
-
-    });
-
-
-    const materials =
-        Object.values(materialSummary);
-
-
-    if (materials.length === 0) {
-
-        materialTableBody.innerHTML = `
-            <tr>
-                <td colspan="3" style="text-align:center;">
-                    No material records found.
-                </td>
-            </tr>
-        `;
-
-        return;
-
-    }
-
-
-    materials.forEach(material => {
-
         const row =
-            document.createElement("tr");
+            document.createElement("div");
+
+
+        row.className =
+            "material-row";
 
 
         row.innerHTML = `
 
-            <td>
-                ${safeValue(material.name)}
-            </td>
+            <div class="form-group">
 
-            <td>
-                ${material.quantity}
-            </td>
+                <label>
+                    Material
+                </label>
 
-            <td>
-                ${safeValue(material.unit)}
-            </td>
+                <input
+                    type="text"
+                    class="material-name"
+                    placeholder="Material name"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Quantity
+                </label>
+
+                <input
+                    type="number"
+                    class="material-quantity"
+                    min="0"
+                    step="0.01"
+                    placeholder="0"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Unit
+                </label>
+
+                <select class="material-unit">
+
+                    ${materialUnitOptions}
+
+                </select>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="remove-row-btn remove-material"
+                title="Remove material"
+            >
+                ×
+            </button>
 
         `;
 
 
-        materialTableBody.appendChild(row);
-
-    });
-
-}
-
-
-// -----------------------------------------------------
-// SAFE DISPLAY
-// -----------------------------------------------------
-
-function safeValue(value) {
-
-    if (
-        value === undefined ||
-        value === null ||
-        value === ""
-    ) {
-
-        return "-";
+        materialContainer.appendChild(
+            row
+        );
 
     }
 
-    return value;
 
-}
+    // =====================================================
+    // ADD MATERIAL
+    // =====================================================
 
+    if (addMaterialBtn) {
 
-function safeNumber(value) {
-
-    const number =
-        Number(value);
-
-    if (isNaN(number)) {
-        return 0;
-    }
-
-    return number;
-
-}
-
-
-// -----------------------------------------------------
-// REFRESH DASHBOARD
-// -----------------------------------------------------
-
-function refreshDashboard() {
-
-    const reports =
-        getFilteredReports();
-
-
-    updateKPI(reports);
-
-    updateReportTable(reports);
-
-    updateProgressTable(reports);
-
-    updateMaterialTable(reports);
-
-}
-
-
-// -----------------------------------------------------
-// FILTER EVENTS
-// -----------------------------------------------------
-
-dateFilter.addEventListener(
-    "change",
-    refreshDashboard
-);
-
-
-locationFilter.addEventListener(
-    "change",
-    () => {
-
-        updateProjectOptions();
-
-        refreshDashboard();
+        addMaterialBtn.addEventListener(
+            "click",
+            createMaterialRow
+        );
 
     }
-);
 
 
-projectFilter.addEventListener(
-    "change",
-    () => {
+    // =====================================================
+    // REMOVE MATERIAL
+    // =====================================================
 
-        updateUnitOptions();
+    if (materialContainer) {
 
-        refreshDashboard();
+        materialContainer.addEventListener(
+            "click",
+            function (event) {
+
+                if (
+                    event.target.classList.contains(
+                        "remove-material"
+                    )
+                ) {
+
+                    const rows =
+                        materialContainer.querySelectorAll(
+                            ".material-row"
+                        );
+
+
+                    if (rows.length > 1) {
+
+                        event.target
+                            .closest(".material-row")
+                            .remove();
+
+                    } else {
+
+                        alert(
+                            "At least one material row is required."
+                        );
+
+                    }
+
+                }
+
+            }
+        );
 
     }
-);
 
 
-unitFilter.addEventListener(
-    "change",
-    refreshDashboard
-);
+    // =====================================================
+    // COLLECT ACTIVITIES
+    // =====================================================
+
+    function collectActivities() {
+
+        const activities = [];
 
 
-// -----------------------------------------------------
-// INITIALIZE
-// -----------------------------------------------------
+        if (!activityContainer) {
+            return activities;
+        }
 
-updateProjectOptions();
 
-refreshDashboard();
+        const rows =
+            activityContainer.querySelectorAll(
+                ".activity-row"
+            );
+
+
+        rows.forEach(function (row) {
+
+            const name =
+                row.querySelector(
+                    ".activity-name"
+                )?.value.trim() || "";
+
+
+            const quantity =
+                Number(
+                    row.querySelector(
+                        ".activity-quantity"
+                    )?.value || 0
+                );
+
+
+            const unit =
+                row.querySelector(
+                    ".activity-unit"
+                )?.value || "";
+
+
+            const dailyProgress =
+                Number(
+                    row.querySelector(
+                        ".activity-progress"
+                    )?.value || 0
+                );
+
+
+            const status =
+                row.querySelector(
+                    ".activity-status"
+                )?.value || "";
+
+
+            if (
+                !name &&
+                !quantity &&
+                !unit &&
+                !dailyProgress &&
+                !status
+            ) {
+                return;
+            }
+
+
+            activities.push({
+
+                name:
+                    name,
+
+                quantity:
+                    quantity,
+
+                unit:
+                    unit,
+
+                dailyProgress:
+                    dailyProgress,
+
+                status:
+                    status
+
+            });
+
+        });
+
+
+        return activities;
+
+    }
+
+
+    // =====================================================
+    // COLLECT MATERIALS
+    // =====================================================
+
+    function collectMaterials() {
+
+        const materials = [];
+
+
+        if (!materialContainer) {
+            return materials;
+        }
+
+
+        const rows =
+            materialContainer.querySelectorAll(
+                ".material-row"
+            );
+
+
+        rows.forEach(function (row) {
+
+            const name =
+                row.querySelector(
+                    ".material-name"
+                )?.value.trim() || "";
+
+
+            const quantity =
+                Number(
+                    row.querySelector(
+                        ".material-quantity"
+                    )?.value || 0
+                );
+
+
+            const unit =
+                row.querySelector(
+                    ".material-unit"
+                )?.value || "";
+
+
+            if (
+                !name &&
+                !quantity &&
+                !unit
+            ) {
+                return;
+            }
+
+
+            materials.push({
+
+                name:
+                    name,
+
+                quantity:
+                    quantity,
+
+                unit:
+                    unit
+
+            });
+
+        });
+
+
+        return materials;
+
+    }
+
+
+    // =====================================================
+    // SUBMIT FORM
+    // =====================================================
+
+    form.addEventListener(
+        "submit",
+        function (event) {
+
+            event.preventDefault();
+
+
+            console.log(
+                "SUBMIT DAILY REPORT"
+            );
+
+
+            // =================================================
+            // BASIC INFORMATION
+            // =================================================
+
+            const reportDate =
+                document.getElementById(
+                    "reportDate"
+                )?.value || "";
+
+
+            const weather =
+                document.getElementById(
+                    "weather"
+                )?.value || "";
+
+
+            const location =
+                document.getElementById(
+                    "location"
+                )?.value || "";
+
+
+            const project =
+                document.getElementById(
+                    "project"
+                )?.value || "";
+
+
+            const unit =
+                document.getElementById(
+                    "unit"
+                )?.value || "";
+
+
+            // =================================================
+            // MANPOWER
+            // =================================================
+
+            const foreman =
+                Number(
+                    document.getElementById(
+                        "foreman"
+                    )?.value || 0
+                );
+
+
+            const headWorker =
+                Number(
+                    document.getElementById(
+                        "headWorker"
+                    )?.value || 0
+                );
+
+
+            const skilledWorker =
+                Number(
+                    document.getElementById(
+                        "skilledWorker"
+                    )?.value || 0
+                );
+
+
+            const staffOffice =
+                Number(
+                    document.getElementById(
+                        "staffOffice"
+                    )?.value || 0
+                );
+
+
+            const normalHours =
+                Number(
+                    document.getElementById(
+                        "normalHours"
+                    )?.value || 0
+                );
+
+
+            const overtimeHours =
+                Number(
+                    document.getElementById(
+                        "overtimeHours"
+                    )?.value || 0
+                );
+
+
+            // =================================================
+            // ACTIVITIES
+            // =================================================
+
+            const activities =
+                collectActivities();
+
+
+            // =================================================
+            // MATERIALS
+            // =================================================
+
+            const materials =
+                collectMaterials();
+
+
+            // =================================================
+            // NOTES
+            // =================================================
+
+            const notes =
+                document.getElementById(
+                    "notes"
+                )?.value.trim() || "";
+
+
+            // =================================================
+            // VALIDATION
+            // =================================================
+
+            if (!reportDate) {
+
+                alert(
+                    "Please select report date."
+                );
+
+                return;
+            }
+
+
+            if (!location) {
+
+                alert(
+                    "Please select location."
+                );
+
+                return;
+            }
+
+
+            if (!project) {
+
+                alert(
+                    "Please select project."
+                );
+
+                return;
+            }
+
+
+            if (!unit) {
+
+                alert(
+                    "Please select unit."
+                );
+
+                return;
+            }
+
+
+            if (activities.length === 0) {
+
+                alert(
+                    "Please add at least one work activity."
+                );
+
+                return;
+            }
+
+
+            // =================================================
+            // ACTIVITY VALIDATION
+            // =================================================
+
+            for (
+                let i = 0;
+                i < activities.length;
+                i++
+            ) {
+
+                const activity =
+                    activities[i];
+
+
+                if (!activity.name) {
+
+                    alert(
+                        `Please enter activity name for row ${i + 1}.`
+                    );
+
+                    return;
+                }
+
+
+                if (!activity.unit) {
+
+                    alert(
+                        `Please select unit for activity row ${i + 1}.`
+                    );
+
+                    return;
+                }
+
+
+                if (!activity.status) {
+
+                    alert(
+                        `Please select status for activity row ${i + 1}.`
+                    );
+
+                    return;
+                }
+
+
+                if (
+                    activity.dailyProgress < 0 ||
+                    activity.dailyProgress > 100
+                ) {
+
+                    alert(
+                        `Daily progress for activity row ${i + 1} must be between 0 and 100%.`
+                    );
+
+                    return;
+                }
+
+            }
+
+
+            // =================================================
+            // MANPOWER CALCULATION
+            // =================================================
+
+            const totalManpower =
+                foreman +
+                headWorker +
+                skilledWorker +
+                staffOffice;
+
+
+            const normalManhours =
+                totalManpower *
+                normalHours;
+
+
+            const overtimeManhours =
+                totalManpower *
+                overtimeHours;
+
+
+            const totalManhours =
+                normalManhours +
+                overtimeManhours;
+
+
+            // =================================================
+            // LEGACY SUMMARY
+            // =================================================
+
+            const firstActivity =
+                activities[0];
+
+
+            const activitySummary =
+                activities
+                    .map(function (item) {
+                        return item.name;
+                    })
+                    .join("; ");
+
+
+            const statusSummary =
+                activities.some(function (item) {
+
+                    return (
+                        item.status ===
+                        "On Progress"
+                    );
+
+                })
+                    ? "On Progress"
+                    : "Completed";
+
+
+            // =================================================
+            // CREATE REPORT
+            // =================================================
+
+            const report = {
+
+                id:
+                    Date.now().toString(),
+
+
+                timestamp:
+                    new Date().toISOString(),
+
+
+                // -----------------------------
+                // Basic Information
+                // -----------------------------
+
+                date:
+                    reportDate,
+
+                weather:
+                    weather,
+
+                location:
+                    location,
+
+                project:
+                    project,
+
+                unit:
+                    unit,
+
+
+                // -----------------------------
+                // Manpower
+                // -----------------------------
+
+                manpower: {
+
+                    foreman:
+                        foreman,
+
+                    headWorker:
+                        headWorker,
+
+                    skilledWorker:
+                        skilledWorker,
+
+                    staffOffice:
+                        staffOffice,
+
+                    total:
+                        totalManpower
+
+                },
+
+
+                // -----------------------------
+                // Working Hours
+                // -----------------------------
+
+                normalHours:
+                    normalHours,
+
+                overtimeHours:
+                    overtimeHours,
+
+
+                // -----------------------------
+                // Man-hours
+                // -----------------------------
+
+                normalManhours:
+                    normalManhours,
+
+                overtimeManhours:
+                    overtimeManhours,
+
+                totalManhours:
+                    totalManhours,
+
+
+                // -----------------------------
+                // Structured Activities
+                // -----------------------------
+
+                activities:
+                    activities,
+
+
+                // -----------------------------
+                // Legacy Activity Fields
+                // -----------------------------
+
+                activity:
+                    activitySummary,
+
+                quantity:
+                    firstActivity.quantity,
+
+                quantityUnit:
+                    firstActivity.unit,
+
+                dailyProgress:
+                    firstActivity.dailyProgress,
+
+                status:
+                    statusSummary,
+
+
+                // -----------------------------
+                // Materials
+                // -----------------------------
+
+                materials:
+                    materials,
+
+
+                // -----------------------------
+                // Notes
+                // -----------------------------
+
+                notes:
+                    notes
+
+            };
+
+
+            // =================================================
+            // GET EXISTING REPORTS
+            // =================================================
+
+            let reports = [];
+
+
+            try {
+
+                const savedReports =
+                    localStorage.getItem(
+                        "dailyReports"
+                    );
+
+
+                if (savedReports) {
+
+                    reports =
+                        JSON.parse(
+                            savedReports
+                        );
+
+
+                    if (
+                        !Array.isArray(
+                            reports
+                        )
+                    ) {
+
+                        reports = [];
+
+                    }
+
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Error reading dailyReports:",
+                    error
+                );
+
+
+                reports = [];
+
+            }
+
+
+            // =================================================
+            // SAVE
+            // =================================================
+
+            reports.push(
+                report
+            );
+
+
+            try {
+
+                localStorage.setItem(
+                    "dailyReports",
+                    JSON.stringify(
+                        reports
+                    )
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Error saving daily report:",
+                    error
+                );
+
+
+                alert(
+                    "Daily report gagal disimpan."
+                );
+
+
+                return;
+
+            }
+
+
+            // =================================================
+            // VERIFY SAVE
+            // =================================================
+
+            const verify =
+                localStorage.getItem(
+                    "dailyReports"
+                );
+
+
+            if (!verify) {
+
+                alert(
+                    "Data gagal tersimpan."
+                );
+
+
+                return;
+
+            }
+
+
+            // =================================================
+            // SUCCESS
+            // =================================================
+
+            console.log(
+                "DAILY REPORT SAVED:",
+                report
+            );
+
+
+            alert(
+                "Daily report berhasil disimpan."
+            );
+
+
+            // =================================================
+            // REDIRECT
+            // =================================================
+
+            window.location.href =
+                "./daily-monitoring.html";
+
+        }
+    );
+
+
+    // =====================================================
+    // INITIALIZE
+    // =====================================================
+
+    updateProjects();
+
+});
