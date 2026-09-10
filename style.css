@@ -536,3 +536,33 @@ tbody tr:hover {
         grid-template-columns: 1fr;
     }
 }
+/* FIX DROPDOWN - DAILY REPORT */
+.report-form select {
+    display: block;
+    width: 100%;
+    height: 44px;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #111827;
+    font-size: 14px;
+    font-family: inherit;
+    box-sizing: border-box;
+    appearance: auto;
+    -webkit-appearance: auto;
+}
+
+.report-form select option {
+    display: block;
+    padding: 8px;
+    background: #ffffff;
+    color: #111827;
+}
+
+.report-form textarea,
+.report-form input[type="number"] {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+}
