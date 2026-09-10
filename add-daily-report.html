@@ -74,6 +74,7 @@
 
                 <div class="form-grid">
 
+                    <!-- REPORT DATE -->
                     <div class="form-group">
 
                         <label for="reportDate">
@@ -90,6 +91,7 @@
                     </div>
 
 
+                    <!-- WEATHER -->
                     <div class="form-group">
 
                         <label for="weather">
@@ -130,6 +132,7 @@
                     </div>
 
 
+                    <!-- LOCATION -->
                     <div class="form-group">
 
                         <label for="location">
@@ -159,6 +162,7 @@
                     </div>
 
 
+                    <!-- PROJECT -->
                     <div class="form-group">
 
                         <label for="project">
@@ -180,6 +184,7 @@
                     </div>
 
 
+                    <!-- UNIT -->
                     <div class="form-group">
 
                         <label for="unit">
@@ -214,6 +219,7 @@
 
                 <div class="form-grid">
 
+                    <!-- FOREMAN -->
                     <div class="form-group">
 
                         <label for="foreman">
@@ -232,6 +238,7 @@
                     </div>
 
 
+                    <!-- HEAD WORKER -->
                     <div class="form-group">
 
                         <label for="headWorker">
@@ -250,6 +257,7 @@
                     </div>
 
 
+                    <!-- SKILLED WORKER -->
                     <div class="form-group">
 
                         <label for="skilledWorker">
@@ -268,6 +276,7 @@
                     </div>
 
 
+                    <!-- OFFICE STAFF -->
                     <div class="form-group">
 
                         <label for="staffOffice">
@@ -286,6 +295,7 @@
                     </div>
 
 
+                    <!-- NORMAL HOURS -->
                     <div class="form-group">
 
                         <label for="normalHours">
@@ -304,6 +314,7 @@
                     </div>
 
 
+                    <!-- OVERTIME HOURS -->
                     <div class="form-group">
 
                         <label for="overtimeHours">
@@ -338,7 +349,7 @@
                         <h3>Work Activities</h3>
 
                         <p class="section-description">
-                            Record all activities carried out for today's work.
+                            Record activities carried out and actual quantities achieved today.
                         </p>
 
                     </div>
@@ -355,14 +366,23 @@
                 </div>
 
 
+                <!-- ACTIVITY TABLE HEADER -->
                 <div class="activity-header">
+
+                    <span>
+                        Work Package
+                    </span>
 
                     <span>
                         Activity
                     </span>
 
                     <span>
-                        Quantity
+                        Planned Qty
+                    </span>
+
+                    <span>
+                        Actual Today
                     </span>
 
                     <span>
@@ -370,7 +390,7 @@
                     </span>
 
                     <span>
-                        Daily Progress (%)
+                        Daily Progress
                     </span>
 
                     <span>
@@ -382,30 +402,81 @@
                 </div>
 
 
+                <!-- ACTIVITY CONTAINER -->
                 <div id="activityContainer">
 
-                    <!-- DEFAULT ACTIVITY ROW -->
+
+                    <!-- =========================
+                         DEFAULT ACTIVITY ROW
+                    ========================== -->
                     <div class="activity-row">
 
+
+                        <!-- WORK PACKAGE -->
+                        <div class="form-group">
+
+                            <label>
+                                Work Package
+                            </label>
+
+                            <select
+                                class="activity-work-package"
+                                required
+                            >
+
+                                <option value="">
+                                    Select Work Package
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- ACTIVITY -->
                         <div class="form-group">
 
                             <label>
                                 Activity
                             </label>
 
-                            <input
-                                type="text"
+                            <select
                                 class="activity-name"
-                                placeholder="Example: Reinforcement installation"
+                                required
+                                disabled
+                            >
+
+                                <option value="">
+                                    Select Activity
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- PLANNED QUANTITY -->
+                        <div class="form-group">
+
+                            <label>
+                                Planned Quantity
+                            </label>
+
+                            <input
+                                type="number"
+                                class="activity-planned"
+                                readonly
+                                placeholder="—"
                             >
 
                         </div>
 
 
+                        <!-- ACTUAL QUANTITY -->
                         <div class="form-group">
 
                             <label>
-                                Quantity
+                                Actual Today
                             </label>
 
                             <input
@@ -414,82 +485,47 @@
                                 min="0"
                                 step="0.01"
                                 placeholder="0"
+                                required
                             >
 
                         </div>
 
 
+                        <!-- UNIT -->
                         <div class="form-group">
 
                             <label>
                                 Unit
                             </label>
 
-                            <select class="activity-unit">
-
-                                <option value="">
-                                    Select Unit
-                                </option>
-
-                                <option value="m³">
-                                    m³
-                                </option>
-
-                                <option value="m²">
-                                    m²
-                                </option>
-
-                                <option value="m¹">
-                                    m¹
-                                </option>
-
-                                <option value="kg">
-                                    kg
-                                </option>
-
-                                <option value="ton">
-                                    ton
-                                </option>
-
-                                <option value="pcs">
-                                    pcs
-                                </option>
-
-                                <option value="titik">
-                                    titik
-                                </option>
-
-                                <option value="unit">
-                                    unit
-                                </option>
-
-                                <option value="lot">
-                                    lot
-                                </option>
-
-                            </select>
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label>
-                                Daily Progress (%)
-                            </label>
-
                             <input
-                                type="number"
-                                class="activity-progress"
-                                min="0"
-                                max="100"
-                                step="0.01"
-                                placeholder="0"
+                                type="text"
+                                class="activity-unit"
+                                readonly
+                                placeholder="—"
                             >
 
                         </div>
 
 
+                        <!-- DAILY PROGRESS -->
+                        <div class="form-group">
+
+                            <label>
+                                Daily Progress
+                            </label>
+
+                            <input
+                                type="text"
+                                class="activity-progress"
+                                readonly
+                                placeholder="0.00%"
+                            >
+
+                        </div>
+
+
+                        <!-- STATUS -->
                         <div class="form-group">
 
                             <label>
@@ -515,6 +551,7 @@
                         </div>
 
 
+                        <!-- REMOVE ACTIVITY -->
                         <button
                             type="button"
                             class="remove-row-btn remove-activity"
@@ -559,6 +596,7 @@
                 </div>
 
 
+                <!-- MATERIAL HEADER -->
                 <div class="material-header">
 
                     <span>
@@ -578,11 +616,17 @@
                 </div>
 
 
+                <!-- MATERIAL CONTAINER -->
                 <div id="materialContainer">
 
-                    <!-- DEFAULT MATERIAL ROW -->
+
+                    <!-- =========================
+                         DEFAULT MATERIAL ROW
+                    ========================== -->
                     <div class="material-row">
 
+
+                        <!-- MATERIAL NAME -->
                         <div class="form-group">
 
                             <label>
@@ -598,6 +642,7 @@
                         </div>
 
 
+                        <!-- MATERIAL QUANTITY -->
                         <div class="form-group">
 
                             <label>
@@ -615,6 +660,7 @@
                         </div>
 
 
+                        <!-- MATERIAL UNIT -->
                         <div class="form-group">
 
                             <label>
@@ -672,6 +718,7 @@
                         </div>
 
 
+                        <!-- REMOVE MATERIAL -->
                         <button
                             type="button"
                             class="remove-row-btn remove-material"
@@ -743,7 +790,11 @@
     <!-- =========================
          JAVASCRIPT
     ========================== -->
+
+    <!-- MASTER SCHEDULE -->
     <script src="./master-schedule.js?v=1"></script>
+
+    <!-- DAILY REPORT -->
     <script src="./daily-report.js?v=4"></script>
 
 </body>
