@@ -1,268 +1,66 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Daily Report - Project Control System</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+<!-- WORK ACTIVITIES -->
+<section class="content-card">
+    <h3>Work Activities</h3>
 
-<body>
+    <div class="form-group">
+        <label for="activity">Activity</label>
+        <textarea 
+            id="activity"
+            rows="4"
+            placeholder="Example: Reinforcement installation for ground floor slab..."
+            required
+        ></textarea>
+    </div>
 
-    <header class="dashboard-header">
-        <div class="header-left">
-            <h1>Project Control System</h1>
-            <p>Daily Field Monitoring</p>
+    <div class="form-grid">
+
+        <div class="form-group">
+            <label for="quantity">Quantity</label>
+            <input
+                type="number"
+                id="quantity"
+                min="0"
+                step="0.01"
+                placeholder="Example: 25"
+            >
         </div>
 
-        <a href="daily-monitoring.html" class="back-btn">
-            ← Back to Daily Monitoring
-        </a>
-    </header>
-
-    <main class="dashboard-container">
-
-        <div class="page-header">
-            <div>
-                <h2>Add Daily Report</h2>
-                <p>Record daily field activities, manpower, materials and progress.</p>
-            </div>
+        <div class="form-group">
+            <label for="quantityUnit">Unit</label>
+            <select id="quantityUnit">
+                <option value="">Select Unit</option>
+                <option value="m³">m³</option>
+                <option value="m²">m²</option>
+                <option value="m¹">m¹</option>
+                <option value="kg">kg</option>
+                <option value="ton">ton</option>
+                <option value="pcs">pcs</option>
+                <option value="titik">titik</option>
+                <option value="unit">unit</option>
+                <option value="lot">lot</option>
+            </select>
         </div>
 
-        <form id="dailyReportForm" class="report-form" novalidate>
+        <div class="form-group">
+            <label for="dailyProgress">Daily Progress (%)</label>
+            <input
+                type="number"
+                id="dailyProgress"
+                min="0"
+                max="100"
+                step="0.01"
+                placeholder="Example: 5"
+            >
+        </div>
 
-            <!-- BASIC INFORMATION -->
-            <section class="content-card">
-                <h3>Basic Information</h3>
+    </div>
 
-                <div class="form-grid">
-
-                    <div class="form-group">
-                        <label for="reportDate">Date</label>
-                        <input type="date" id="reportDate" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="weather">Weather</label>
-                        <select id="weather" required>
-                            <option value="">Select Weather</option>
-                            <option value="Clear">Clear</option>
-                            <option value="Cloudy">Cloudy</option>
-                            <option value="Rain">Rain</option>
-                            <option value="Heavy Rain">Heavy Rain</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="location">Location</label>
-                        <select id="location" required>
-                            <option value="">Select Location</option>
-                            <option value="Kalimantan">Kalimantan</option>
-                            <option value="Tasikmalaya">Tasikmalaya</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="project">Project</label>
-                        <select id="project" required>
-                            <option value="">Select Project</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="unit">Unit</label>
-                        <select id="unit" required>
-                            <option value="">Select Unit</option>
-                        </select>
-                    </div>
-
-                </div>
-            </section>
-
-
-            <!-- MANPOWER -->
-            <section class="content-card">
-                <h3>Manpower</h3>
-
-                <div class="form-grid">
-
-                    <div class="form-group">
-                        <label for="foreman">Foreman</label>
-                        <input type="number" id="foreman" min="0" value="0">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="headWorker">Head Worker</label>
-                        <input type="number" id="headWorker" min="0" value="0">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="skilledWorker">Skilled Worker</label>
-                        <input type="number" id="skilledWorker" min="0" value="0">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="staffOffice">Staff Office</label>
-                        <input type="number" id="staffOffice" min="0" value="0">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="normalHours">Normal Working Hours / Person</label>
-                        <input
-                            type="number"
-                            id="normalHours"
-                            min="0"
-                            max="8"
-                            step="0.5"
-                            value="8"
-                        >
-                    </div>
-
-                    <div class="form-group">
-                        <label for="overtimeHours">Overtime Hours / Person</label>
-                        <input
-                            type="number"
-                            id="overtimeHours"
-                            min="0"
-                            step="0.5"
-                            value="0"
-                        >
-                    </div>
-
-                </div>
-            </section>
-
-
-            <!-- WORK ACTIVITIES -->
-            <section class="content-card">
-                <h3>Work Activities</h3>
-
-                <div class="form-group">
-                    <label for="activity">Activity</label>
-                    <textarea
-                        id="activity"
-                        rows="4"
-                        placeholder="Example: Reinforcement installation for ground floor slab..."
-                        required
-                    ></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="status">Status</label>
-                    <select id="status" required>
-                        <option value="">Select Status</option>
-                        <option value="On Progress">On Progress</option>
-                        <option value="Completed">Completed</option>
-                    </select>
-                </div>
-            </section>
-
-
-            <!-- MATERIALS -->
-            <section class="content-card">
-                <h3>Materials</h3>
-
-                <div id="materialContainer">
-
-                    <div class="material-row">
-
-                        <div class="form-group">
-                            <label>Material</label>
-                            <input
-                                type="text"
-                                class="material-name"
-                                placeholder="Example: Cement, sand, rebar..."
-                            >
-                        </div>
-
-                        <div class="form-group">
-                            <label>Quantity</label>
-                            <input
-                                type="number"
-                                class="material-quantity"
-                                min="0"
-                                step="0.01"
-                                placeholder="Quantity"
-                            >
-                        </div>
-
-                        <div class="form-group">
-                            <label>Unit</label>
-                            <select class="material-unit">
-                                <option value="">Select Unit</option>
-                                <option value="kg">kg</option>
-                                <option value="ton">ton</option>
-                                <option value="m³">m³</option>
-                                <option value="m²">m²</option>
-                                <option value="pcs">pcs</option>
-                                <option value="batang">batang</option>
-                                <option value="sak">sak</option>
-                                <option value="lembar">lembar</option>
-                                <option value="rit">rit</option>
-                            </select>
-                        </div>
-
-                        <button
-                            type="button"
-                            class="remove-material-btn"
-                        >
-                            Remove
-                        </button>
-
-                    </div>
-
-                </div>
-
-                <button
-                    type="button"
-                    id="addMaterialBtn"
-                    class="secondary-btn"
-                >
-                    + Add Material
-                </button>
-
-            </section>
-
-
-            <!-- NOTES -->
-            <section class="content-card">
-                <h3>Daily Notes</h3>
-
-                <div class="form-group">
-                    <label for="notes">Notes</label>
-                    <textarea
-                        id="notes"
-                        rows="4"
-                        placeholder="Issues, weather impact, coordination, corrective action, etc."
-                    ></textarea>
-                </div>
-            </section>
-
-
-            <!-- ACTIONS -->
-            <div class="form-actions">
-
-                <a
-                    href="daily-monitoring.html"
-                    class="cancel-btn"
-                >
-                    Cancel
-                </a>
-
-                <button
-                    type="submit"
-                    class="primary-btn"
-                >
-                    Save Daily Report
-                </button>
-
-            </div>
-
-        </form>
-
-    </main>
-
-    <script src="./daily-report.js?v=3"></script>
-
-</body>
-</html>
+    <div class="form-group">
+        <label for="status">Status</label>
+        <select id="status" required>
+            <option value="">Select Status</option>
+            <option value="On Progress">On Progress</option>
+            <option value="Completed">Completed</option>
+        </select>
+    </div>
+</section>
