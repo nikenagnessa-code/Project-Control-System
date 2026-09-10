@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // =====================================================
-    // GET ELEMENTS
+    // GET FILTER ELEMENTS
     // =====================================================
 
     const dateFilter =
@@ -74,11 +74,36 @@ document.addEventListener("DOMContentLoaded", function () {
     const unitFilter =
         document.getElementById("unitFilter");
 
+
+    // =====================================================
+    // GET TABLE ELEMENTS
+    // =====================================================
+
     const reportTableBody =
         document.getElementById("reportTableBody");
 
     const materialTableBody =
         document.getElementById("materialTableBody");
+
+
+    /*
+        Daily Monitoring mempunyai 3 tabel:
+
+        1. Recent Daily Reports
+        2. Daily Progress & Quantity
+        3. Material Summary
+
+        Karena tabel progress belum mempunyai ID khusus,
+        kita ambil tbody tabel ke-2.
+    */
+
+    const allTableBodies =
+        document.querySelectorAll("table tbody");
+
+    const progressTableBody =
+        allTableBodies.length >= 2
+            ? allTableBodies[1]
+            : null;
 
 
     // =====================================================
@@ -113,9 +138,7 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
 
             const saved =
-                localStorage.getItem(
-                    "dailyReports"
-                );
+                localStorage.getItem("dailyReports");
 
             if (!saved) {
                 return [];
@@ -145,7 +168,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // =====================================================
-    // POPULATE PROJECT FILTER
+    // UPDATE PROJECT FILTER
     // =====================================================
 
     function updateProjectFilter() {
@@ -157,7 +180,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const location =
             locationFilter.value;
 
-
         projectFilter.innerHTML =
             '<option value="">All Projects</option>';
 
@@ -166,8 +188,11 @@ document.addEventListener("DOMContentLoaded", function () {
             !location ||
             !projectData[location]
         ) {
+
             updateUnitFilter();
+
             return;
+
         }
 
 
@@ -197,7 +222,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // =====================================================
-    // POPULATE UNIT FILTER
+    // UPDATE UNIT FILTER
     // =====================================================
 
     function updateUnitFilter() {
@@ -205,7 +230,6 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!unitFilter) {
             return;
         }
-
 
         const location =
             locationFilter.value;
@@ -224,7 +248,9 @@ document.addEventListener("DOMContentLoaded", function () {
             !projectData[location] ||
             !projectData[location][project]
         ) {
+
             return;
+
         }
 
 
@@ -282,39 +308,43 @@ document.addEventListener("DOMContentLoaded", function () {
         return reports.filter(
             function (report) {
 
-                // DATE
                 if (
                     selectedDate &&
                     report.date !== selectedDate
                 ) {
+
                     return false;
+
                 }
 
 
-                // LOCATION
                 if (
                     selectedLocation &&
                     report.location !== selectedLocation
                 ) {
+
                     return false;
+
                 }
 
 
-                // PROJECT
                 if (
                     selectedProject &&
                     report.project !== selectedProject
                 ) {
+
                     return false;
+
                 }
 
 
-                // UNIT
                 if (
                     selectedUnit &&
                     report.unit !== selectedUnit
                 ) {
+
                     return false;
+
                 }
 
 
@@ -401,7 +431,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     );
 
 
-                // Compatibility for old data
+                // Compatibility with old data
                 if (
                     totalMH === 0 &&
                     reportManpower > 0
@@ -411,6 +441,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         Number(
                             report.normalHours || 0
                         );
+
 
                     const overtime =
                         Number(
@@ -461,11 +492,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 ) {
 
                     const statuses =
-                        report.activities.map(
-                            function (activity) {
+                        report.activities
+                            .map(function (activity) {
                                 return activity.status;
-                            }
-                        );
+                            })
+                            .filter(Boolean);
 
 
                     if (
@@ -513,42 +544,54 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         // -----------------------------
-        // DISPLAY
+        // DISPLAY KPI
         // -----------------------------
 
         if (totalManpower) {
+
             totalManpower.textContent =
                 manpower;
+
         }
 
 
         if (normalManhours) {
+
             normalManhours.textContent =
                 normalHours.toFixed(1);
+
         }
 
 
         if (overtimeManhours) {
+
             overtimeManhours.textContent =
                 overtimeHours.toFixed(1);
+
         }
 
 
         if (totalManhours) {
+
             totalManhours.textContent =
                 totalHours.toFixed(1);
+
         }
 
 
         if (onProgress) {
+
             onProgress.textContent =
                 progressCount;
+
         }
 
 
         if (completed) {
+
             completed.textContent =
                 completedCount;
+
         }
 
     }
@@ -610,7 +653,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function getActivitySummary(report) {
 
-        // New structured data
+        // New multiple-activity format
         if (
             report.activities &&
             Array.isArray(report.activities) &&
@@ -618,18 +661,18 @@ document.addEventListener("DOMContentLoaded", function () {
         ) {
 
             return report.activities
-                .map(
-                    function (activity) {
-                        return activity.name;
-                    }
-                )
+                .map(function (activity) {
+
+                    return activity.name;
+
+                })
                 .filter(Boolean)
                 .join(", ");
 
         }
 
 
-        // Old data
+        // Old single-activity format
         return report.activity || "-";
 
     }
@@ -649,11 +692,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const statuses =
                 report.activities
-                    .map(
-                        function (activity) {
-                            return activity.status;
-                        }
-                    )
+                    .map(function (activity) {
+
+                        return activity.status;
+
+                    })
                     .filter(Boolean);
 
 
@@ -672,7 +715,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 statuses.length > 0 &&
                 statuses.every(
                     function (status) {
+
                         return status === "Completed";
+
                     }
                 )
             ) {
@@ -690,7 +735,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // =====================================================
-    // RENDER REPORT TABLE
+    // RENDER RECENT DAILY REPORTS
     // =====================================================
 
     function renderReportTable(reports) {
@@ -707,17 +752,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
             reportTableBody.innerHTML = `
                 <tr>
-                    <td colspan="9" style="text-align:center; color:#98a2b3;">
+                    <td colspan="9"
+                        style="text-align:center; color:#98a2b3;">
                         No daily reports available.
                     </td>
                 </tr>
             `;
 
             return;
+
         }
 
 
-        // Most recent first
         const sortedReports =
             [...reports].sort(
                 function (a, b) {
@@ -742,15 +788,27 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.createElement("tr");
 
 
-                const manpower =
+                let manpower = 0;
+
+
+                if (
                     report.manpower &&
                     typeof report.manpower === "object"
-                        ? Number(
+                ) {
+
+                    manpower =
+                        Number(
                             report.manpower.total || 0
-                        )
-                        : Number(
+                        );
+
+                } else {
+
+                    manpower =
+                        Number(
                             report.manpower || 0
                         );
+
+                }
 
 
                 const totalMH =
@@ -823,6 +881,222 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // =====================================================
+    // RENDER DAILY PROGRESS & QUANTITY
+    // =====================================================
+
+    function renderProgressTable(reports) {
+
+        if (!progressTableBody) {
+            return;
+        }
+
+
+        progressTableBody.innerHTML = "";
+
+
+        const progressRows = [];
+
+
+        reports.forEach(
+            function (report) {
+
+                // =========================================
+                // NEW MULTIPLE ACTIVITY FORMAT
+                // =========================================
+
+                if (
+                    report.activities &&
+                    Array.isArray(report.activities) &&
+                    report.activities.length > 0
+                ) {
+
+                    report.activities.forEach(
+                        function (activity) {
+
+                            if (
+                                !activity ||
+                                !activity.name
+                            ) {
+                                return;
+                            }
+
+
+                            progressRows.push({
+
+                                date:
+                                    report.date || "-",
+
+                                project:
+                                    report.project || "-",
+
+                                unit:
+                                    report.unit || "-",
+
+                                activity:
+                                    activity.name || "-",
+
+                                quantity:
+                                    Number(
+                                        activity.quantity || 0
+                                    ),
+
+                                quantityUnit:
+                                    activity.unit || "-",
+
+                                plannedQuantity:
+                                    activity.plannedQuantity || "-",
+
+                                progress:
+                                    activity.dailyProgress !== undefined
+                                        ? activity.dailyProgress
+                                        : "-"
+
+                            });
+
+                        }
+                    );
+
+
+                    return;
+
+                }
+
+
+                // =========================================
+                // OLD SINGLE ACTIVITY FORMAT
+                // =========================================
+
+                if (
+                    report.activity
+                ) {
+
+                    progressRows.push({
+
+                        date:
+                            report.date || "-",
+
+                        project:
+                            report.project || "-",
+
+                        unit:
+                            report.unit || "-",
+
+                        activity:
+                            report.activity || "-",
+
+                        quantity:
+                            Number(
+                                report.quantity || 0
+                            ),
+
+                        quantityUnit:
+                            report.quantityUnit || "-",
+
+                        plannedQuantity:
+                            report.plannedQuantity || "-",
+
+                        progress:
+                            report.dailyProgress !== undefined
+                                ? report.dailyProgress
+                                : "-"
+
+                    });
+
+                }
+
+            }
+        );
+
+
+        // =========================================
+        // NO DATA
+        // =========================================
+
+        if (
+            progressRows.length === 0
+        ) {
+
+            progressTableBody.innerHTML = `
+                <tr>
+                    <td colspan="8"
+                        style="text-align:center; color:#98a2b3;">
+                        No progress data available.
+                    </td>
+                </tr>
+            `;
+
+            return;
+
+        }
+
+
+        // =========================================
+        // RENDER EACH ACTIVITY
+        // =========================================
+
+        progressRows.forEach(
+            function (item) {
+
+                const row =
+                    document.createElement("tr");
+
+
+                const progressValue =
+                    item.progress === "-"
+                        ? "-"
+                        : `${Number(
+                            item.progress
+                        ).toFixed(2)}%`;
+
+
+                row.innerHTML = `
+
+                    <td>
+                        ${item.date}
+                    </td>
+
+                    <td>
+                        ${item.project}
+                    </td>
+
+                    <td>
+                        ${item.unit}
+                    </td>
+
+                    <td>
+                        ${item.activity}
+                    </td>
+
+                    <td>
+                        ${item.quantity}
+                    </td>
+
+                    <td>
+                        ${item.quantityUnit}
+                    </td>
+
+                    <td>
+                        ${item.plannedQuantity}
+                    </td>
+
+                    <td>
+                        ${progressValue}
+                    </td>
+
+                `;
+
+
+                progressTableBody.appendChild(
+                    row
+                );
+
+            }
+        );
+
+    }
+
+
+    // =====================================================
     // RENDER MATERIAL SUMMARY
     // =====================================================
 
@@ -848,7 +1122,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         report.materials
                     )
                 ) {
+
                     return;
+
                 }
 
 
@@ -859,7 +1135,9 @@ document.addEventListener("DOMContentLoaded", function () {
                             !material ||
                             !material.name
                         ) {
+
                             return;
+
                         }
 
 
@@ -920,17 +1198,21 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
-        if (materials.length === 0) {
+        if (
+            materials.length === 0
+        ) {
 
             materialTableBody.innerHTML = `
                 <tr>
-                    <td colspan="3" style="text-align:center; color:#98a2b3;">
+                    <td colspan="3"
+                        style="text-align:center; color:#98a2b3;">
                         No material data available.
                     </td>
                 </tr>
             `;
 
             return;
+
         }
 
 
@@ -969,7 +1251,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // =====================================================
-    // REFRESH DASHBOARD
+    // REFRESH MONITORING
     // =====================================================
 
     function refreshMonitoring() {
@@ -990,6 +1272,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         renderReportTable(
+            filteredReports
+        );
+
+
+        renderProgressTable(
             filteredReports
         );
 
