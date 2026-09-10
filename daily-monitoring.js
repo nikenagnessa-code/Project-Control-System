@@ -1393,9 +1393,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 </td>
 
                 <td>
-                    ${formatNumber(
-                        material.quantity
-                    )}
+                    ${Number(material.quantity).toLocaleString("id-ID", {
+                        maximumFractionDigits: 3
+                    })} 
                 </td>
 
                 <td>
