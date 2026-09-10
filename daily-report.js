@@ -2,121 +2,149 @@
 // ACTIVITY → MASTER DATA
 // =====================================================
 
-activitySelect.addEventListener(
-    "change",
-    function () {
+activitySelect.addEventListener("change", function () {
 
-        const selectedId =
-            activitySelect.value;
+    const selectedId = activitySelect.value;
 
-        const selectedActivity =
-            schedule.find(function (item) {
+    const selectedActivity = schedule.find(function (item) {
+        return String(item.activityId) === String(selectedId);
+    });
 
-                return String(item.activityId) ===
-                    String(selectedId);
+    if (!selectedActivity) {
+        clearActivityDetails(row);
+        return;
+    }
 
-            });
+    // ---------------------------------------------
+    // STORE MASTER ACTIVITY ID
+    // ---------------------------------------------
 
+    row.dataset.activityId = selectedActivity.activityId;
 
-        if (!selectedActivity) {
+    // ---------------------------------------------
+    // PLANNED QUANTITY
+    // ---------------------------------------------
 
-            clearActivityDetails(row);
+    if (plannedInput) {
 
-            return;
-
-        }
-
-
-        // ---------------------------------------------
-        // STORE MASTER ACTIVITY ID
-        // ---------------------------------------------
-
-        row.dataset.activityId =
-            selectedActivity.activityId;
-
-
-        // ---------------------------------------------
-        // PLANNED QUANTITY
-        // ---------------------------------------------
-
-        if (plannedInput) {
-
-            plannedInput.value =
-                Number(
-                    selectedActivity.plannedQuantity || 0
-                );
-
-        }
-
-
-        // ---------------------------------------------
-        // UNIT
-        // ---------------------------------------------
-
-        if (unitInput) {
-
-            unitInput.value =
-                selectedActivity.quantityUnit ||
-                "";
-
-        }
-
-
-        // ---------------------------------------------
-        // RESET ACTUAL
-        // ---------------------------------------------
-
-        if (quantityInput) {
-
-            quantityInput.value = "";
-
-        }
-
-
-        // ---------------------------------------------
-        // RESET DAILY PROGRESS
-        // ---------------------------------------------
-
-        if (progressInput) {
-
-            progressInput.value = "0.00";
-
-        }
-
-
-        // ---------------------------------------------
-        // STORE WEIGHT
-        // ---------------------------------------------
-
-        row.dataset.weight =
-            Number(
-                selectedActivity.weight || 0
-            );
-
-
-        console.log(
-            "Selected activity:",
-            selectedActivity
-        );
+        plannedInput.value =
+            Number(selectedActivity.plannedQuantity || 0);
 
     }
-);
+
+    // ---------------------------------------------
+    // UNIT
+    // ---------------------------------------------
+
+    if (unitInput) {
+
+        unitInput.value =
+            selectedActivity.quantityUnit || "";
+
+    }
+
+    // ---------------------------------------------
+    // STORE WEIGHT
+    // ---------------------------------------------
+
+    row.dataset.weight =
+        Number(selectedActivity.weight || 0);
+
+    // ---------------------------------------------
+    // RESET ACTUAL
+    // ---------------------------------------------
+
+    if (quantityInput) {
+        quantityInput.value = "";
+    }
+
+    // ---------------------------------------------
+    // RESET DAILY PROGRESS
+    // ---------------------------------------------
+
+    if (progressInput) {
+        progressInput.value = "0.00";
+    }
+
+    console.log(
+        "Selected activity:",
+        selectedActivity
+    );
+
+});
 
 
 // =====================================================
 // ACTUAL TODAY → DAILY PROGRESS
 // =====================================================
 
-if (quantityInput) {
+// Gunakan event delegation.
+// Ini lebih aman karena activity row dibuat secara dinamis.
 
-    quantityInput.addEventListener(
-        "input",
-        function () {
+document.addEventListener("input", function (event) {
 
-            calculateDailyProgress(row);
+    if (!event.target.classList.contains("activity-quantity")) {
+        return;
+    }
 
-        }
-    );
+    const row = event.target.closest(".activity-row");
+
+    if (!row) {
+        return;
+    }
+
+    calculateDailyProgress(row);
+
+});
+
+
+// =====================================================
+// PARSE ANGKA FORMAT INDONESIA
+// =====================================================
+
+function parseNumber(value) {
+
+    if (value === null || value === undefined) {
+        return 0;
+    }
+
+    let text = String(value).trim();
+
+    if (text === "") {
+        return 0;
+    }
+
+    // Hapus spasi
+    text = text.replace(/\s/g, "");
+
+    /*
+     * Format Indonesia:
+     * 2,562      → 2.562
+     * 1.234,56   → 1234.56
+     * 1234.56    → 1234.56
+     */
+
+    if (
+        text.includes(".") &&
+        text.includes(",")
+    ) {
+
+        // Contoh: 1.234,56
+        text = text.replace(/\./g, "");
+        text = text.replace(",", ".");
+
+    } else if (text.includes(",")) {
+
+        // Contoh: 2,6 atau 2,562
+        text = text.replace(",", ".");
+
+    }
+
+    const number = Number(text);
+
+    return Number.isFinite(number)
+        ? number
+        : 0;
 
 }
 
@@ -128,22 +156,18 @@ if (quantityInput) {
 function calculateDailyProgress(row) {
 
     const plannedInput =
-        row.querySelector(
-            ".activity-planned"
-        );
-
+        row.querySelector(".activity-planned");
 
     const quantityInput =
-        row.querySelector(
-            ".activity-quantity"
-        );
-
+        row.querySelector(".activity-quantity");
 
     const progressInput =
-        row.querySelector(
-            ".activity-progress"
-        );
+        row.querySelector(".activity-progress");
 
+
+    // ---------------------------------------------
+    // CHECK ELEMENT
+    // ---------------------------------------------
 
     if (
         !plannedInput ||
@@ -151,21 +175,25 @@ function calculateDailyProgress(row) {
         !progressInput
     ) {
 
+        console.warn(
+            "Daily progress element tidak ditemukan.",
+            row
+        );
+
         return;
 
     }
 
 
-    const planned =
-        parseFloat(
-            plannedInput.value
-        ) || 0;
+    // ---------------------------------------------
+    // GET VALUES
+    // ---------------------------------------------
 
+    const planned =
+        parseNumber(plannedInput.value);
 
     const actualToday =
-        parseFloat(
-            quantityInput.value
-        ) || 0;
+        parseNumber(quantityInput.value);
 
 
     console.log(
@@ -183,8 +211,7 @@ function calculateDailyProgress(row) {
 
     if (planned <= 0) {
 
-        progressInput.value =
-            "0.00";
+        progressInput.value = "0.00";
 
         return;
 
@@ -192,13 +219,12 @@ function calculateDailyProgress(row) {
 
 
     // ---------------------------------------------
-    // NO ACTUAL
+    // NO ACTUAL TODAY
     // ---------------------------------------------
 
     if (actualToday <= 0) {
 
-        progressInput.value =
-            "0.00";
+        progressInput.value = "0.00";
 
         return;
 
@@ -210,10 +236,7 @@ function calculateDailyProgress(row) {
     // ---------------------------------------------
 
     let progress =
-        (
-            actualToday /
-            planned
-        ) * 100;
+        (actualToday / planned) * 100;
 
 
     // ---------------------------------------------
@@ -236,5 +259,11 @@ function calculateDailyProgress(row) {
 
     progressInput.value =
         progress.toFixed(2);
+
+
+    console.log(
+        "DAILY PROGRESS RESULT:",
+        progressInput.value
+    );
 
 }
