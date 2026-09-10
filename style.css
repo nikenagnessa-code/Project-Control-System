@@ -481,3 +481,58 @@ tbody tr:hover {
         grid-template-columns: 1fr;
     }
 }
+/* =========================================
+   WORK ACTIVITIES - DAILY REPORT
+   ========================================= */
+
+.report-form .content-card {
+    margin-bottom: 24px;
+}
+
+.report-form .content-card h3 {
+    margin-bottom: 20px;
+}
+
+.report-form .form-group {
+    margin-bottom: 18px;
+}
+
+.report-form .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.report-form .form-group textarea,
+.report-form .form-group input,
+.report-form .form-group select {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Activity textarea */
+.report-form #activity {
+    min-height: 110px;
+    resize: vertical;
+}
+
+/* Quantity + Unit + Daily Progress */
+.report-form .form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-bottom: 18px;
+}
+
+/* Make sure each field stays inside its column */
+.report-form .form-grid .form-group {
+    min-width: 0;
+    margin-bottom: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .report-form .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
