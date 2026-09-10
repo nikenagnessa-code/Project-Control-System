@@ -1,20 +1,14 @@
 // =====================================================
-// DAILY REPORT SYSTEM
+// DAILY REPORT SYSTEM - FINAL VERSION
 // =====================================================
 
 document.addEventListener("DOMContentLoaded", function () {
 
-    // =================================================
-    // MASTER SCHEDULE
-    // =================================================
+    "use strict";
 
-    const schedule =
-        typeof masterSchedule !== "undefined" &&
-        Array.isArray(masterSchedule)
-            ? masterSchedule
-            : [];
-
-    console.log("MASTER SCHEDULE:", schedule);
+    console.log("=====================================");
+    console.log("DAILY REPORT JS - FINAL VERSION");
+    console.log("=====================================");
 
 
     // =================================================
@@ -37,13 +31,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const weather =
         document.getElementById("weather");
 
-    const location =
+    const locationSelect =
         document.getElementById("location");
 
-    const project =
+    const projectSelect =
         document.getElementById("project");
 
-    const unit =
+    const unitSelect =
         document.getElementById("unit");
 
     const foreman =
@@ -70,13 +64,16 @@ document.addEventListener("DOMContentLoaded", function () {
         document.querySelector("#activityRows");
 
     const addActivityButton =
+        document.getElementById("addActivityBtn") ||
         document.getElementById("addActivity");
 
-    const materialsContainer =
+    const materialContainer =
+        document.getElementById("materialContainer") ||
         document.getElementById("materialsContainer") ||
         document.getElementById("materialList");
 
     const addMaterialButton =
+        document.getElementById("addMaterialBtn") ||
         document.getElementById("addMaterial");
 
     const notes =
@@ -84,27 +81,113 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // =================================================
-    // GET MASTER SCHEDULE
+    // CHECK DOM
     // =================================================
 
-    function getMasterSchedule() {
+    console.log("DOM CHECK:", {
+        form: !!reportForm,
+        location: !!locationSelect,
+        project: !!projectSelect,
+        unit: !!unitSelect,
+        activityContainer: !!activityContainer,
+        addActivityButton: !!addActivityButton,
+        materialContainer: !!materialContainer,
+        addMaterialButton: !!addMaterialButton
+    });
 
-        if (
-            typeof masterSchedule !== "undefined" &&
-            Array.isArray(masterSchedule)
-        ) {
-            return masterSchedule;
+
+    // =================================================
+    // PROJECT DATA
+    // =================================================
+
+    const projectData = {
+
+        Kalimantan: {
+
+            "Tipe 200": [
+                "DANREM"
+            ],
+
+            "Tipe 175": [
+                "KASREM",
+                "KASI 01",
+                "KASI 02",
+                "KASI 03",
+                "KASI 04",
+                "KASI 05",
+                "KASI 06"
+            ]
+
+        },
+
+
+        Tasikmalaya: {
+
+            "Casa Sabrina": [
+                "Unit 01",
+                "Unit 02",
+                "Unit 03",
+                "Unit 04",
+                "Unit 05",
+                "Unit 06",
+                "Unit 07",
+                "Unit 08",
+                "Unit 09",
+                "Unit 10"
+            ],
+
+            "Buana Royale Residence": [
+                "Unit 01",
+                "Unit 02",
+                "Unit 03"
+            ],
+
+            "Andalusia": [
+                "Unit 01"
+            ]
+
         }
 
-        if (
-            typeof window.masterSchedule !== "undefined" &&
-            Array.isArray(window.masterSchedule)
-        ) {
-            return window.masterSchedule;
-        }
+    };
 
-        return [];
-    }
+
+    // =================================================
+    // ACTIVITY UNITS
+    // =================================================
+
+    const activityUnitOptions = [
+        "m",
+        "m'",
+        "m²",
+        "m³",
+        "kg",
+        "ton",
+        "unit",
+        "bh",
+        "set",
+        "ls"
+    ];
+
+
+    // =================================================
+    // MATERIAL UNITS
+    // =================================================
+
+    const materialUnitOptions = [
+        "kg",
+        "ton",
+        "m",
+        "m'",
+        "m²",
+        "m³",
+        "bh",
+        "unit",
+        "set",
+        "ls",
+        "sak",
+        "batang",
+        "lembar"
+    ];
 
 
     // =================================================
@@ -121,47 +204,90 @@ document.addEventListener("DOMContentLoaded", function () {
             return 0;
         }
 
-        let text =
-            String(value)
-                .trim()
-                .replace(/\s/g, "");
+        let text = String(value)
+            .trim()
+            .replace(/\s/g, "");
 
         if (text === "") {
             return 0;
         }
-
-        /*
-         * Format:
-         *
-         * 2,6
-         * 2.6
-         * 1.234,56
-         * 1234.56
-         */
 
         if (
             text.includes(".") &&
             text.includes(",")
         ) {
 
-            text =
-                text.replace(/\./g, "")
-                    .replace(",", ".");
+            text = text
+                .replace(/\./g, "")
+                .replace(",", ".");
+
+        } else if (text.includes(",")) {
+
+            text = text.replace(",", ".");
 
         }
-        else if (text.includes(",")) {
 
-            text =
-                text.replace(",", ".");
-
-        }
-
-        const result =
-            Number(text);
+        const result = Number(text);
 
         return Number.isFinite(result)
             ? result
             : 0;
+    }
+
+
+    // =================================================
+    // MASTER SCHEDULE
+    // =================================================
+
+    function getMasterSchedule() {
+
+        try {
+
+            if (
+                typeof masterSchedule !== "undefined" &&
+                Array.isArray(masterSchedule)
+            ) {
+
+                return masterSchedule;
+
+            }
+
+        } catch (error) {
+
+            console.warn(
+                "masterSchedule tidak tersedia secara langsung."
+            );
+
+        }
+
+
+        if (
+            typeof window !== "undefined" &&
+            Array.isArray(window.masterSchedule)
+        ) {
+
+            return window.masterSchedule;
+
+        }
+
+
+        return [];
+
+    }
+
+
+    // =================================================
+    // CHECK MASTER SCHEDULE
+    // =================================================
+
+    function isMasterScheduleUnit() {
+
+        return (
+            locationSelect?.value === "Kalimantan" &&
+            projectSelect?.value === "Tipe 200" &&
+            unitSelect?.value === "DANREM"
+        );
+
     }
 
 
@@ -180,6 +306,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 String(activityId);
 
         });
+
     }
 
 
@@ -200,19 +327,209 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
+
+            // =========================================
+            // PEMIPAAN DI-SKIP DULU
+            // =========================================
+
+            if (
+                item.workPackage
+                    .toLowerCase()
+                    .includes("pemipaan")
+            ) {
+
+                return;
+
+            }
+
+
             if (
                 !packages.includes(
                     item.workPackage
                 )
             ) {
+
                 packages.push(
                     item.workPackage
                 );
+
             }
 
         });
 
         return packages;
+
+    }
+
+
+    // =================================================
+    // UPDATE PROJECT DROPDOWN
+    // =================================================
+
+    function updateProjects() {
+
+        if (!projectSelect) {
+            return;
+        }
+
+
+        projectSelect.innerHTML = "";
+
+
+        const placeholder =
+            document.createElement("option");
+
+        placeholder.value = "";
+
+        placeholder.textContent =
+            "Select Project";
+
+        projectSelect.appendChild(
+            placeholder
+        );
+
+
+        const selectedLocation =
+            locationSelect?.value;
+
+
+        if (
+            !selectedLocation ||
+            !projectData[selectedLocation]
+        ) {
+
+            projectSelect.disabled = true;
+
+            updateUnits();
+
+            return;
+
+        }
+
+
+        projectSelect.disabled = false;
+
+
+        Object.keys(
+            projectData[selectedLocation]
+        ).forEach(function (projectName) {
+
+            const option =
+                document.createElement("option");
+
+            option.value =
+                projectName;
+
+            option.textContent =
+                projectName;
+
+            projectSelect.appendChild(
+                option
+            );
+
+        });
+
+
+        updateUnits();
+
+    }
+
+
+    // =================================================
+    // UPDATE UNIT DROPDOWN
+    // =================================================
+
+    function updateUnits() {
+
+        if (!unitSelect) {
+            return;
+        }
+
+
+        unitSelect.innerHTML = "";
+
+
+        const placeholder =
+            document.createElement("option");
+
+        placeholder.value = "";
+
+        placeholder.textContent =
+            "Select Unit";
+
+        unitSelect.appendChild(
+            placeholder
+        );
+
+
+        const selectedLocation =
+            locationSelect?.value;
+
+        const selectedProject =
+            projectSelect?.value;
+
+
+        if (
+            !selectedLocation ||
+            !selectedProject ||
+            !projectData[selectedLocation] ||
+            !projectData[selectedLocation][selectedProject]
+        ) {
+
+            unitSelect.disabled = true;
+
+            refreshActivityRows();
+
+            return;
+
+        }
+
+
+        unitSelect.disabled = false;
+
+
+        projectData[selectedLocation][selectedProject]
+            .forEach(function (unitName) {
+
+                const option =
+                    document.createElement("option");
+
+                option.value =
+                    unitName;
+
+                option.textContent =
+                    unitName;
+
+                unitSelect.appendChild(
+                    option
+                );
+
+            });
+
+
+        refreshActivityRows();
+
+    }
+
+
+    // =================================================
+    // CREATE OPTION
+    // =================================================
+
+    function createOption(
+        value,
+        text
+    ) {
+
+        const option =
+            document.createElement("option");
+
+        option.value = value;
+
+        option.textContent = text;
+
+        return option;
+
     }
 
 
@@ -229,6 +546,7 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
             return null;
+
         }
 
 
@@ -252,37 +570,35 @@ document.addEventListener("DOMContentLoaded", function () {
         workPackageSelect.required = true;
 
 
-        const packagePlaceholder =
-            document.createElement("option");
-
-        packagePlaceholder.value = "";
-
-        packagePlaceholder.textContent =
-            "Select Work Package";
-
         workPackageSelect.appendChild(
-            packagePlaceholder
+            createOption(
+                "",
+                "Select Work Package"
+            )
         );
 
 
-        getWorkPackages().forEach(
-            function (packageName) {
+        // =============================================
+        // ONLY LOAD MASTER SCHEDULE
+        // FOR KALIMANTAN / TIPE 200 / DANREM
+        // =============================================
 
-                const option =
-                    document.createElement("option");
+        if (isMasterScheduleUnit()) {
 
-                option.value =
-                    packageName;
+            getWorkPackages().forEach(
+                function (packageName) {
 
-                option.textContent =
-                    packageName;
+                    workPackageSelect.appendChild(
+                        createOption(
+                            packageName,
+                            packageName
+                        )
+                    );
 
-                workPackageSelect.appendChild(
-                    option
-                );
+                }
+            );
 
-            }
-        );
+        }
 
 
         // =============================================
@@ -300,16 +616,11 @@ document.addEventListener("DOMContentLoaded", function () {
         activitySelect.disabled = true;
 
 
-        const activityPlaceholder =
-            document.createElement("option");
-
-        activityPlaceholder.value = "";
-
-        activityPlaceholder.textContent =
-            "Select Activity";
-
         activitySelect.appendChild(
-            activityPlaceholder
+            createOption(
+                "",
+                "Select Activity"
+            )
         );
 
 
@@ -328,9 +639,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
         plannedInput.readOnly = true;
 
+        plannedInput.placeholder =
+            "Planned";
+
 
         // =============================================
-        // ACTUAL TODAY
+        // ACTUAL QUANTITY
         // =============================================
 
         const quantityInput =
@@ -343,10 +657,9 @@ document.addEventListener("DOMContentLoaded", function () {
             "activity-quantity";
 
         quantityInput.placeholder =
-            "0";
+            "Actual Today";
 
-        quantityInput.required =
-            true;
+        quantityInput.required = true;
 
 
         // =============================================
@@ -363,6 +676,9 @@ document.addEventListener("DOMContentLoaded", function () {
             "activity-unit";
 
         unitInput.readOnly = true;
+
+        unitInput.placeholder =
+            "Unit";
 
 
         // =============================================
@@ -383,6 +699,9 @@ document.addEventListener("DOMContentLoaded", function () {
         progressInput.value =
             "0.00";
 
+        progressInput.placeholder =
+            "%";
+
 
         // =============================================
         // STATUS
@@ -394,36 +713,24 @@ document.addEventListener("DOMContentLoaded", function () {
         statusSelect.className =
             "activity-status";
 
-        statusSelect.required =
-            true;
+        statusSelect.required = true;
 
 
-        const statusOptions = [
+        [
             "Not Started",
             "On Progress",
             "Completed",
             "Delayed"
-        ];
+        ].forEach(function (status) {
 
+            statusSelect.appendChild(
+                createOption(
+                    status,
+                    status
+                )
+            );
 
-        statusOptions.forEach(
-            function (status) {
-
-                const option =
-                    document.createElement("option");
-
-                option.value =
-                    status;
-
-                option.textContent =
-                    status;
-
-                statusSelect.appendChild(
-                    option
-                );
-
-            }
-        );
+        });
 
 
         // =============================================
@@ -444,7 +751,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         // =============================================
-        // APPEND ELEMENTS
+        // APPEND
         // =============================================
 
         row.appendChild(
@@ -495,16 +802,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 activitySelect.innerHTML = "";
 
 
-                const placeholder =
-                    document.createElement("option");
-
-                placeholder.value = "";
-
-                placeholder.textContent =
-                    "Select Activity";
-
                 activitySelect.appendChild(
-                    placeholder
+                    createOption(
+                        "",
+                        "Select Activity"
+                    )
                 );
 
 
@@ -515,10 +817,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 plannedInput.value =
                     "";
 
-                unitInput.value =
+                quantityInput.value =
                     "";
 
-                quantityInput.value =
+                unitInput.value =
                     "";
 
                 progressInput.value =
@@ -541,8 +843,15 @@ document.addEventListener("DOMContentLoaded", function () {
                     getMasterSchedule().filter(
                         function (item) {
 
-                            return item.workPackage ===
-                                selectedPackage;
+                            return (
+                                item.workPackage ===
+                                selectedPackage &&
+                                !String(
+                                    item.workPackage
+                                )
+                                .toLowerCase()
+                                .includes("pemipaan")
+                            );
 
                         }
                     );
@@ -551,16 +860,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 activities.forEach(
                     function (item) {
 
+                        const label =
+                            item.activity +
+                            " — Plan: " +
+                            item.plannedQuantity +
+                            " " +
+                            item.quantityUnit;
+
+
                         const option =
-                            document.createElement(
-                                "option"
+                            createOption(
+                                item.activityId,
+                                label
                             );
 
-                        option.value =
-                            item.activityId;
-
-                        option.textContent =
-                            item.activity;
 
                         activitySelect.appendChild(
                             option
@@ -618,38 +931,13 @@ document.addEventListener("DOMContentLoaded", function () {
                         "0";
 
                     return;
+
                 }
 
-
-                // -------------------------------------
-                // STORE ACTIVITY ID
-                // -------------------------------------
 
                 row.dataset.activityId =
                     selectedActivity.activityId;
 
-
-                // -------------------------------------
-                // PLANNED QUANTITY
-                // -------------------------------------
-
-                plannedInput.value =
-                    selectedActivity.plannedQuantity ??
-                    0;
-
-
-                // -------------------------------------
-                // UNIT
-                // -------------------------------------
-
-                unitInput.value =
-                    selectedActivity.quantityUnit ||
-                    "";
-
-
-                // -------------------------------------
-                // WEIGHT
-                // -------------------------------------
 
                 row.dataset.weight =
                     Number(
@@ -657,17 +945,16 @@ document.addEventListener("DOMContentLoaded", function () {
                     );
 
 
-                // -------------------------------------
-                // RESET ACTUAL
-                // -------------------------------------
+                plannedInput.value =
+                    selectedActivity.plannedQuantity ?? 0;
+
+
+                unitInput.value =
+                    selectedActivity.quantityUnit || "";
+
 
                 quantityInput.value =
                     "";
-
-
-                // -------------------------------------
-                // RESET PROGRESS
-                // -------------------------------------
 
                 progressInput.value =
                     "0.00";
@@ -683,7 +970,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         // =============================================
-        // ACTUAL TODAY → DAILY PROGRESS
+        // ACTUAL → DAILY PROGRESS
         // =============================================
 
         quantityInput.addEventListener(
@@ -711,7 +998,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         // =============================================
-        // REMOVE ACTIVITY
+        // REMOVE
         // =============================================
 
         removeButton.addEventListener(
@@ -730,6 +1017,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         return row;
+
     }
 
 
@@ -760,7 +1048,9 @@ document.addEventListener("DOMContentLoaded", function () {
             !quantityInput ||
             !progressInput
         ) {
+
             return;
+
         }
 
 
@@ -768,7 +1058,6 @@ document.addEventListener("DOMContentLoaded", function () {
             parseNumber(
                 plannedInput.value
             );
-
 
         const actualToday =
             parseNumber(
@@ -785,6 +1074,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 "0.00";
 
             return;
+
         }
 
 
@@ -808,27 +1098,42 @@ document.addEventListener("DOMContentLoaded", function () {
         progressInput.value =
             progress.toFixed(2);
 
+    }
 
-        console.log(
-            "DAILY PROGRESS:",
-            {
-                planned: planned,
-                actualToday: actualToday,
-                progress: progress
-            }
-        );
+
+    // =================================================
+    // REFRESH ACTIVITY ROWS
+    // =================================================
+
+    function refreshActivityRows() {
+
+        if (!activityContainer) {
+            return;
+        }
+
+
+        activityContainer.innerHTML = "";
+
+
+        createActivityRow();
 
     }
 
 
     // =================================================
-    // MATERIAL ROW
+    // CREATE MATERIAL ROW
     // =================================================
 
     function createMaterialRow() {
 
-        if (!materialsContainer) {
-            return;
+        if (!materialContainer) {
+
+            console.error(
+                "Material container tidak ditemukan."
+            );
+
+            return null;
+
         }
 
 
@@ -838,6 +1143,10 @@ document.addEventListener("DOMContentLoaded", function () {
         row.className =
             "material-row";
 
+
+        // =============================================
+        // MATERIAL NAME
+        // =============================================
 
         const materialInput =
             document.createElement("input");
@@ -852,6 +1161,10 @@ document.addEventListener("DOMContentLoaded", function () {
             "Material";
 
 
+        // =============================================
+        // QUANTITY
+        // =============================================
+
         const quantityInput =
             document.createElement("input");
 
@@ -865,18 +1178,42 @@ document.addEventListener("DOMContentLoaded", function () {
             "Quantity";
 
 
-        const unitInput =
-            document.createElement("input");
+        // =============================================
+        // UNIT
+        // =============================================
 
-        unitInput.type =
-            "text";
+        const unitInput =
+            document.createElement("select");
 
         unitInput.className =
             "material-unit";
 
-        unitInput.placeholder =
-            "Unit";
 
+        unitInput.appendChild(
+            createOption(
+                "",
+                "Unit"
+            )
+        );
+
+
+        materialUnitOptions.forEach(
+            function (unitName) {
+
+                unitInput.appendChild(
+                    createOption(
+                        unitName,
+                        unitName
+                    )
+                );
+
+            }
+        );
+
+
+        // =============================================
+        // REMOVE
+        // =============================================
 
         const removeButton =
             document.createElement("button");
@@ -890,6 +1227,10 @@ document.addEventListener("DOMContentLoaded", function () {
         removeButton.textContent =
             "Remove";
 
+
+        // =============================================
+        // APPEND
+        // =============================================
 
         row.appendChild(
             materialInput
@@ -918,9 +1259,12 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-        materialsContainer.appendChild(
+        materialContainer.appendChild(
             row
         );
+
+
+        return row;
 
     }
 
@@ -945,118 +1289,112 @@ document.addEventListener("DOMContentLoaded", function () {
         const activities = [];
 
 
-        rows.forEach(
-            function (row) {
+        rows.forEach(function (row) {
 
-                const activityId =
-                    row.dataset.activityId ||
-                    "";
+            const activityId =
+                row.dataset.activityId || "";
 
 
-                const selectedActivity =
-                    findScheduleActivity(
-                        activityId
-                    );
-
-
-                const activitySelect =
-                    row.querySelector(
-                        ".activity-name"
-                    );
-
-                const plannedInput =
-                    row.querySelector(
-                        ".activity-planned"
-                    );
-
-                const quantityInput =
-                    row.querySelector(
-                        ".activity-quantity"
-                    );
-
-                const unitInput =
-                    row.querySelector(
-                        ".activity-unit"
-                    );
-
-                const progressInput =
-                    row.querySelector(
-                        ".activity-progress"
-                    );
-
-                const statusSelect =
-                    row.querySelector(
-                        ".activity-status"
-                    );
-
-
-                if (
-                    !activityId ||
-                    !selectedActivity
-                ) {
-                    return;
-                }
-
-
-                const quantity =
-                    parseNumber(
-                        quantityInput?.value
-                    );
-
-
-                const plannedQuantity =
-                    parseNumber(
-                        plannedInput?.value
-                    );
-
-
-                const dailyProgress =
-                    parseNumber(
-                        progressInput?.value
-                    );
-
-
-                activities.push({
-
-                    activityId:
-                        selectedActivity.activityId,
-
-                    workPackage:
-                        selectedActivity.workPackage,
-
-                    name:
-                        selectedActivity.activity,
-
-                    plannedQuantity:
-                        plannedQuantity,
-
-                    quantity:
-                        quantity,
-
-                    unit:
-                        selectedActivity.quantityUnit ||
-                        unitInput?.value ||
-                        "",
-
-                    dailyProgress:
-                        dailyProgress,
-
-                    weight:
-                        Number(
-                            selectedActivity.weight || 0
-                        ),
-
-                    status:
-                        statusSelect?.value ||
-                        "On Progress"
-
-                });
-
+            if (!activityId) {
+                return;
             }
-        );
+
+
+            const selectedActivity =
+                findScheduleActivity(
+                    activityId
+                );
+
+
+            if (!selectedActivity) {
+                return;
+            }
+
+
+            const quantityInput =
+                row.querySelector(
+                    ".activity-quantity"
+                );
+
+            const progressInput =
+                row.querySelector(
+                    ".activity-progress"
+                );
+
+            const statusSelect =
+                row.querySelector(
+                    ".activity-status"
+                );
+
+
+            const quantity =
+                parseNumber(
+                    quantityInput?.value
+                );
+
+
+            const plannedQuantity =
+                parseNumber(
+                    selectedActivity.plannedQuantity
+                );
+
+
+            const dailyProgress =
+                parseNumber(
+                    progressInput?.value
+                );
+
+
+            activities.push({
+
+                activityId:
+                    selectedActivity.activityId,
+
+                workPackage:
+                    selectedActivity.workPackage,
+
+                name:
+                    selectedActivity.activity,
+
+                activity:
+                    selectedActivity.activity,
+
+                plannedQuantity:
+                    plannedQuantity,
+
+                quantity:
+                    quantity,
+
+                actualQuantity:
+                    quantity,
+
+                unit:
+                    selectedActivity.quantityUnit ||
+                    "",
+
+                quantityUnit:
+                    selectedActivity.quantityUnit ||
+                    "",
+
+                dailyProgress:
+                    dailyProgress,
+
+                weight:
+                    Number(
+                        selectedActivity.weight || 0
+                    ),
+
+                status:
+                    statusSelect?.value ||
+                    "On Progress"
+
+            });
+
+        });
 
 
         return activities;
+
     }
 
 
@@ -1066,13 +1404,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function collectMaterials() {
 
-        if (!materialsContainer) {
+        if (!materialContainer) {
             return [];
         }
 
 
         const rows =
-            materialsContainer.querySelectorAll(
+            materialContainer.querySelectorAll(
                 ".material-row"
             );
 
@@ -1080,52 +1418,51 @@ document.addEventListener("DOMContentLoaded", function () {
         const materials = [];
 
 
-        rows.forEach(
-            function (row) {
+        rows.forEach(function (row) {
 
-                const name =
+            const name =
+                row.querySelector(
+                    ".material-name"
+                )?.value.trim() || "";
+
+
+            const quantity =
+                parseNumber(
                     row.querySelector(
-                        ".material-name"
-                    )?.value.trim() || "";
+                        ".material-quantity"
+                    )?.value
+                );
 
 
-                const quantity =
-                    parseNumber(
-                        row.querySelector(
-                            ".material-quantity"
-                        )?.value
-                    );
+            const unit =
+                row.querySelector(
+                    ".material-unit"
+                )?.value || "";
 
 
-                const unit =
-                    row.querySelector(
-                        ".material-unit"
-                    )?.value.trim() || "";
-
-
-                if (!name) {
-                    return;
-                }
-
-
-                materials.push({
-
-                    name:
-                        name,
-
-                    quantity:
-                        quantity,
-
-                    unit:
-                        unit
-
-                });
-
+            if (!name) {
+                return;
             }
-        );
+
+
+            materials.push({
+
+                name:
+                    name,
+
+                quantity:
+                    quantity,
+
+                unit:
+                    unit
+
+            });
+
+        });
 
 
         return materials;
+
     }
 
 
@@ -1146,15 +1483,88 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
             return;
+
         }
 
 
-        const reports =
-            JSON.parse(
-                localStorage.getItem(
-                    REPORT_STORAGE_KEY
-                ) || "[]"
+        // =============================================
+        // GET EXISTING REPORTS SAFELY
+        // =============================================
+
+        let reports = [];
+
+
+        try {
+
+            reports =
+                JSON.parse(
+                    localStorage.getItem(
+                        REPORT_STORAGE_KEY
+                    ) || "[]"
+                );
+
+
+            if (!Array.isArray(reports)) {
+                reports = [];
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Gagal membaca dailyReports:",
+                error
             );
+
+            reports = [];
+
+        }
+
+
+        // =============================================
+        // REPORT OBJECT
+        // =============================================
+
+        const normal =
+            parseNumber(
+                normalHours?.value
+            );
+
+        const overtime =
+            parseNumber(
+                overtimeHours?.value
+            );
+
+
+        const manpowerData = {
+
+            foreman:
+                parseNumber(
+                    foreman?.value
+                ),
+
+            headWorker:
+                parseNumber(
+                    headWorker?.value
+                ),
+
+            skilledWorker:
+                parseNumber(
+                    skilledWorker?.value
+                ),
+
+            staffOffice:
+                parseNumber(
+                    staffOffice?.value
+                )
+
+        };
+
+
+        const totalManpower =
+            manpowerData.foreman +
+            manpowerData.headWorker +
+            manpowerData.skilledWorker +
+            manpowerData.staffOffice;
 
 
         const report = {
@@ -1173,57 +1583,68 @@ document.addEventListener("DOMContentLoaded", function () {
                 weather?.value || "",
 
             location:
-                location?.value || "",
+                locationSelect?.value || "",
 
             project:
-                project?.value || "",
+                projectSelect?.value || "",
 
             unit:
-                unit?.value || "",
+                unitSelect?.value || "",
 
 
-            manpower: {
+            manpower:
+                manpowerData,
 
-                foreman:
-                    Number(
-                        foreman?.value || 0
-                    ),
 
-                headWorker:
-                    Number(
-                        headWorker?.value || 0
-                    ),
-
-                skilledWorker:
-                    Number(
-                        skilledWorker?.value || 0
-                    ),
-
-                staffOffice:
-                    Number(
-                        staffOffice?.value || 0
-                    )
-
-            },
+            totalManpower:
+                totalManpower,
 
 
             hours: {
 
                 normal:
-                    Number(
-                        normalHours?.value || 0
-                    ),
+                    normal,
 
                 overtime:
-                    Number(
-                        overtimeHours?.value || 0
-                    )
+                    overtime
 
             },
 
 
+            manhours:
+                totalManpower *
+                normal,
+
+
             activities:
                 activities,
+
+
+            // Legacy compatibility
+            activity:
+                activities.length > 0
+                    ? activities[0].name
+                    : "",
+
+            quantity:
+                activities.length > 0
+                    ? activities[0].quantity
+                    : 0,
+
+            quantityUnit:
+                activities.length > 0
+                    ? activities[0].quantityUnit
+                    : "",
+
+            dailyProgress:
+                activities.length > 0
+                    ? activities[0].dailyProgress
+                    : 0,
+
+            status:
+                activities.length > 0
+                    ? activities[0].status
+                    : "",
 
 
             materials:
@@ -1235,6 +1656,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
         };
 
+
+        // =============================================
+        // SAVE
+        // =============================================
 
         reports.push(
             report
@@ -1258,6 +1683,10 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
+        // =============================================
+        // RESET FORM
+        // =============================================
+
         if (reportForm) {
 
             reportForm.reset();
@@ -1265,20 +1694,94 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        if (activityContainer) {
+        // =============================================
+        // RESTORE DROPDOWN STATE
+        // =============================================
 
-            activityContainer.innerHTML = "";
+        updateProjects();
 
-            createActivityRow();
+
+        // =============================================
+        // RESET MATERIALS
+        // =============================================
+
+        if (materialContainer) {
+
+            materialContainer.innerHTML = "";
 
         }
 
+    }
 
-        if (materialsContainer) {
 
-            materialsContainer.innerHTML = "";
+    // =================================================
+    // LOCATION CHANGE
+    // =================================================
 
-        }
+    if (locationSelect) {
+
+        locationSelect.addEventListener(
+            "change",
+            function () {
+
+                console.log(
+                    "Location changed:",
+                    locationSelect.value
+                );
+
+
+                updateProjects();
+
+            }
+        );
+
+    }
+
+
+    // =================================================
+    // PROJECT CHANGE
+    // =================================================
+
+    if (projectSelect) {
+
+        projectSelect.addEventListener(
+            "change",
+            function () {
+
+                console.log(
+                    "Project changed:",
+                    projectSelect.value
+                );
+
+
+                updateUnits();
+
+            }
+        );
+
+    }
+
+
+    // =================================================
+    // UNIT CHANGE
+    // =================================================
+
+    if (unitSelect) {
+
+        unitSelect.addEventListener(
+            "change",
+            function () {
+
+                console.log(
+                    "Unit changed:",
+                    unitSelect.value
+                );
+
+
+                refreshActivityRows();
+
+            }
+        );
 
     }
 
@@ -1289,13 +1792,31 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (addActivityButton) {
 
+        addActivityButton.type =
+            "button";
+
+
         addActivityButton.addEventListener(
             "click",
-            function () {
+            function (event) {
+
+                event.preventDefault();
+
+
+                console.log(
+                    "ADD ACTIVITY CLICKED"
+                );
+
 
                 createActivityRow();
 
             }
+        );
+
+    } else {
+
+        console.warn(
+            "Tombol Add Activity tidak ditemukan."
         );
 
     }
@@ -1307,13 +1828,31 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (addMaterialButton) {
 
+        addMaterialButton.type =
+            "button";
+
+
         addMaterialButton.addEventListener(
             "click",
-            function () {
+            function (event) {
+
+                event.preventDefault();
+
+
+                console.log(
+                    "ADD MATERIAL CLICKED"
+                );
+
 
                 createMaterialRow();
 
             }
+        );
+
+    } else {
+
+        console.warn(
+            "Tombol Add Material tidak ditemukan."
         );
 
     }
@@ -1331,35 +1870,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 event.preventDefault();
 
-                saveReport();
 
-            }
-        );
+                console.log(
+                    "FORM SUBMIT"
+                );
 
-    }
-
-
-    // =================================================
-    // SAVE BUTTON FALLBACK
-    // =================================================
-
-    const saveButton =
-        document.getElementById("saveReport") ||
-        document.querySelector(
-            '[type="submit"]'
-        );
-
-
-    if (
-        saveButton &&
-        !reportForm
-    ) {
-
-        saveButton.addEventListener(
-            "click",
-            function (event) {
-
-                event.preventDefault();
 
                 saveReport();
 
@@ -1370,8 +1885,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // =================================================
-    // INITIAL ACTIVITY ROW
+    // INITIALIZE
     // =================================================
+
+    updateProjects();
+
 
     if (
         activityContainer &&
@@ -1383,18 +1901,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // =================================================
-    // INITIAL MATERIAL ROW
-    // =================================================
-
-    /*
-     * Material row tidak dibuat otomatis
-     * supaya form tetap bersih.
-     */
-
-
     console.log(
-        "Daily Report JS loaded successfully."
+        "Daily Report System initialized successfully."
     );
 
 });
