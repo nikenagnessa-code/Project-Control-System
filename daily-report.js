@@ -6,7 +6,138 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // ==============================
-    // MATERIAL - ADD NEW ROW
+    // BASIC INFORMATION
+    // ==============================
+
+    const locationSelect = document.getElementById("location");
+    const projectSelect = document.getElementById("project");
+    const unitSelect = document.getElementById("unit");
+
+
+    // Project berdasarkan lokasi
+    const projectOptions = {
+
+        Kalimantan: [
+            "Rumah Dinas Type 200"
+        ],
+
+        Tasikmalaya: [
+            "Tasikmalaya Project"
+        ]
+
+    };
+
+
+    // ==============================
+    // UPDATE PROJECT
+    // ==============================
+
+    function updateProjects() {
+
+        const location = locationSelect.value;
+
+        projectSelect.innerHTML = `
+            <option value="">
+                Select Project
+            </option>
+        `;
+
+        unitSelect.innerHTML = `
+            <option value="">
+                Select Unit
+            </option>
+        `;
+
+
+        if (!location || !projectOptions[location]) {
+            return;
+        }
+
+
+        projectOptions[location].forEach(function (project) {
+
+            const option = document.createElement("option");
+
+            option.value = project;
+            option.textContent = project;
+
+            projectSelect.appendChild(option);
+
+        });
+
+    }
+
+
+    // ==============================
+    // UPDATE UNIT
+    // ==============================
+
+    function updateUnits() {
+
+        const location = locationSelect.value;
+
+        unitSelect.innerHTML = `
+            <option value="">
+                Select Unit
+            </option>
+        `;
+
+
+        let unitCount = 0;
+
+
+        if (location === "Kalimantan") {
+
+            unitCount = 8;
+
+        } else if (location === "Tasikmalaya") {
+
+            unitCount = 15;
+
+        }
+
+
+        for (let i = 1; i <= unitCount; i++) {
+
+            const unitNumber = String(i).padStart(2, "0");
+
+            const option = document.createElement("option");
+
+            option.value = `Unit ${unitNumber}`;
+            option.textContent = `Unit ${unitNumber}`;
+
+            unitSelect.appendChild(option);
+
+        }
+
+    }
+
+
+    // ==============================
+    // LOCATION CHANGE
+    // ==============================
+
+    locationSelect.addEventListener("change", function () {
+
+        updateProjects();
+        updateUnits();
+
+    });
+
+
+    // ==============================
+    // PROJECT CHANGE
+    // ==============================
+
+    projectSelect.addEventListener("change", function () {
+
+        updateUnits();
+
+    });
+
+
+    // ==============================
+    // MATERIAL
     // ==============================
 
     const materialContainer =
@@ -16,14 +147,13 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("addMaterialBtn");
 
 
-    addMaterialBtn.addEventListener("click", function () {
+    function addMaterialRow() {
 
-        const materialRow =
-            document.createElement("div");
+        const row = document.createElement("div");
 
-        materialRow.className = "material-row";
+        row.className = "material-row";
 
-        materialRow.innerHTML = `
+        row.innerHTML = `
 
             <div class="form-group">
 
@@ -59,7 +189,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 <select class="material-unit">
 
-                    <option value="">Select Unit</option>
+                    <option value="">
+                        Select Unit
+                    </option>
+
                     <option>kg</option>
                     <option>ton</option>
                     <option>m³</option>
@@ -84,16 +217,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
         `;
 
-        materialContainer.appendChild(materialRow);
+
+        materialContainer.appendChild(row);
+
+    }
+
+
+    addMaterialBtn.addEventListener("click", function () {
+
+        addMaterialRow();
 
     });
 
 
     // ==============================
-    // MATERIAL - REMOVE ROW
+    // REMOVE MATERIAL
     // ==============================
 
-    document.addEventListener("click", function (event) {
+    materialContainer.addEventListener("click", function (event) {
 
         if (
             event.target.classList.contains(
@@ -101,12 +242,18 @@ document.addEventListener("DOMContentLoaded", function () {
             )
         ) {
 
-            const row =
-                event.target.closest(".material-row");
+            const rows =
+                materialContainer.querySelectorAll(
+                    ".material-row"
+                );
 
-            if (row) {
 
-                row.remove();
+            // Minimal satu baris material tetap tersedia
+            if (rows.length > 1) {
+
+                event.target
+                    .closest(".material-row")
+                    .remove();
 
             }
 
@@ -116,7 +263,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // ==============================
-    // FORM SUBMIT
+    // SAVE DAILY REPORT
     // ==============================
 
     form.addEventListener("submit", function (event) {
@@ -124,125 +271,137 @@ document.addEventListener("DOMContentLoaded", function () {
         event.preventDefault();
 
 
-        // ==============================
-        // BASIC INFORMATION
-        // ==============================
+        // ------------------------------
+        // Basic Information
+        // ------------------------------
 
-        const report = {
+        const date =
+            document.getElementById("reportDate").value;
 
-            date:
-                document.getElementById("reportDate").value,
+        const location =
+            document.getElementById("location").value;
 
-            project:
-                document.getElementById("project").value,
+        const project =
+            document.getElementById("project").value;
 
-            unit:
-                document.getElementById("unit").value,
+        const unit =
+            document.getElementById("unit").value;
 
-            weather:
-                document.getElementById("weather").value,
-
-
-            // ==============================
-            // MANPOWER
-            // ==============================
-
-            foreman:
-                Number(document.getElementById("foreman").value || 0),
-
-            headWorker:
-                Number(document.getElementById("headWorker").value || 0),
-
-            skilledWorker:
-                Number(document.getElementById("skilledWorker").value || 0),
-
-            staffOffice:
-                Number(document.getElementById("staffOffice").value || 0),
+        const weather =
+            document.getElementById("weather").value;
 
 
-            // ==============================
-            // WORKING HOURS
-            // ==============================
+        // ------------------------------
+        // Manpower
+        // ------------------------------
 
-            normalHours:
-                Number(document.getElementById("normalHours").value || 0),
+        const foreman =
+            Number(
+                document.getElementById("foreman").value
+            ) || 0;
 
-            overtimeHours:
-                Number(document.getElementById("overtimeHours").value || 0),
+        const headWorker =
+            Number(
+                document.getElementById("headWorker").value
+            ) || 0;
 
+        const skilledWorker =
+            Number(
+                document.getElementById("skilledWorker").value
+            ) || 0;
 
-            // ==============================
-            // WORK ACTIVITIES
-            // ==============================
-
-            activity:
-                document.getElementById("activity").value,
-
-            status:
-                document.getElementById("status").value,
-
-
-            // ==============================
-            // MATERIALS
-            // ==============================
-
-            materials: [],
+        const staffOffice =
+            Number(
+                document.getElementById("staffOffice").value
+            ) || 0;
 
 
-            // ==============================
-            // DAILY NOTES
-            // ==============================
+        const normalHours =
+            Number(
+                document.getElementById("normalHours").value
+            ) || 0;
 
-            notes:
-                document.getElementById("notes").value
+        const overtimeHours =
+            Number(
+                document.getElementById("overtimeHours").value
+            ) || 0;
 
-        };
+
+        const totalManpower =
+            foreman +
+            headWorker +
+            skilledWorker +
+            staffOffice;
 
 
-        // ==============================
-        // COLLECT MATERIALS
-        // ==============================
+        const normalManhours =
+            totalManpower * normalHours;
+
+        const overtimeManhours =
+            totalManpower * overtimeHours;
+
+        const totalManhours =
+            normalManhours +
+            overtimeManhours;
+
+
+        // ------------------------------
+        // Work Activity
+        // ------------------------------
+
+        const activity =
+            document.getElementById("activity").value;
+
+        const status =
+            document.getElementById("status").value;
+
+
+        // ------------------------------
+        // Materials
+        // ------------------------------
 
         const materialRows =
-            document.querySelectorAll(".material-row");
+            materialContainer.querySelectorAll(
+                ".material-row"
+            );
+
+
+        const materials = [];
 
 
         materialRows.forEach(function (row) {
 
             const name =
-                row
-                    .querySelector(".material-name")
-                    .value
-                    .trim();
+                row.querySelector(
+                    ".material-name"
+                ).value.trim();
 
 
             const quantity =
-                row
-                    .querySelector(".material-quantity")
-                    .value;
+                Number(
+                    row.querySelector(
+                        ".material-quantity"
+                    ).value
+                ) || 0;
 
 
-            const unit =
-                row
-                    .querySelector(".material-unit")
-                    .value;
+            const materialUnit =
+                row.querySelector(
+                    ".material-unit"
+                ).value;
 
 
-            // Only save completed material rows
+            // Hanya simpan material
+            // yang memiliki nama
+            if (name !== "") {
 
-            if (
-                name !== "" &&
-                quantity !== "" &&
-                unit !== ""
-            ) {
-
-                report.materials.push({
+                materials.push({
 
                     name: name,
 
-                    quantity: Number(quantity),
+                    quantity: quantity,
 
-                    unit: unit
+                    unit: materialUnit
 
                 });
 
@@ -251,51 +410,76 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
 
-        // ==============================
-        // TOTAL MANPOWER
-        // ==============================
+        // ------------------------------
+        // Notes
+        // ------------------------------
 
-        report.totalManpower =
-
-            report.foreman +
-
-            report.headWorker +
-
-            report.skilledWorker +
-
-            report.staffOffice;
+        const notes =
+            document.getElementById("notes").value;
 
 
         // ==============================
-        // MAN-HOURS
+        // REPORT OBJECT
         // ==============================
 
-        report.normalManhours =
+        const report = {
 
-            report.totalManpower *
-            report.normalHours;
+            date: date,
+
+            location: location,
+
+            project: project,
+
+            unit: unit,
+
+            weather: weather,
 
 
-        report.overtimeManhours =
+            foreman: foreman,
 
-            report.totalManpower *
-            report.overtimeHours;
+            headWorker: headWorker,
+
+            skilledWorker: skilledWorker,
+
+            staffOffice: staffOffice,
 
 
-        report.totalManhours =
+            normalHours: normalHours,
 
-            report.normalManhours +
-            report.overtimeManhours;
+            overtimeHours: overtimeHours,
+
+
+            totalManpower: totalManpower,
+
+            normalManhours: normalManhours,
+
+            overtimeManhours: overtimeManhours,
+
+            totalManhours: totalManhours,
+
+
+            activity: activity,
+
+            status: status,
+
+
+            materials: materials,
+
+
+            notes: notes
+
+        };
 
 
         // ==============================
-        // SAVE REPORT
+        // LOCAL STORAGE
         // ==============================
 
         let reports =
-
             JSON.parse(
-                localStorage.getItem("dailyReports")
+                localStorage.getItem(
+                    "dailyReports"
+                )
             ) || [];
 
 
@@ -303,26 +487,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         localStorage.setItem(
-
             "dailyReports",
-
             JSON.stringify(reports)
-
         );
 
 
         // ==============================
-        // SUCCESS MESSAGE
+        // SUCCESS
         // ==============================
 
         alert(
             "Daily Report berhasil disimpan!"
         );
 
-
-        // ==============================
-        // REDIRECT
-        // ==============================
 
         window.location.assign(
             "./daily-monitoring.html"
