@@ -2,126 +2,348 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <title>Daily Monitoring - Project Control System</title>
+    <title>
+        Daily Monitoring - Project Control System
+    </title>
 
-    <link rel="stylesheet" href="style.css">
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
 </head>
 
+
 <body>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
 
     <header class="top-header">
 
         <div>
-            <h1>PROJECT CONTROL SYSTEM</h1>
-            <p>Digital Project Monitoring & Reporting Prototype</p>
+
+            <h1>
+                PROJECT CONTROL SYSTEM
+            </h1>
+
+            <p>
+                Digital Project Monitoring & Reporting Prototype
+            </p>
+
         </div>
 
-        <a href="index.html" class="back-button">
+
+        <a
+            href="index.html"
+            class="back-button"
+        >
             ← Dashboard
         </a>
 
     </header>
 
 
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
     <main class="container">
 
-        <!-- PAGE HEADER -->
+
+        <!-- =================================================
+             PAGE HEADER
+        ================================================== -->
 
         <section class="page-header">
 
             <div>
-                <h2>Daily Monitoring</h2>
+
+                <h2>
+                    Daily Monitoring
+                </h2>
 
                 <p>
                     Daily field monitoring for project activities,
                     manpower, material and site conditions.
                 </p>
+
             </div>
 
-            <a href="add-daily-report.html" class="primary-button">
+
+            <a
+                href="add-daily-report.html"
+                class="primary-button"
+            >
                 + Add Daily Report
             </a>
 
         </section>
 
 
-        <!-- SUMMARY -->
+
+        <!-- =================================================
+             FILTER
+        ================================================== -->
 
         <section class="content-card filter-card">
-    <div class="filter-grid">
 
-        <div class="form-group">
-            <label for="dateFilter">Monitoring Date</label>
-            <input type="date" id="dateFilter">
-        </div>
-
-        <div class="form-group">
-            <label for="unitFilter">Unit</label>
-            <select id="unitFilter">
-                <option value="All">All Units</option>
-                <option value="Unit 01">Unit 01</option>
-                <option value="Unit 02">Unit 02</option>
-                <option value="Unit 03">Unit 03</option>
-                <option value="Unit 04">Unit 04</option>
-                <option value="Unit 05">Unit 05</option>
-                <option value="Unit 06">Unit 06</option>
-                <option value="Unit 07">Unit 07</option>
-                <option value="Unit 08">Unit 08</option>
-            </select>
-        </div>
-
-    </div>
-</section>
-        <section class="kpi-grid">
-
-            <div class="kpi-card">
-                <span>Total Manpower</span>
-                <strong>24</strong>
-                <small>People today</small>
-            </div>
+            <div class="filter-grid">
 
 
-            <div class="kpi-card">
-                <span>Total Man-hours</span>
-                <strong>192</strong>
-                <small>Hours today</small>
-            </div>
+                <!-- DATE -->
+
+                <div class="form-group">
+
+                    <label for="dateFilter">
+                        Monitoring Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="dateFilter"
+                    >
+
+                </div>
 
 
-            <div class="kpi-card">
-                <span>On Progress</span>
-                <strong>8</strong>
-                <small>Activities</small>
-            </div>
+
+                <!-- LOCATION -->
+
+                <div class="form-group">
+
+                    <label for="locationFilter">
+                        Location
+                    </label>
+
+                    <select id="locationFilter">
+
+                        <option value="All">
+                            All Locations
+                        </option>
+
+                        <option value="Kalimantan">
+                            Kalimantan
+                        </option>
+
+                        <option value="Tasikmalaya">
+                            Tasikmalaya
+                        </option>
+
+                    </select>
+
+                </div>
 
 
-            <div class="kpi-card">
-                <span>Completed</span>
-                <strong>5</strong>
-                <small>Activities</small>
+
+                <!-- PROJECT -->
+
+                <div class="form-group">
+
+                    <label for="projectFilter">
+                        Project
+                    </label>
+
+                    <select id="projectFilter">
+
+                        <option value="All">
+                            All Projects
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <!-- UNIT -->
+
+                <div class="form-group">
+
+                    <label for="unitFilter">
+                        Unit
+                    </label>
+
+                    <select id="unitFilter">
+
+                        <option value="All">
+                            All Units
+                        </option>
+
+                    </select>
+
+                </div>
+
+
             </div>
 
         </section>
 
 
-        <!-- RECENT REPORTS -->
+
+        <!-- =================================================
+             KPI
+        ================================================== -->
+
+        <section class="kpi-grid">
+
+
+            <!-- TOTAL MANPOWER -->
+
+            <div class="kpi-card">
+
+                <span>
+                    Total Manpower
+                </span>
+
+                <strong id="totalManpower">
+                    0
+                </strong>
+
+                <small>
+                    People
+                </small>
+
+            </div>
+
+
+
+            <!-- NORMAL MAN-HOURS -->
+
+            <div class="kpi-card">
+
+                <span>
+                    Normal Man-hours
+                </span>
+
+                <strong id="normalManhours">
+                    0
+                </strong>
+
+                <small>
+                    Hours
+                </small>
+
+            </div>
+
+
+
+            <!-- OVERTIME -->
+
+            <div class="kpi-card">
+
+                <span>
+                    Overtime Man-hours
+                </span>
+
+                <strong id="overtimeManhours">
+                    0
+                </strong>
+
+                <small>
+                    Hours
+                </small>
+
+            </div>
+
+
+
+            <!-- TOTAL MAN-HOURS -->
+
+            <div class="kpi-card">
+
+                <span>
+                    Total Man-hours
+                </span>
+
+                <strong id="totalManhours">
+                    0
+                </strong>
+
+                <small>
+                    Hours
+                </small>
+
+            </div>
+
+
+
+            <!-- ON PROGRESS -->
+
+            <div class="kpi-card">
+
+                <span>
+                    On Progress
+                </span>
+
+                <strong id="onProgress">
+                    0
+                </strong>
+
+                <small>
+                    Activities
+                </small>
+
+            </div>
+
+
+
+            <!-- COMPLETED -->
+
+            <div class="kpi-card">
+
+                <span>
+                    Completed
+                </span>
+
+                <strong id="completed">
+                    0
+                </strong>
+
+                <small>
+                    Activities
+                </small>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             RECENT DAILY REPORTS
+        ================================================== -->
 
         <section class="content-card">
+
 
             <div class="section-title">
 
                 <div>
-                    <h3>Recent Daily Reports</h3>
+
+                    <h3>
+                        Recent Daily Reports
+                    </h3>
 
                     <p>
                         Latest field monitoring records
                     </p>
+
                 </div>
 
             </div>
+
 
 
             <div class="table-wrapper">
@@ -131,12 +353,43 @@
                     <thead>
 
                         <tr>
-                            <th>Date</th>
-                            <th>Project / Unit</th>
-                            <th>Weather</th>
-                            <th>Manpower</th>
-                            <th>Activities</th>
-                            <th>Status</th>
+
+                            <th>
+                                Date
+                            </th>
+
+                            <th>
+                                Location
+                            </th>
+
+                            <th>
+                                Project
+                            </th>
+
+                            <th>
+                                Unit
+                            </th>
+
+                            <th>
+                                Weather
+                            </th>
+
+                            <th>
+                                Manpower
+                            </th>
+
+                            <th>
+                                Man-hours
+                            </th>
+
+                            <th>
+                                Activities
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
                         </tr>
 
                     </thead>
@@ -152,12 +405,80 @@
 
         </section>
 
+
+
+        <!-- =================================================
+             MATERIAL SUMMARY
+        ================================================== -->
+
+        <section class="content-card">
+
+
+            <div class="section-title">
+
+                <div>
+
+                    <h3>
+                        Material Summary
+                    </h3>
+
+                    <p>
+                        Materials reported for the selected
+                        monitoring period.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Material
+                            </th>
+
+                            <th>
+                                Quantity
+                            </th>
+
+                            <th>
+                                Unit
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="materialTableBody">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
     </main>
 
 
-    <!-- DAILY MONITORING JAVASCRIPT -->
 
-    <script src="daily-monitoring.js"></script>
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script src="./daily-monitoring.js?v=2"></script>
+
 
 </body>
 
