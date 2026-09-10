@@ -4,38 +4,117 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (!tableBody) return;
 
-    // Ambil data daily report dari localStorage
     const reports = JSON.parse(
         localStorage.getItem("dailyReports")
     ) || [];
 
-    // Jika belum ada data
+    // =========================
+    // KPI ELEMENTS
+    // =========================
+
+    const kpiCards = document.querySelectorAll(".kpi-card");
+
+    const manpowerElement = kpiCards[0]?.querySelector("strong");
+    const manhoursElement = kpiCards[1]?.querySelector("strong");
+    const progressElement = kpiCards[2]?.querySelector("strong");
+    const completedElement = kpiCards[3]?.querySelector("strong");
+
+
+    // =========================
+    // EMPTY DATA
+    // =========================
+
     if (reports.length === 0) {
 
         tableBody.innerHTML = `
             <tr>
-                <td colspan="6" style="text-align: center; padding: 30px;">
+                <td colspan="6" style="text-align:center; padding:30px;">
                     No daily reports available.
                 </td>
             </tr>
         `;
 
+        if (manpowerElement) manpowerElement.textContent = "0";
+        if (manhoursElement) manhoursElement.textContent = "0";
+        if (progressElement) progressElement.textContent = "0";
+        if (completedElement) completedElement.textContent = "0";
+
         return;
     }
 
-    // Tampilkan laporan terbaru di paling atas
-    reports.reverse();
+
+    // =========================
+    // CALCULATE KPI
+    // =========================
+
+    let totalManpower = 0;
+    let totalManhours = 0;
+    let onProgress = 0;
+    let completed = 0;
 
     reports.forEach(function (report) {
 
-        // Hitung total manpower
-        const totalManpower =
+        const manpower =
             Number(report.foreman || 0) +
             Number(report.headWorker || 0) +
             Number(report.skilledWorker || 0) +
             Number(report.laborer || 0);
 
-        // Tentukan icon cuaca
+        const workingHours =
+            Number(report.workingHours || 0);
+
+        totalManpower += manpower;
+
+        totalManhours += manpower * workingHours;
+
+        if (report.status === "On Progress") {
+            onProgress++;
+        }
+
+        if (report.status === "Completed") {
+            completed++;
+        }
+
+    });
+
+
+    // =========================
+    // UPDATE KPI
+    // =========================
+
+    if (manpowerElement) {
+        manpowerElement.textContent = totalManpower;
+    }
+
+    if (manhoursElement) {
+        manhoursElement.textContent = totalManhours;
+    }
+
+    if (progressElement) {
+        progressElement.textContent = onProgress;
+    }
+
+    if (completedElement) {
+        completedElement.textContent = completed;
+    }
+
+
+    // =========================
+    // DISPLAY TABLE
+    // =========================
+
+    tableBody.innerHTML = "";
+
+    const sortedReports = [...reports].reverse();
+
+    sortedReports.forEach(function (report) {
+
+        const manpower =
+            Number(report.foreman || 0) +
+            Number(report.headWorker || 0) +
+            Number(report.skilledWorker || 0) +
+            Number(report.laborer || 0);
+
         let weatherIcon = "🌤️";
 
         if (report.weather === "Clear") {
@@ -48,14 +127,12 @@ document.addEventListener("DOMContentLoaded", function () {
             weatherIcon = "⛈️";
         }
 
-        // Tentukan class status
         let statusClass = "status-progress";
 
         if (report.status === "Completed") {
             statusClass = "status-completed";
         }
 
-        // Buat baris tabel
         const row = document.createElement("tr");
 
         row.innerHTML = `
@@ -67,11 +144,12 @@ document.addEventListener("DOMContentLoaded", function () {
             </td>
 
             <td>
-                ${weatherIcon} ${report.weather || "-"}
+                ${weatherIcon}
+                ${report.weather || "-"}
             </td>
 
             <td>
-                ${totalManpower}
+                ${manpower}
             </td>
 
             <td>
