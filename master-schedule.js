@@ -476,3 +476,56 @@ const masterSchedule = [
     }
 
 ];
+    // =========================
+    // PASANGAN
+    // =========================
+
+    {
+        id: "ARS-DIN-001",
+        category: "Arsitektur",
+        workPackage: "Pasangan",
+        activity: "Pasangan Dinding Bata",
+        plannedQuantity: 492.1689,
+        unit: "m²",
+        weightPercent: 6.147071
+    },
+
+    {
+        id: "ARS-DIN-002",
+        category: "Arsitektur",
+        workPackage: "Pasangan",
+        activity: "Plesteran",
+        plannedQuantity: 984.3378,
+        unit: "m²",
+        weightPercent: 4.085166
+    },
+
+    {
+        id: "ARS-DIN-003",
+        category: "Arsitektur",
+        workPackage: "Pasangan",
+        activity: "Acian",
+        plannedQuantity: 984.3378,
+        unit: "m²",
+        weightPercent: 3.414756
+    },
+
+    {
+        id: "ARS-DIN-004",
+        category: "Arsitektur",
+        workPackage: "Pasangan",
+        activity: "Balok Praktis",
+        plannedQuantity: 26.91,
+        unit: "m'",
+        weightPercent: 0.194524
+    },
+
+    {
+        id: "ARS-DIN-005",
+        category: "Arsitektur",
+        workPackage: "Pasangan",
+        activity: "Kolom Praktis",
+        plannedQuantity: 99.22,
+        unit: "m'",
+        weightPercent: 0.717231
+    },
