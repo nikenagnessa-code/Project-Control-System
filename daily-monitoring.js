@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
 
     // =====================================================
-    // LOAD DATA
+    // LOAD REPORT DATA
     // =====================================================
 
     let reports =
@@ -83,41 +83,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // =====================================================
-    // UPDATE LOCATION
-    // =====================================================
-
-    function updateLocationFilter() {
-
-        if (!locationFilter) return;
-
-        locationFilter.innerHTML = `
-            <option value="">All Locations</option>
-            <option value="Kalimantan">Kalimantan</option>
-            <option value="Tasikmalaya">Tasikmalaya</option>
-        `;
-
-    }
-
-
-    // =====================================================
-    // UPDATE PROJECT
+    // UPDATE PROJECT FILTER
     // =====================================================
 
     function updateProjectFilter() {
-
-        if (!projectFilter) return;
 
         const location =
             locationFilter.value;
 
         projectFilter.innerHTML =
-            `<option value="">All Projects</option>`;
+            `<option value="All">All Projects</option>`;
 
         unitFilter.innerHTML =
-            `<option value="">All Units</option>`;
+            `<option value="All">All Units</option>`;
 
 
-        if (!location || !projectData[location]) {
+        if (
+            location === "All" ||
+            !projectData[location]
+        ) {
             return;
         }
 
@@ -140,12 +124,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // =====================================================
-    // UPDATE UNIT
+    // UPDATE UNIT FILTER
     // =====================================================
 
     function updateUnitFilter() {
-
-        if (!unitFilter) return;
 
         const location =
             locationFilter.value;
@@ -153,14 +135,13 @@ document.addEventListener("DOMContentLoaded", function () {
         const project =
             projectFilter.value;
 
-
         unitFilter.innerHTML =
-            `<option value="">All Units</option>`;
+            `<option value="All">All Units</option>`;
 
 
         if (
-            !location ||
-            !project ||
+            location === "All" ||
+            project === "All" ||
             !projectData[location] ||
             !projectData[location][project]
         ) {
@@ -190,47 +171,39 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function getFilteredReports() {
 
-        const date =
-            dateFilter
-                ? dateFilter.value
-                : "";
+        const selectedDate =
+            dateFilter.value;
 
-        const location =
-            locationFilter
-                ? locationFilter.value
-                : "";
+        const selectedLocation =
+            locationFilter.value;
 
-        const project =
-            projectFilter
-                ? projectFilter.value
-                : "";
+        const selectedProject =
+            projectFilter.value;
 
-        const unit =
-            unitFilter
-                ? unitFilter.value
-                : "";
+        const selectedUnit =
+            unitFilter.value;
 
 
         return reports.filter(function (report) {
 
             const dateMatch =
-                !date ||
-                report.date === date;
+                !selectedDate ||
+                report.date === selectedDate;
 
 
             const locationMatch =
-                !location ||
-                report.location === location;
+                selectedLocation === "All" ||
+                report.location === selectedLocation;
 
 
             const projectMatch =
-                !project ||
-                report.project === project;
+                selectedProject === "All" ||
+                report.project === selectedProject;
 
 
             const unitMatch =
-                !unit ||
-                report.unit === unit;
+                selectedUnit === "All" ||
+                report.unit === selectedUnit;
 
 
             return (
@@ -283,49 +256,61 @@ document.addEventListener("DOMContentLoaded", function () {
             if (
                 status.includes("progress")
             ) {
+
                 onProgress++;
 
-            } else if (
-                status.includes("complete") ||
-                status.includes("completed")
+            }
+
+
+            if (
+                status.includes("complete")
             ) {
+
                 completed++;
+
             }
 
         });
 
 
-        const kpiCards =
-            document.querySelectorAll(".kpi-card");
+        // =================================================
+        // UPDATE HTML KPI DIRECTLY
+        // =================================================
+
+        document.getElementById(
+            "totalManpower"
+        ).textContent =
+            totalManpower.toLocaleString("id-ID");
 
 
-        if (kpiCards.length >= 6) {
+        document.getElementById(
+            "normalManhours"
+        ).textContent =
+            normalManhours.toLocaleString("id-ID");
 
-            kpiCards[0]
-                .querySelector(".kpi-value")
-                .textContent = totalManpower;
 
-            kpiCards[1]
-                .querySelector(".kpi-value")
-                .textContent = normalManhours.toLocaleString();
+        document.getElementById(
+            "overtimeManhours"
+        ).textContent =
+            overtimeManhours.toLocaleString("id-ID");
 
-            kpiCards[2]
-                .querySelector(".kpi-value")
-                .textContent = overtimeManhours.toLocaleString();
 
-            kpiCards[3]
-                .querySelector(".kpi-value")
-                .textContent = totalManhours.toLocaleString();
+        document.getElementById(
+            "totalManhours"
+        ).textContent =
+            totalManhours.toLocaleString("id-ID");
 
-            kpiCards[4]
-                .querySelector(".kpi-value")
-                .textContent = onProgress;
 
-            kpiCards[5]
-                .querySelector(".kpi-value")
-                .textContent = completed;
+        document.getElementById(
+            "onProgress"
+        ).textContent =
+            onProgress;
 
-        }
+
+        document.getElementById(
+            "completed"
+        ).textContent =
+            completed;
 
     }
 
@@ -337,12 +322,9 @@ document.addEventListener("DOMContentLoaded", function () {
     function updateReportTable(filteredReports) {
 
         const tbody =
-            document.querySelector(
-                "#reportTable tbody"
+            document.getElementById(
+                "reportTableBody"
             );
-
-
-        if (!tbody) return;
 
 
         tbody.innerHTML = "";
@@ -359,6 +341,7 @@ document.addEventListener("DOMContentLoaded", function () {
             `;
 
             return;
+
         }
 
 
@@ -368,33 +351,43 @@ document.addEventListener("DOMContentLoaded", function () {
                 document.createElement("tr");
 
 
-            const totalManpower =
-                Number(report.totalManpower) || 0;
-
-
-            const totalManhours =
-                Number(report.totalManhours) || 0;
-
-
             row.innerHTML = `
 
-                <td>${report.date || "-"}</td>
+                <td>
+                    ${report.date || "-"}
+                </td>
 
-                <td>${report.location || "-"}</td>
+                <td>
+                    ${report.location || "-"}
+                </td>
 
-                <td>${report.project || "-"}</td>
+                <td>
+                    ${report.project || "-"}
+                </td>
 
-                <td>${report.unit || "-"}</td>
+                <td>
+                    ${report.unit || "-"}
+                </td>
 
-                <td>${report.weather || "-"}</td>
+                <td>
+                    ${report.weather || "-"}
+                </td>
 
-                <td>${totalManpower}</td>
+                <td>
+                    ${report.totalManpower || 0}
+                </td>
 
-                <td>${totalManhours}</td>
+                <td>
+                    ${report.totalManhours || 0}
+                </td>
 
-                <td>${report.activity || "-"}</td>
+                <td>
+                    ${report.activity || "-"}
+                </td>
 
-                <td>${report.status || "-"}</td>
+                <td>
+                    ${report.status || "-"}
+                </td>
 
             `;
 
@@ -413,12 +406,9 @@ document.addEventListener("DOMContentLoaded", function () {
     function updateMaterialSummary(filteredReports) {
 
         const tbody =
-            document.querySelector(
-                "#materialTable tbody"
+            document.getElementById(
+                "materialTableBody"
             );
-
-
-        if (!tbody) return;
 
 
         tbody.innerHTML = "";
@@ -452,6 +442,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (!name) return;
 
 
+                // Material + unit menjadi key
                 const key =
                     name + "||" + unit;
 
@@ -506,7 +497,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
             row.innerHTML = `
 
-                <td>${material.name}</td>
+                <td>
+                    ${material.name}
+                </td>
 
                 <td>
                     ${material.quantity.toLocaleString(
@@ -517,7 +510,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     )}
                 </td>
 
-                <td>${material.unit}</td>
+                <td>
+                    ${material.unit}
+                </td>
 
             `;
 
@@ -560,63 +555,45 @@ document.addEventListener("DOMContentLoaded", function () {
     // FILTER EVENTS
     // =====================================================
 
-    if (dateFilter) {
-
-        dateFilter.addEventListener(
-            "change",
-            updateDashboard
-        );
-
-    }
+    dateFilter.addEventListener(
+        "change",
+        updateDashboard
+    );
 
 
-    if (locationFilter) {
+    locationFilter.addEventListener(
+        "change",
+        function () {
 
-        locationFilter.addEventListener(
-            "change",
-            function () {
+            updateProjectFilter();
 
-                updateProjectFilter();
+            updateDashboard();
 
-                updateDashboard();
-
-            }
-        );
-
-    }
+        }
+    );
 
 
-    if (projectFilter) {
+    projectFilter.addEventListener(
+        "change",
+        function () {
 
-        projectFilter.addEventListener(
-            "change",
-            function () {
+            updateUnitFilter();
 
-                updateUnitFilter();
+            updateDashboard();
 
-                updateDashboard();
-
-            }
-        );
-
-    }
+        }
+    );
 
 
-    if (unitFilter) {
-
-        unitFilter.addEventListener(
-            "change",
-            updateDashboard
-        );
-
-    }
+    unitFilter.addEventListener(
+        "change",
+        updateDashboard
+    );
 
 
     // =====================================================
     // INITIALIZE
     // =====================================================
-
-    updateLocationFilter();
 
     updateProjectFilter();
 
