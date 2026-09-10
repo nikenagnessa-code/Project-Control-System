@@ -1,663 +1,552 @@
-document.addEventListener("DOMContentLoaded", function () {
+// ===============================
+// PROJECT DATA
+// ===============================
 
-    const form = document.querySelector(".report-form");
+const projectData = {
+    Kalimantan: {
+        "Tipe 200": [
+            "DANREM"
+        ],
+        "Tipe 175": [
+            "KASREM",
+            "KASI 01",
+            "KASI 02",
+            "KASI 03",
+            "KASI 04",
+            "KASI 05",
+            "KASI 06"
+        ]
+    },
 
-    if (!form) return;
+    Tasikmalaya: {
+        "Casa Sabrina": [
+            "Tipe 95 - Rumah No. 09",
+            "Tipe 95 - Rumah No. 10",
+            "Tipe 95 - Rumah No. 14",
+            "Tipe 95 - Rumah No. 15",
+            "Tipe 128 - Rumah No. 38",
+            "Tipe 150 - Rumah No. 19",
+            "Tipe 150 - Rumah No. 21",
+            "Tipe 150 - Rumah No. 23",
+            "Tipe Custom - Rumah No. 12",
+            "Tipe Custom - Rumah No. 9-11",
+            "Tipe Custom - Rumah No. 18-20"
+        ],
 
+        "Buana Royale Residence": [
+            "Tipe 45 - Y-7",
+            "Tipe 95 - D3",
+            "Tipe 95 - D5"
+        ],
 
-    // =====================================================
-    // PROJECT & UNIT DATA
-    // =====================================================
-
-    const projectData = {
-
-        Kalimantan: {
-
-            "Tipe 200": [
-                "DANREM"
-            ],
-
-            "Tipe 175": [
-                "KASREM",
-                "KASI 01",
-                "KASI 02",
-                "KASI 03",
-                "KASI 04",
-                "KASI 05",
-                "KASI 06"
-            ]
-
-        },
-
-
-        Tasikmalaya: {
-
-            "Casa Sabrina": [
-
-                "Tipe 95 - Rumah No. 09",
-                "Tipe 95 - Rumah No. 10",
-                "Tipe 95 - Rumah No. 14",
-                "Tipe 95 - Rumah No. 15",
-
-                "Tipe 128 - Rumah No. 38",
-
-                "Tipe 150 - Rumah No. 19",
-                "Tipe 150 - Rumah No. 21",
-                "Tipe 150 - Rumah No. 23",
-
-                "Tipe Custom - Rumah No. 12",
-                "Tipe Custom - Rumah No. 9-11",
-                "Tipe Custom - Rumah No. 18-20"
-
-            ],
+        "Andalusia": [
+            "Tipe Custom - Boulevard 1-2 E"
+        ]
+    }
+};
 
 
-            "Buana Royale Residence": [
+// ===============================
+// DOM ELEMENTS
+// ===============================
 
-                "Tipe 45 - Y-7",
+const locationSelect = document.getElementById("location");
+const projectSelect = document.getElementById("project");
+const unitSelect = document.getElementById("unit");
 
-                "Tipe 95 - D3",
-                "Tipe 95 - D5"
+const reportForm = document.getElementById("dailyReportForm");
 
-            ],
+const materialContainer = document.getElementById("materialContainer");
+const addMaterialBtn = document.getElementById("addMaterialBtn");
 
 
-            "Andalusia": [
+// ===============================
+// LOCATION → PROJECT
+// ===============================
 
-                "Tipe Custom - Boulevard 1-2 E"
+function updateProjectOptions() {
 
-            ]
+    const location = locationSelect.value;
+
+    projectSelect.innerHTML = `
+        <option value="">Select Project</option>
+    `;
+
+    unitSelect.innerHTML = `
+        <option value="">Select Unit</option>
+    `;
+
+    if (!location || !projectData[location]) {
+        return;
+    }
+
+    Object.keys(projectData[location]).forEach(project => {
+
+        const option = document.createElement("option");
+
+        option.value = project;
+        option.textContent = project;
+
+        projectSelect.appendChild(option);
+    });
+}
+
+
+// ===============================
+// PROJECT → UNIT
+// ===============================
+
+function updateUnitOptions() {
+
+    const location = locationSelect.value;
+    const project = projectSelect.value;
+
+    unitSelect.innerHTML = `
+        <option value="">Select Unit</option>
+    `;
+
+    if (
+        !location ||
+        !project ||
+        !projectData[location] ||
+        !projectData[location][project]
+    ) {
+        return;
+    }
+
+    projectData[location][project].forEach(unit => {
+
+        const option = document.createElement("option");
+
+        option.value = unit;
+        option.textContent = unit;
+
+        unitSelect.appendChild(option);
+    });
+}
+
+
+// ===============================
+// EVENT LISTENERS
+// ===============================
+
+locationSelect.addEventListener("change", updateProjectOptions);
+
+projectSelect.addEventListener("change", updateUnitOptions);
+
+
+// ===============================
+// PROGRESS & QUANTITY
+// ===============================
+
+const dailyQuantityInput = document.getElementById("dailyQuantity");
+const quantityUnitInput = document.getElementById("quantityUnit");
+const plannedQuantityInput = document.getElementById("plannedQuantity");
+const progressPercentageInput = document.getElementById("progressPercentage");
+
+
+function calculateProgress() {
+
+    if (
+        !dailyQuantityInput ||
+        !plannedQuantityInput ||
+        !progressPercentageInput
+    ) {
+        return;
+    }
+
+    const dailyQuantity = parseFloat(dailyQuantityInput.value);
+    const plannedQuantity = parseFloat(plannedQuantityInput.value);
+
+    if (
+        isNaN(dailyQuantity) ||
+        isNaN(plannedQuantity) ||
+        plannedQuantity <= 0
+    ) {
+        progressPercentageInput.value = "";
+        return;
+    }
+
+    const progress = (dailyQuantity / plannedQuantity) * 100;
+
+    progressPercentageInput.value = progress.toFixed(2);
+}
+
+
+if (dailyQuantityInput) {
+    dailyQuantityInput.addEventListener("input", calculateProgress);
+}
+
+if (plannedQuantityInput) {
+    plannedQuantityInput.addEventListener("input", calculateProgress);
+}
+
+
+// ===============================
+// MATERIAL ROW
+// ===============================
+
+function createMaterialRow() {
+
+    const materialRow = document.createElement("div");
+
+    materialRow.className = "material-row";
+
+    materialRow.innerHTML = `
+        <div class="form-group">
+            <label>Material</label>
+            <input
+                type="text"
+                class="material-name"
+                placeholder="Material name"
+            >
+        </div>
+
+        <div class="form-group">
+            <label>Quantity</label>
+            <input
+                type="number"
+                class="material-quantity"
+                min="0"
+                step="0.01"
+                placeholder="Quantity"
+            >
+        </div>
+
+        <div class="form-group">
+            <label>Unit</label>
+            <input
+                type="text"
+                class="material-unit"
+                placeholder="Unit"
+            >
+        </div>
+
+        <button
+            type="button"
+            class="remove-material-btn"
+        >
+            Remove
+        </button>
+    `;
+
+    const removeButton =
+        materialRow.querySelector(".remove-material-btn");
+
+    removeButton.addEventListener("click", function () {
+        materialRow.remove();
+    });
+
+    materialContainer.appendChild(materialRow);
+}
+
+
+// ===============================
+// ADD MATERIAL
+// ===============================
+
+if (addMaterialBtn) {
+
+    addMaterialBtn.addEventListener("click", function () {
+
+        createMaterialRow();
+
+    });
+
+}
+
+
+// ===============================
+// FORM SUBMIT
+// ===============================
+
+reportForm.addEventListener("submit", function (event) {
+
+    event.preventDefault();
+
+
+    // ===============================
+    // BASIC INFORMATION
+    // ===============================
+
+    const date =
+        document.getElementById("reportDate").value;
+
+    const weather =
+        document.getElementById("weather").value;
+
+    const location =
+        document.getElementById("location").value;
+
+    const project =
+        document.getElementById("project").value;
+
+    const unit =
+        document.getElementById("unit").value;
+
+
+    // ===============================
+    // MANPOWER
+    // ===============================
+
+    const foreman =
+        parseInt(document.getElementById("foreman").value) || 0;
+
+    const headWorker =
+        parseInt(document.getElementById("headWorker").value) || 0;
+
+    const skilledWorker =
+        parseInt(document.getElementById("skilledWorker").value) || 0;
+
+    const staffOffice =
+        parseInt(document.getElementById("staffOffice").value) || 0;
+
+
+    const normalHours =
+        parseFloat(document.getElementById("normalHours").value) || 0;
+
+    const overtimeHours =
+        parseFloat(document.getElementById("overtimeHours").value) || 0;
+
+
+    // ===============================
+    // MANPOWER CALCULATION
+    // ===============================
+
+    const totalManpower =
+        foreman +
+        headWorker +
+        skilledWorker +
+        staffOffice;
+
+
+    const normalManhours =
+        totalManpower * normalHours;
+
+
+    const overtimeManhours =
+        totalManpower * overtimeHours;
+
+
+    const totalManhours =
+        normalManhours +
+        overtimeManhours;
+
+
+    // ===============================
+    // WORK ACTIVITY
+    // ===============================
+
+    const activity =
+        document.getElementById("activity").value;
+
+    const status =
+        document.getElementById("status").value;
+
+
+    // ===============================
+    // PROGRESS & QUANTITY
+    // ===============================
+
+    let dailyQuantity = null;
+    let quantityUnit = "";
+    let plannedQuantity = null;
+    let progressPercentage = null;
+
+
+    if (dailyQuantityInput) {
+
+        const value =
+            parseFloat(dailyQuantityInput.value);
+
+        if (!isNaN(value)) {
+            dailyQuantity = value;
+        }
+    }
+
+
+    if (quantityUnitInput) {
+
+        quantityUnit =
+            quantityUnitInput.value;
+    }
+
+
+    if (plannedQuantityInput) {
+
+        const value =
+            parseFloat(plannedQuantityInput.value);
+
+        if (!isNaN(value)) {
+            plannedQuantity = value;
+        }
+    }
+
+
+    if (
+        dailyQuantity !== null &&
+        plannedQuantity !== null &&
+        plannedQuantity > 0
+    ) {
+
+        progressPercentage =
+            (dailyQuantity / plannedQuantity) * 100;
+
+    }
+
+
+    // ===============================
+    // MATERIALS
+    // ===============================
+
+    const materials = [];
+
+    const materialRows =
+        materialContainer.querySelectorAll(".material-row");
+
+
+    materialRows.forEach(row => {
+
+        const name =
+            row.querySelector(".material-name")?.value.trim() || "";
+
+        const quantityValue =
+            row.querySelector(".material-quantity")?.value;
+
+        const quantity =
+            parseFloat(quantityValue) || 0;
+
+        const materialUnit =
+            row.querySelector(".material-unit")?.value.trim() || "";
+
+
+        if (name !== "") {
+
+            materials.push({
+                name: name,
+                quantity: quantity,
+                unit: materialUnit
+            });
 
         }
+
+    });
+
+
+    // ===============================
+    // NOTES
+    // ===============================
+
+    const notes =
+        document.getElementById("notes").value;
+
+
+    // ===============================
+    // REPORT OBJECT
+    // ===============================
+
+    const report = {
+
+        id: Date.now(),
+
+        date: date,
+
+        location: location,
+
+        project: project,
+
+        unit: unit,
+
+        weather: weather,
+
+
+        // MANPOWER
+
+        foreman: foreman,
+
+        headWorker: headWorker,
+
+        skilledWorker: skilledWorker,
+
+        staffOffice: staffOffice,
+
+
+        normalHours: normalHours,
+
+        overtimeHours: overtimeHours,
+
+
+        totalManpower: totalManpower,
+
+        normalManhours: normalManhours,
+
+        overtimeManhours: overtimeManhours,
+
+        totalManhours: totalManhours,
+
+
+        // ACTIVITY
+
+        activity: activity,
+
+        status: status,
+
+
+        // PROGRESS
+
+        dailyQuantity: dailyQuantity,
+
+        quantityUnit: quantityUnit,
+
+        plannedQuantity: plannedQuantity,
+
+        progressPercentage: progressPercentage,
+
+
+        // MATERIAL
+
+        materials: materials,
+
+
+        // NOTES
+
+        notes: notes
 
     };
 
 
-    // =====================================================
-    // ELEMENTS
-    // =====================================================
+    // ===============================
+    // SAVE TO LOCAL STORAGE
+    // ===============================
 
-    const locationSelect =
-        document.getElementById("location");
-
-    const projectSelect =
-        document.getElementById("project");
-
-    const unitSelect =
-        document.getElementById("unit");
+    let reports =
+        JSON.parse(
+            localStorage.getItem("dailyReports")
+        ) || [];
 
 
-    // =====================================================
-    // UPDATE PROJECT
-    // =====================================================
-
-    function updateProjects() {
-
-        const location = locationSelect.value;
-
-        projectSelect.innerHTML =
-            `<option value="">Select Project</option>`;
-
-        unitSelect.innerHTML =
-            `<option value="">Select Unit</option>`;
-
-        if (
-            !location ||
-            !projectData[location]
-        ) {
-            return;
-        }
-
-        Object.keys(
-            projectData[location]
-        ).forEach(function (project) {
-
-            const option =
-                document.createElement("option");
-
-            option.value = project;
-            option.textContent = project;
-
-            projectSelect.appendChild(option);
-
-        });
-
-    }
+    reports.push(report);
 
 
-    // =====================================================
-    // UPDATE UNIT
-    // =====================================================
-
-    function updateUnits() {
-
-        const location =
-            locationSelect.value;
-
-        const project =
-            projectSelect.value;
-
-        unitSelect.innerHTML =
-            `<option value="">Select Unit</option>`;
-
-        if (
-            !location ||
-            !project ||
-            !projectData[location] ||
-            !projectData[location][project]
-        ) {
-            return;
-        }
-
-        projectData[location][project]
-            .forEach(function (unit) {
-
-                const option =
-                    document.createElement("option");
-
-                option.value = unit;
-                option.textContent = unit;
-
-                unitSelect.appendChild(option);
-
-            });
-
-    }
-
-
-    // =====================================================
-    // LOCATION CHANGE
-    // =====================================================
-
-    locationSelect.addEventListener(
-        "change",
-        function () {
-
-            updateProjects();
-
-        }
+    localStorage.setItem(
+        "dailyReports",
+        JSON.stringify(reports)
     );
 
 
-    // =====================================================
-    // PROJECT CHANGE
-    // =====================================================
-
-    projectSelect.addEventListener(
-        "change",
-        function () {
-
-            updateUnits();
-
-        }
-    );
-
-
-    // =====================================================
-    // MATERIAL SECTION
-    // =====================================================
-
-    const materialContainer =
-        document.getElementById(
-            "materialContainer"
-        );
-
-    const addMaterialBtn =
-        document.getElementById(
-            "addMaterialBtn"
-        );
-
-
-    function addMaterialRow() {
-
-        const row =
-            document.createElement("div");
-
-        row.className =
-            "material-row";
-
-        row.innerHTML = `
-
-            <div class="form-group">
-
-                <label>Material</label>
-
-                <input
-                    type="text"
-                    class="material-name"
-                    placeholder="Example: Cement, sand, rebar..."
-                >
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>Quantity</label>
-
-                <input
-                    type="number"
-                    class="material-quantity"
-                    min="0"
-                    step="0.01"
-                    placeholder="Quantity"
-                >
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>Unit</label>
-
-                <select class="material-unit">
-
-                    <option value="">
-                        Select Unit
-                    </option>
-
-                    <option value="kg">
-                        kg
-                    </option>
-
-                    <option value="ton">
-                        ton
-                    </option>
-
-                    <option value="m³">
-                        m³
-                    </option>
-
-                    <option value="m²">
-                        m²
-                    </option>
-
-                    <option value="pcs">
-                        pcs
-                    </option>
-
-                    <option value="batang">
-                        batang
-                    </option>
-
-                    <option value="sak">
-                        sak
-                    </option>
-
-                    <option value="lembar">
-                        lembar
-                    </option>
-
-                    <option value="rit">
-                        rit
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <button
-                type="button"
-                class="remove-material-btn"
-            >
-                Remove
-            </button>
-
-        `;
-
-        materialContainer.appendChild(row);
-
-    }
-
-
-    // =====================================================
-    // ADD MATERIAL
-    // =====================================================
-
-    addMaterialBtn.addEventListener(
-        "click",
-        function () {
-
-            addMaterialRow();
-
-        }
-    );
-
-
-    // =====================================================
-    // REMOVE MATERIAL
-    // =====================================================
-
-    materialContainer.addEventListener(
-        "click",
-        function (event) {
-
-            if (
-                event.target.classList.contains(
-                    "remove-material-btn"
-                )
-            ) {
-
-                const rows =
-                    materialContainer.querySelectorAll(
-                        ".material-row"
-                    );
-
-                if (rows.length > 1) {
-
-                    event.target
-                        .closest(".material-row")
-                        .remove();
-
-                }
-
-            }
-
-        }
-    );
-
-
-    // =====================================================
-    // FORM SUBMIT
-    // =====================================================
-
-    form.addEventListener(
-        "submit",
-        function (event) {
-
-            event.preventDefault();
-
-
-            // =================================================
-            // BASIC INFORMATION
-            // =================================================
-
-            const date =
-                document.getElementById(
-                    "reportDate"
-                ).value;
-
-            const location =
-                document.getElementById(
-                    "location"
-                ).value;
-
-            const project =
-                document.getElementById(
-                    "project"
-                ).value;
-
-            const unit =
-                document.getElementById(
-                    "unit"
-                ).value;
-
-            const weather =
-                document.getElementById(
-                    "weather"
-                ).value;
-
-
-            // =================================================
-            // MANPOWER
-            // =================================================
-
-            const foreman =
-                Number(
-                    document.getElementById(
-                        "foreman"
-                    ).value
-                ) || 0;
-
-            const headWorker =
-                Number(
-                    document.getElementById(
-                        "headWorker"
-                    ).value
-                ) || 0;
-
-            const skilledWorker =
-                Number(
-                    document.getElementById(
-                        "skilledWorker"
-                    ).value
-                ) || 0;
-
-            const staffOffice =
-                Number(
-                    document.getElementById(
-                        "staffOffice"
-                    ).value
-                ) || 0;
-
-
-            const normalHours =
-                Number(
-                    document.getElementById(
-                        "normalHours"
-                    ).value
-                ) || 0;
-
-            const overtimeHours =
-                Number(
-                    document.getElementById(
-                        "overtimeHours"
-                    ).value
-                ) || 0;
-
-
-            // =================================================
-            // MANPOWER CALCULATION
-            // =================================================
-
-            const totalManpower =
-                foreman +
-                headWorker +
-                skilledWorker +
-                staffOffice;
-
-
-            const normalManhours =
-                totalManpower *
-                normalHours;
-
-
-            const overtimeManhours =
-                totalManpower *
-                overtimeHours;
-
-
-            const totalManhours =
-                normalManhours +
-                overtimeManhours;
-
-
-            // =================================================
-            // WORK ACTIVITY
-            // =================================================
-
-            const activity =
-                document.getElementById(
-                    "activity"
-                ).value;
-
-            const status =
-                document.getElementById(
-                    "status"
-                ).value;
-
-
-            // =================================================
-            // MATERIALS
-            // =================================================
-
-            const materialRows =
-                materialContainer.querySelectorAll(
-                    ".material-row"
-                );
-
-            const materials = [];
-
-
-            materialRows.forEach(
-                function (row) {
-
-                    const name =
-                        row
-                            .querySelector(
-                                ".material-name"
-                            )
-                            .value
-                            .trim();
-
-
-                    const quantity =
-                        Number(
-                            row
-                                .querySelector(
-                                    ".material-quantity"
-                                )
-                                .value
-                        ) || 0;
-
-
-                    const materialUnit =
-                        row
-                            .querySelector(
-                                ".material-unit"
-                            )
-                            .value;
-
-
-                    if (name !== "") {
-
-                        materials.push({
-
-                            name: name,
-
-                            quantity: quantity,
-
-                            unit: materialUnit
-
-                        });
-
-                    }
-
-                }
-            );
-
-
-            // =================================================
-            // NOTES
-            // =================================================
-
-            const notes =
-                document.getElementById(
-                    "notes"
-                ).value;
-
-
-            // =================================================
-            // REPORT OBJECT
-            // =================================================
-
-            const report = {
-
-                date: date,
-
-                location: location,
-
-                project: project,
-
-                unit: unit,
-
-                weather: weather,
-
-
-                // MANPOWER
-
-                foreman: foreman,
-
-                headWorker: headWorker,
-
-                skilledWorker: skilledWorker,
-
-                staffOffice: staffOffice,
-
-
-                // WORKING HOURS
-
-                normalHours: normalHours,
-
-                overtimeHours: overtimeHours,
-
-
-                // MAN-HOURS
-
-                totalManpower: totalManpower,
-
-                normalManhours: normalManhours,
-
-                overtimeManhours: overtimeManhours,
-
-                totalManhours: totalManhours,
-
-
-                // ACTIVITY
-
-                activity: activity,
-
-                status: status,
-
-
-                // MATERIALS
-
-                materials: materials,
-
-
-                // NOTES
-
-                notes: notes
-
-            };
-
-
-            // =================================================
-            // SAVE TO LOCAL STORAGE
-            // =================================================
-
-            let reports =
-                JSON.parse(
-                    localStorage.getItem(
-                        "dailyReports"
-                    )
-                ) || [];
-
-
-            reports.push(report);
-
-
-            localStorage.setItem(
-                "dailyReports",
-                JSON.stringify(reports)
-            );
-
-
-            // =================================================
-            // REDIRECT
-            // =================================================
-
-            alert(
-                "Daily Report berhasil disimpan!"
-            );
-
-
-            window.location.assign(
-                "./daily-monitoring.html"
-            );
-
-        }
+    // ===============================
+    // REDIRECT
+    // ===============================
+
+    window.location.assign(
+        "./daily-monitoring.html"
     );
 
 });
+
+
+// ===============================
+// INITIAL STATE
+// ===============================
+
+updateProjectOptions();
