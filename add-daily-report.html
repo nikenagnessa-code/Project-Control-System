@@ -1,71 +1,418 @@
-<!-- WORK ACTIVITIES -->
-<section class="content-card work-activities-card">
+<!DOCTYPE html>
+<html lang="en">
 
-    <h3>Work Activities</h3>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <div class="form-group">
-        <label for="activity">Activity</label>
-        <textarea
-            id="activity"
-            name="activity"
-            rows="4"
-            placeholder="Example: Reinforcement installation for ground floor slab..."
-            required
-        ></textarea>
-    </div>
+    <title>Add Daily Report</title>
 
-    <div class="activity-grid">
+    <!-- MAIN CSS -->
+    <link rel="stylesheet" href="./style.css?v=5">
+</head>
 
-        <div class="form-group">
-            <label for="quantity">Quantity</label>
-            <input
-                type="number"
-                id="quantity"
-                name="quantity"
-                min="0"
-                step="0.01"
-                placeholder="Example: 25"
-            >
+<body>
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+    <header class="top-header">
+        <div class="container">
+            <div class="header-content">
+                <div>
+                    <h1>Project Control System</h1>
+                    <p>Construction Monitoring & Project Control</p>
+                </div>
+
+                <a href="index.html" class="back-link">
+                    ← Back to Dashboard
+                </a>
+            </div>
         </div>
+    </header>
 
-        <div class="form-group">
-            <label for="quantityUnit">Unit</label>
-            <select id="quantityUnit" name="quantityUnit">
-                <option value="">Select Unit</option>
-                <option value="m³">m³</option>
-                <option value="m²">m²</option>
-                <option value="m¹">m¹</option>
-                <option value="kg">kg</option>
-                <option value="ton">ton</option>
-                <option value="pcs">pcs</option>
-                <option value="titik">titik</option>
-                <option value="unit">unit</option>
-                <option value="lot">lot</option>
-            </select>
-        </div>
 
-        <div class="form-group">
-            <label for="dailyProgress">Daily Progress (%)</label>
-            <input
-                type="number"
-                id="dailyProgress"
-                name="dailyProgress"
-                min="0"
-                max="100"
-                step="0.01"
-                placeholder="Example: 5"
-            >
-        </div>
+    <!-- =========================
+         MAIN CONTENT
+    ========================== -->
+    <main class="container">
 
-    </div>
+        <!-- PAGE HEADER -->
+        <section class="page-header">
+            <div>
+                <h2>Add Daily Report</h2>
+                <p>Record daily field activities, manpower, progress and materials.</p>
+            </div>
+        </section>
 
-    <div class="form-group status-group">
-        <label for="status">Status</label>
-        <select id="status" name="status" required>
-            <option value="">Select Status</option>
-            <option value="On Progress">On Progress</option>
-            <option value="Completed">Completed</option>
-        </select>
-    </div>
 
-</section>
+        <!-- =========================
+             FORM
+        ========================== -->
+        <form id="dailyReportForm" class="report-form" novalidate>
+
+
+            <!-- =========================
+                 BASIC INFORMATION
+            ========================== -->
+            <section class="content-card">
+
+                <h3>Basic Information</h3>
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label for="reportDate">Report Date</label>
+                        <input
+                            type="date"
+                            id="reportDate"
+                            name="reportDate"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="weather">Weather</label>
+                        <select id="weather" name="weather">
+                            <option value="">Select Weather</option>
+                            <option value="Sunny">Sunny</option>
+                            <option value="Cloudy">Cloudy</option>
+                            <option value="Rain">Rain</option>
+                            <option value="Rainy Morning">Rainy Morning</option>
+                            <option value="Rainy Afternoon">Rainy Afternoon</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location">Location</label>
+                        <select id="location" name="location" required>
+                            <option value="">Select Location</option>
+                            <option value="Kalimantan">Kalimantan</option>
+                            <option value="Tasikmalaya">Tasikmalaya</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="project">Project</label>
+                        <select id="project" name="project" required>
+                            <option value="">Select Project</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="unit">Unit</label>
+                        <select id="unit" name="unit" required>
+                            <option value="">Select Unit</option>
+                        </select>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                 MANPOWER
+            ========================== -->
+            <section class="content-card">
+
+                <h3>Manpower</h3>
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label for="foreman">Foreman</label>
+                        <input
+                            type="number"
+                            id="foreman"
+                            name="foreman"
+                            min="0"
+                            step="1"
+                            placeholder="0"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="headWorker">Head Worker</label>
+                        <input
+                            type="number"
+                            id="headWorker"
+                            name="headWorker"
+                            min="0"
+                            step="1"
+                            placeholder="0"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="skilledWorker">Skilled Worker</label>
+                        <input
+                            type="number"
+                            id="skilledWorker"
+                            name="skilledWorker"
+                            min="0"
+                            step="1"
+                            placeholder="0"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="staffOffice">Office Staff</label>
+                        <input
+                            type="number"
+                            id="staffOffice"
+                            name="staffOffice"
+                            min="0"
+                            step="1"
+                            placeholder="0"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="normalHours">Normal Hours</label>
+                        <input
+                            type="number"
+                            id="normalHours"
+                            name="normalHours"
+                            min="0"
+                            step="0.5"
+                            placeholder="8"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="overtimeHours">Overtime Hours</label>
+                        <input
+                            type="number"
+                            id="overtimeHours"
+                            name="overtimeHours"
+                            min="0"
+                            step="0.5"
+                            placeholder="0"
+                        >
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                 WORK ACTIVITIES
+            ========================== -->
+            <section class="content-card work-activities-card">
+
+                <h3>Work Activities</h3>
+
+                <div class="form-group">
+                    <label for="activity">Activity</label>
+
+                    <textarea
+                        id="activity"
+                        name="activity"
+                        rows="4"
+                        placeholder="Example: Reinforcement installation for ground floor slab..."
+                        required
+                    ></textarea>
+                </div>
+
+
+                <div class="activity-grid">
+
+                    <div class="form-group">
+                        <label for="quantity">Quantity</label>
+
+                        <input
+                            type="number"
+                            id="quantity"
+                            name="quantity"
+                            min="0"
+                            step="0.01"
+                            placeholder="Example: 25"
+                        >
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="quantityUnit">Unit</label>
+
+                        <select
+                            id="quantityUnit"
+                            name="quantityUnit"
+                        >
+                            <option value="">Select Unit</option>
+                            <option value="m³">m³</option>
+                            <option value="m²">m²</option>
+                            <option value="m¹">m¹</option>
+                            <option value="kg">kg</option>
+                            <option value="ton">ton</option>
+                            <option value="pcs">pcs</option>
+                            <option value="titik">titik</option>
+                            <option value="unit">unit</option>
+                            <option value="lot">lot</option>
+                        </select>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="dailyProgress">Daily Progress (%)</label>
+
+                        <input
+                            type="number"
+                            id="dailyProgress"
+                            name="dailyProgress"
+                            min="0"
+                            max="100"
+                            step="0.01"
+                            placeholder="Example: 5"
+                        >
+                    </div>
+
+                </div>
+
+
+                <div class="form-group status-group">
+
+                    <label for="status">Status</label>
+
+                    <select
+                        id="status"
+                        name="status"
+                        required
+                    >
+                        <option value="">Select Status</option>
+                        <option value="On Progress">On Progress</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                 MATERIALS
+            ========================== -->
+            <section class="content-card">
+
+                <div class="section-title-row">
+                    <div>
+                        <h3>Materials</h3>
+                        <p class="section-description">
+                            Record materials received or used for today's activities.
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        id="addMaterialBtn"
+                        class="secondary-btn"
+                    >
+                        + Add Material
+                    </button>
+                </div>
+
+                <div id="materialContainer">
+
+                    <div class="material-row">
+
+                        <div class="form-group">
+                            <label>Material</label>
+                            <input
+                                type="text"
+                                class="material-name"
+                                placeholder="Example: Ready Mix Concrete"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label>Quantity</label>
+                            <input
+                                type="number"
+                                class="material-quantity"
+                                min="0"
+                                step="0.01"
+                                placeholder="0"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label>Unit</label>
+                            <select class="material-unit">
+                                <option value="">Select Unit</option>
+                                <option value="m³">m³</option>
+                                <option value="m²">m²</option>
+                                <option value="m¹">m¹</option>
+                                <option value="kg">kg</option>
+                                <option value="ton">ton</option>
+                                <option value="pcs">pcs</option>
+                                <option value="batang">batang</option>
+                                <option value="rit">rit</option>
+                                <option value="zak">zak</option>
+                                <option value="unit">unit</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                 NOTES
+            ========================== -->
+            <section class="content-card">
+
+                <h3>Notes</h3>
+
+                <div class="form-group">
+
+                    <label for="notes">Additional Notes</label>
+
+                    <textarea
+                        id="notes"
+                        name="notes"
+                        rows="4"
+                        placeholder="Example: Rain affected concrete casting activity in the afternoon..."
+                    ></textarea>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                 FORM ACTIONS
+            ========================== -->
+            <div class="form-actions">
+
+                <a
+                    href="daily-monitoring.html"
+                    class="cancel-btn"
+                >
+                    Cancel
+                </a>
+
+                <button
+                    type="submit"
+                    class="primary-btn"
+                >
+                    Save Daily Report
+                </button>
+
+            </div>
+
+        </form>
+
+    </main>
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================== -->
+    <script src="./daily-report.js?v=3"></script>
+
+</body>
+</html>
