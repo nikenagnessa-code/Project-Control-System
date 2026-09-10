@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
             ],
 
             "Tipe 175": [
-                "Unit KASREM"
+                "Unit KASREM",
                 "Unit KASI 01",
                 "Unit KASI 02",
                 "Unit KASI 03",
