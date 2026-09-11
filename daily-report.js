@@ -232,6 +232,7 @@ document.addEventListener("DOMContentLoaded", function () {
         return Number.isFinite(result)
             ? result
             : 0;
+
     }
 
 
@@ -277,7 +278,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // =================================================
-    // CHECK MASTER SCHEDULE
+    // CHECK MASTER SCHEDULE UNIT
     // =================================================
 
     function isMasterScheduleUnit() {
@@ -524,9 +525,11 @@ document.addEventListener("DOMContentLoaded", function () {
         const option =
             document.createElement("option");
 
-        option.value = value;
+        option.value =
+            value;
 
-        option.textContent = text;
+        option.textContent =
+            text;
 
         return option;
 
@@ -1114,7 +1117,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         activityContainer.innerHTML = "";
 
-
         createActivityRow();
 
     }
@@ -1521,7 +1523,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         // =============================================
-        // REPORT OBJECT
+        // NORMAL & OVERTIME HOURS
         // =============================================
 
         const normal =
@@ -1534,6 +1536,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 overtimeHours?.value
             );
 
+
+        // =============================================
+        // MANPOWER DATA
+        // =============================================
 
         const manpowerData = {
 
@@ -1560,12 +1566,37 @@ document.addEventListener("DOMContentLoaded", function () {
         };
 
 
+        // =============================================
+        // TOTAL MANPOWER
+        // =============================================
+
         const totalManpower =
             manpowerData.foreman +
             manpowerData.headWorker +
             manpowerData.skilledWorker +
             manpowerData.staffOffice;
 
+
+        // =============================================
+        // MAN-HOURS
+        // =============================================
+
+        const normalManhours =
+            totalManpower *
+            normal;
+
+        const overtimeManhours =
+            totalManpower *
+            overtime;
+
+        const totalManhours =
+            normalManhours +
+            overtimeManhours;
+
+
+        // =============================================
+        // REPORT OBJECT
+        // =============================================
 
         const report = {
 
@@ -1592,6 +1623,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 unitSelect?.value || "",
 
 
+            // =========================================
+            // MANPOWER
+            // =========================================
+
             manpower:
                 manpowerData,
 
@@ -1599,6 +1634,10 @@ document.addEventListener("DOMContentLoaded", function () {
             totalManpower:
                 totalManpower,
 
+
+            // =========================================
+            // WORKING HOURS
+            // =========================================
 
             hours: {
 
@@ -1611,16 +1650,32 @@ document.addEventListener("DOMContentLoaded", function () {
             },
 
 
-            manhours:
-                totalManpower *
-                normal,
+            // =========================================
+            // MAN-HOURS
+            // =========================================
 
+            normalManhours:
+                normalManhours,
+
+            overtimeManhours:
+                overtimeManhours,
+
+            manhours:
+                totalManhours,
+
+
+            // =========================================
+            // ACTIVITIES
+            // =========================================
 
             activities:
                 activities,
 
 
-            // Legacy compatibility
+            // =========================================
+            // LEGACY COMPATIBILITY
+            // =========================================
+
             activity:
                 activities.length > 0
                     ? activities[0].name
@@ -1647,9 +1702,17 @@ document.addEventListener("DOMContentLoaded", function () {
                     : "",
 
 
+            // =========================================
+            // MATERIALS
+            // =========================================
+
             materials:
                 collectMaterials(),
 
+
+            // =========================================
+            // NOTES
+            // =========================================
 
             notes:
                 notes?.value || ""
@@ -1658,7 +1721,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         // =============================================
-        // SAVE
+        // SAVE TO LOCAL STORAGE
         // =============================================
 
         reports.push(
@@ -1672,46 +1735,49 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
+        // =============================================
+        // DEBUG
+        // =============================================
+
         console.log(
             "REPORT SAVED:",
             report
         );
 
+        console.log(
+            "TOTAL MANPOWER:",
+            totalManpower
+        );
+
+        console.log(
+            "NORMAL MANHOURS:",
+            normalManhours
+        );
+
+        console.log(
+            "OVERTIME MANHOURS:",
+            overtimeManhours
+        );
+
+        console.log(
+            "TOTAL MANHOURS:",
+            totalManhours
+        );
+
+
+        // =============================================
+        // REDIRECT
+        // =============================================
 
         alert(
             "Daily Report berhasil disimpan."
         );
-        window.location.replace("./daily-monitoring.html");
+
+        window.location.replace(
+            "./daily-monitoring.html"
+        );
+
         return;
-
-
-        // =============================================
-        // RESET FORM
-        // =============================================
-
-        if (reportForm) {
-
-            reportForm.reset();
-
-        }
-
-
-        // =============================================
-        // RESTORE DROPDOWN STATE
-        // =============================================
-
-        updateProjects();
-
-
-        // =============================================
-        // RESET MATERIALS
-        // =============================================
-
-        if (materialContainer) {
-
-            materialContainer.innerHTML = "";
-
-        }
 
     }
 
