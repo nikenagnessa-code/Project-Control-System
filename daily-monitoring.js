@@ -125,6 +125,10 @@ const progressStatusElement =
     document.getElementById("progressStatus");
 
 
+const sCurveChart =
+    document.getElementById("sCurveChart");
+
+
 /* =========================================================
    DATA
    ========================================================= */
@@ -255,11 +259,6 @@ function number(value) {
         text.includes(",")
     ) {
 
-        /*
-           Indonesian format:
-           1.500,50
-        */
-
         if (
             text.lastIndexOf(",") >
             text.lastIndexOf(".")
@@ -271,11 +270,6 @@ function number(value) {
                     .replace(",", ".");
 
         }
-
-        /*
-           English format:
-           1,500.50
-        */
 
         else {
 
@@ -289,10 +283,6 @@ function number(value) {
     else if (
         text.includes(",")
     ) {
-
-        /*
-           Treat comma as decimal
-        */
 
         text =
             text.replace(",", ".");
@@ -381,19 +371,6 @@ function normalize(value) {
    MANPOWER HELPERS
    ========================================================= */
 
-/*
-   Membaca manpower dari struktur DAILY REPORT terbaru:
-
-   report.manpower = {
-       foreman,
-       headWorker,
-       skilledWorker,
-       staffOffice
-   }
-
-   Tetap mendukung struktur lama sebagai fallback.
-*/
-
 function getReportManpower(report) {
 
     const manpower =
@@ -435,13 +412,6 @@ function getReportManpower(report) {
         staffOffice;
 
 
-    /*
-       Kalau daily report sudah menyimpan
-       totalManpower, gunakan nilai tersebut.
-
-       Kalau tidak ada, hitung dari kategori.
-    */
-
     const storedTotal =
         number(
             report?.totalManpower
@@ -474,15 +444,6 @@ function getReportManpower(report) {
 /* =========================================================
    HOURS HELPERS
    ========================================================= */
-
-/*
-   Membaca:
-
-   report.hours.normal
-   report.hours.overtime
-
-   dan tetap mendukung format lama.
-*/
 
 function getReportHours(report) {
 
@@ -522,11 +483,15 @@ function getReportHours(report) {
 function getReportManhours(report) {
 
     const manpower =
-        getReportManpower(report);
+        getReportManpower(
+            report
+        );
 
 
     const hours =
-        getReportHours(report);
+        getReportHours(
+            report
+        );
 
 
     const normal =
@@ -636,6 +601,34 @@ function getActivityWeight(activity) {
 
 
 /* =========================================================
+   SCHEDULE DATE GETTERS
+   ========================================================= */
+
+function getActivityStart(activity) {
+
+    return String(
+        activity?.plannedStart ??
+        activity?.startDate ??
+        activity?.start ??
+        ""
+    ).trim();
+
+}
+
+
+function getActivityFinish(activity) {
+
+    return String(
+        activity?.plannedFinish ??
+        activity?.finishDate ??
+        activity?.finish ??
+        ""
+    ).trim();
+
+}
+
+
+/* =========================================================
    REPORT ACTIVITY GETTERS
    ========================================================= */
 
@@ -700,7 +693,9 @@ function createScheduleMap() {
     schedule.forEach(item => {
 
         const id =
-            getActivityId(item);
+            getActivityId(
+                item
+            );
 
 
         if (!id) {
@@ -734,7 +729,9 @@ function getFilteredReports() {
     return reports.filter(report => {
 
         const reportDate =
-            getReportDate(report);
+            getReportDate(
+                report
+            );
 
 
         const reportLocation =
@@ -1324,10 +1321,6 @@ function updateManpowerKPI(
     });
 
 
-    /* ==============================================
-       UPDATE KPI
-       ============================================== */
-
     if (totalManpower) {
 
         totalManpower.textContent =
@@ -1367,10 +1360,6 @@ function updateManpowerKPI(
 
     }
 
-
-    /* ==============================================
-       DEBUG
-       ============================================== */
 
     console.log(
         "=== MANPOWER KPI ==="
@@ -1547,7 +1536,8 @@ function buildActivityData(
             if (
                 normalize(
                     activity.status
-                ) === "completed"
+                ) ===
+                "completed"
             ) {
 
                 item.status =
@@ -1624,7 +1614,8 @@ function getAllReportsForActivity(
 
         if (
             untilDate &&
-            reportDate > untilDate
+            reportDate >
+            untilDate
         ) {
 
             return;
@@ -1935,11 +1926,15 @@ function calculatePlannedActivityProgress(
 ) {
 
     const start =
-        activity.plannedStart;
+        getActivityStart(
+            activity
+        );
 
 
     const finish =
-        activity.plannedFinish;
+        getActivityFinish(
+            activity
+        );
 
 
     if (
@@ -2530,6 +2525,907 @@ function updateProjectProgressOverview() {
 
 
 /* =========================================================
+   S-CURVE DATE RANGE
+   ========================================================= */
+
+function getSCurveDateRange() {
+
+    const schedule =
+        getMasterSchedule();
+
+
+    const reports =
+        getReports();
+
+
+    const dates = [];
+
+
+    schedule.forEach(activity => {
+
+        const start =
+            getActivityStart(
+                activity
+            );
+
+
+        const finish =
+            getActivityFinish(
+                activity
+            );
+
+
+        if (start) {
+            dates.push(start);
+        }
+
+
+        if (finish) {
+            dates.push(finish);
+        }
+
+    });
+
+
+    reports.forEach(report => {
+
+        const date =
+            getReportDate(
+                report
+            );
+
+
+        if (date) {
+            dates.push(date);
+        }
+
+    });
+
+
+    if (!dates.length) {
+
+        return null;
+
+    }
+
+
+    dates.sort();
+
+
+    return {
+
+        start:
+            dates[0],
+
+        end:
+            dates[dates.length - 1]
+
+    };
+
+}
+
+
+/* =========================================================
+   GENERATE DATE ARRAY
+   ========================================================= */
+
+function generateSCurveDates(
+    startDate,
+    endDate
+) {
+
+    const dates = [];
+
+
+    if (
+        !startDate ||
+        !endDate
+    ) {
+
+        return dates;
+
+    }
+
+
+    const start =
+        new Date(
+            startDate +
+            "T00:00:00"
+        );
+
+
+    const end =
+        new Date(
+            endDate +
+            "T00:00:00"
+        );
+
+
+    if (
+        Number.isNaN(
+            start.getTime()
+        ) ||
+        Number.isNaN(
+            end.getTime()
+        )
+    ) {
+
+        return dates;
+
+    }
+
+
+    let current =
+        new Date(
+            start
+        );
+
+
+    while (
+        current <= end
+    ) {
+
+        const iso =
+            current
+                .toISOString()
+                .slice(
+                    0,
+                    10
+                );
+
+
+        dates.push(
+            iso
+        );
+
+
+        current.setDate(
+            current.getDate() +
+            7
+        );
+
+    }
+
+
+    if (
+        dates.length &&
+        dates[dates.length - 1] !==
+        endDate
+    ) {
+
+        dates.push(
+            endDate
+        );
+
+    }
+
+
+    return dates;
+
+}
+
+
+/* =========================================================
+   S-CURVE DRAWING
+   ========================================================= */
+
+function drawSCurve() {
+
+    if (!sCurveChart) {
+        return;
+    }
+
+
+    const canvas =
+        sCurveChart;
+
+
+    const wrapper =
+        canvas.parentElement;
+
+
+    if (!wrapper) {
+        return;
+    }
+
+
+    /*
+       S-Curve hanya digunakan
+       untuk Master Schedule DANREM.
+    */
+
+    if (
+        !isDANREMProjectSelected()
+    ) {
+
+        const ctx =
+            canvas.getContext(
+                "2d"
+            );
+
+
+        const width =
+            wrapper.clientWidth;
+
+
+        const height =
+            wrapper.clientHeight;
+
+
+        const dpr =
+            window.devicePixelRatio ||
+            1;
+
+
+        canvas.width =
+            width *
+            dpr;
+
+
+        canvas.height =
+            height *
+            dpr;
+
+
+        canvas.style.width =
+            width +
+            "px";
+
+
+        canvas.style.height =
+            height +
+            "px";
+
+
+        ctx.setTransform(
+            dpr,
+            0,
+            0,
+            dpr,
+            0,
+            0
+        );
+
+
+        ctx.clearRect(
+            0,
+            0,
+            width,
+            height
+        );
+
+
+        ctx.font =
+            "14px Arial";
+
+
+        ctx.textAlign =
+            "center";
+
+
+        ctx.textBaseline =
+            "middle";
+
+
+        ctx.fillText(
+            "S-Curve available for Kalimantan → Tipe 200 → DANREM",
+            width / 2,
+            height / 2
+        );
+
+
+        return;
+
+    }
+
+
+    const dateRange =
+        getSCurveDateRange();
+
+
+    if (
+        !dateRange
+    ) {
+
+        return;
+
+    }
+
+
+    const dates =
+        generateSCurveDates(
+            dateRange.start,
+            dateRange.end
+        );
+
+
+    if (
+        dates.length < 2
+    ) {
+
+        return;
+
+    }
+
+
+    const plannedValues =
+        dates.map(date =>
+            calculatePlannedProjectProgress(
+                date
+            )
+        );
+
+
+    const actualValues =
+        dates.map(date =>
+            calculateActualProjectProgress(
+                date
+            )
+        );
+
+
+    const width =
+        wrapper.clientWidth;
+
+
+    const height =
+        wrapper.clientHeight;
+
+
+    const dpr =
+        window.devicePixelRatio ||
+        1;
+
+
+    canvas.width =
+        width *
+        dpr;
+
+
+    canvas.height =
+        height *
+        dpr;
+
+
+    canvas.style.width =
+        width +
+        "px";
+
+
+    canvas.style.height =
+        height +
+        "px";
+
+
+    const ctx =
+        canvas.getContext(
+            "2d"
+        );
+
+
+    ctx.setTransform(
+        dpr,
+        0,
+        0,
+        dpr,
+        0,
+        0
+    );
+
+
+    ctx.clearRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    /*
+       ============================================
+       CHART AREA
+       ============================================
+    */
+
+    const margin = {
+
+        top: 30,
+
+        right: 35,
+
+        bottom: 65,
+
+        left: 60
+
+    };
+
+
+    const chartWidth =
+        width -
+        margin.left -
+        margin.right;
+
+
+    const chartHeight =
+        height -
+        margin.top -
+        margin.bottom;
+
+
+    if (
+        chartWidth <= 0 ||
+        chartHeight <= 0
+    ) {
+
+        return;
+
+    }
+
+
+    /*
+       ============================================
+       BACKGROUND
+       ============================================
+    */
+
+    ctx.fillStyle =
+        "#ffffff";
+
+
+    ctx.fillRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    /*
+       ============================================
+       GRID
+       ============================================
+    */
+
+    ctx.lineWidth =
+        1;
+
+
+    ctx.strokeStyle =
+        "#e5e7eb";
+
+
+    ctx.font =
+        "11px Arial";
+
+
+    ctx.fillStyle =
+        "#6b7280";
+
+
+    ctx.textAlign =
+        "right";
+
+
+    ctx.textBaseline =
+        "middle";
+
+
+    for (
+        let percentage = 0;
+        percentage <= 100;
+        percentage += 20
+    ) {
+
+        const y =
+            margin.top +
+            chartHeight -
+            (
+                percentage /
+                100
+            ) *
+            chartHeight;
+
+
+        ctx.beginPath();
+
+
+        ctx.moveTo(
+            margin.left,
+            y
+        );
+
+
+        ctx.lineTo(
+            width -
+            margin.right,
+            y
+        );
+
+
+        ctx.stroke();
+
+
+        ctx.fillText(
+            percentage +
+            "%",
+            margin.left -
+            10,
+            y
+        );
+
+    }
+
+
+    /*
+       ============================================
+       AXIS
+       ============================================
+    */
+
+    ctx.strokeStyle =
+        "#9ca3af";
+
+
+    ctx.lineWidth =
+        1.2;
+
+
+    ctx.beginPath();
+
+
+    ctx.moveTo(
+        margin.left,
+        margin.top
+    );
+
+
+    ctx.lineTo(
+        margin.left,
+        margin.top +
+        chartHeight
+    );
+
+
+    ctx.lineTo(
+        width -
+        margin.right,
+        margin.top +
+        chartHeight
+    );
+
+
+    ctx.stroke();
+
+
+    /*
+       ============================================
+       X-AXIS DATE LABEL
+       ============================================
+    */
+
+    ctx.fillStyle =
+        "#6b7280";
+
+
+    ctx.font =
+        "10px Arial";
+
+
+    ctx.textAlign =
+        "center";
+
+
+    ctx.textBaseline =
+        "top";
+
+
+    const labelEvery =
+        Math.max(
+            1,
+            Math.ceil(
+                dates.length /
+                8
+            )
+        );
+
+
+    dates.forEach(
+        (date, index) => {
+
+            if (
+                index % labelEvery !== 0 &&
+                index !==
+                dates.length - 1
+            ) {
+
+                return;
+
+            }
+
+
+            const x =
+                margin.left +
+                (
+                    index /
+                    (
+                        dates.length -
+                        1
+                    )
+                ) *
+                chartWidth;
+
+
+            const dateObject =
+                new Date(
+                    date +
+                    "T00:00:00"
+                );
+
+
+            const label =
+                dateObject.toLocaleDateString(
+                    "id-ID",
+                    {
+                        day: "2-digit",
+                        month: "short"
+                    }
+                );
+
+
+            ctx.fillText(
+                label,
+                x,
+                margin.top +
+                chartHeight +
+                12
+            );
+
+        }
+    );
+
+
+    /*
+       ============================================
+       DRAW LINE FUNCTION
+       ============================================
+    */
+
+    function drawLine(
+        values,
+        lineColor,
+        lineWidth
+    ) {
+
+        if (
+            !values.length
+        ) {
+
+            return;
+
+        }
+
+
+        ctx.beginPath();
+
+
+        values.forEach(
+            (value, index) => {
+
+                const x =
+                    margin.left +
+                    (
+                        index /
+                        (
+                            values.length -
+                            1
+                        )
+                    ) *
+                    chartWidth;
+
+
+                const safeValue =
+                    Math.max(
+                        0,
+                        Math.min(
+                            100,
+                            number(value)
+                        )
+                    );
+
+
+                const y =
+                    margin.top +
+                    chartHeight -
+                    (
+                        safeValue /
+                        100
+                    ) *
+                    chartHeight;
+
+
+                if (
+                    index === 0
+                ) {
+
+                    ctx.moveTo(
+                        x,
+                        y
+                    );
+
+                }
+
+                else {
+
+                    ctx.lineTo(
+                        x,
+                        y
+                    );
+
+                }
+
+            }
+        );
+
+
+        ctx.strokeStyle =
+            lineColor;
+
+
+        ctx.lineWidth =
+            lineWidth;
+
+
+        ctx.lineJoin =
+            "round";
+
+
+        ctx.lineCap =
+            "round";
+
+
+        ctx.stroke();
+
+    }
+
+
+    /*
+       ============================================
+       PLANNED LINE
+       ============================================
+    */
+
+    drawLine(
+        plannedValues,
+        "#2563eb",
+        3
+    );
+
+
+    /*
+       ============================================
+       ACTUAL LINE
+       ============================================
+    */
+
+    drawLine(
+        actualValues,
+        "#16a34a",
+        3
+    );
+
+
+    /*
+       ============================================
+       LEGEND
+       ============================================
+    */
+
+    const legendY =
+        height -
+        22;
+
+
+    ctx.font =
+        "12px Arial";
+
+
+    ctx.textAlign =
+        "left";
+
+
+    ctx.textBaseline =
+        "middle";
+
+
+    /*
+       Planned
+    */
+
+    ctx.strokeStyle =
+        "#2563eb";
+
+
+    ctx.lineWidth =
+        3;
+
+
+    ctx.beginPath();
+
+
+    ctx.moveTo(
+        margin.left,
+        legendY
+    );
+
+
+    ctx.lineTo(
+        margin.left + 25,
+        legendY
+    );
+
+
+    ctx.stroke();
+
+
+    ctx.fillStyle =
+        "#374151";
+
+
+    ctx.fillText(
+        "Planned",
+        margin.left + 35,
+        legendY
+    );
+
+
+    /*
+       Actual
+    */
+
+    const actualLegendX =
+        margin.left + 115;
+
+
+    ctx.strokeStyle =
+        "#16a34a";
+
+
+    ctx.lineWidth =
+        3;
+
+
+    ctx.beginPath();
+
+
+    ctx.moveTo(
+        actualLegendX,
+        legendY
+    );
+
+
+    ctx.lineTo(
+        actualLegendX + 25,
+        legendY
+    );
+
+
+    ctx.stroke();
+
+
+    ctx.fillStyle =
+        "#374151";
+
+
+    ctx.fillText(
+        "Actual",
+        actualLegendX + 35,
+        legendY
+    );
+
+}
+
+
+/* =========================================================
    RECENT DAILY REPORTS
    ========================================================= */
 
@@ -2578,13 +3474,6 @@ function renderReports(
         sortedReports
             .map(report => {
 
-
-                /*
-                   ====================================
-                   FIX:
-                   READ MANPOWER FROM report.manpower
-                   ====================================
-                */
 
                 const manpowerData =
                     getReportManpower(
@@ -3118,6 +4007,13 @@ function renderDashboard() {
 
     updateProjectProgressOverview();
 
+
+    /*
+       S-Curve
+    */
+
+    drawSCurve();
+
 }
 
 
@@ -3220,6 +4116,20 @@ window.addEventListener(
 
 
 /* =========================================================
+   WINDOW RESIZE
+   ========================================================= */
+
+window.addEventListener(
+    "resize",
+    () => {
+
+        drawSCurve();
+
+    }
+);
+
+
+/* =========================================================
    INITIAL LOAD
    ========================================================= */
 
@@ -3243,6 +4153,11 @@ console.log(
 console.log(
     "Reports:",
     getReports()
+);
+
+console.log(
+    "Master Schedule:",
+    getMasterSchedule()
 );
 
 console.log(
