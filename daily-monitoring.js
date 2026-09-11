@@ -184,14 +184,35 @@ function getReportDate(report) {
 
 function getMasterSchedule() {
 
-    if (
-        typeof masterSchedule !== "undefined" &&
-        Array.isArray(masterSchedule)
-    ) {
+    try {
 
-        return masterSchedule;
+        if (
+            typeof masterSchedule !== "undefined" &&
+            Array.isArray(masterSchedule)
+        ) {
+
+            return masterSchedule;
+
+        }
+
+    } catch (error) {
+
+        console.warn(
+            "masterSchedule is not directly available."
+        );
 
     }
+
+
+    if (
+        typeof window !== "undefined" &&
+        Array.isArray(window.masterSchedule)
+    ) {
+
+        return window.masterSchedule;
+
+    }
+
 
     return [];
 
@@ -204,8 +225,84 @@ function getMasterSchedule() {
 
 function number(value) {
 
+    if (
+        value === null ||
+        value === undefined ||
+        value === ""
+    ) {
+
+        return 0;
+
+    }
+
+
+    let text =
+        String(value)
+            .trim()
+            .replace(/\s/g, "");
+
+
+    /*
+       Support:
+       1.500
+       1,500
+       1.500,50
+       1,500.50
+    */
+
+    if (
+        text.includes(".") &&
+        text.includes(",")
+    ) {
+
+        /*
+           Indonesian format:
+           1.500,50
+        */
+
+        if (
+            text.lastIndexOf(",") >
+            text.lastIndexOf(".")
+        ) {
+
+            text =
+                text
+                    .replace(/\./g, "")
+                    .replace(",", ".");
+
+        }
+
+        /*
+           English format:
+           1,500.50
+        */
+
+        else {
+
+            text =
+                text.replace(/,/g, "");
+
+        }
+
+    }
+
+    else if (
+        text.includes(",")
+    ) {
+
+        /*
+           Treat comma as decimal
+        */
+
+        text =
+            text.replace(",", ".");
+
+    }
+
+
     const parsed =
-        parseFloat(value);
+        parseFloat(text);
+
 
     return Number.isFinite(parsed)
         ? parsed
@@ -276,6 +373,183 @@ function normalize(value) {
     return String(value ?? "")
         .trim()
         .toLowerCase();
+
+}
+
+
+/* =========================================================
+   MANPOWER HELPERS
+   ========================================================= */
+
+/*
+   Membaca manpower dari struktur DAILY REPORT terbaru:
+
+   report.manpower = {
+       foreman,
+       headWorker,
+       skilledWorker,
+       staffOffice
+   }
+
+   Tetap mendukung struktur lama sebagai fallback.
+*/
+
+function getReportManpower(report) {
+
+    const manpower =
+        report?.manpower || {};
+
+
+    const foreman =
+        number(
+            manpower.foreman ??
+            report?.foreman
+        );
+
+
+    const headWorker =
+        number(
+            manpower.headWorker ??
+            report?.headWorker
+        );
+
+
+    const skilledWorker =
+        number(
+            manpower.skilledWorker ??
+            report?.skilledWorker
+        );
+
+
+    const staffOffice =
+        number(
+            manpower.staffOffice ??
+            report?.staffOffice
+        );
+
+
+    const calculatedTotal =
+        foreman +
+        headWorker +
+        skilledWorker +
+        staffOffice;
+
+
+    /*
+       Kalau daily report sudah menyimpan
+       totalManpower, gunakan nilai tersebut.
+
+       Kalau tidak ada, hitung dari kategori.
+    */
+
+    const storedTotal =
+        number(
+            report?.totalManpower
+        );
+
+
+    const total =
+        storedTotal > 0
+            ? storedTotal
+            : calculatedTotal;
+
+
+    return {
+
+        foreman,
+
+        headWorker,
+
+        skilledWorker,
+
+        staffOffice,
+
+        total
+
+    };
+
+}
+
+
+/* =========================================================
+   HOURS HELPERS
+   ========================================================= */
+
+/*
+   Membaca:
+
+   report.hours.normal
+   report.hours.overtime
+
+   dan tetap mendukung format lama.
+*/
+
+function getReportHours(report) {
+
+    const hours =
+        report?.hours || {};
+
+
+    const normal =
+        number(
+            hours.normal ??
+            report?.normalHours
+        );
+
+
+    const overtime =
+        number(
+            hours.overtime ??
+            report?.overtimeHours
+        );
+
+
+    return {
+
+        normal,
+
+        overtime
+
+    };
+
+}
+
+
+/* =========================================================
+   MANHOUR HELPER
+   ========================================================= */
+
+function getReportManhours(report) {
+
+    const manpower =
+        getReportManpower(report);
+
+
+    const hours =
+        getReportHours(report);
+
+
+    const normal =
+        manpower.total *
+        hours.normal;
+
+
+    const overtime =
+        manpower.total *
+        hours.overtime;
+
+
+    return {
+
+        normal,
+
+        overtime,
+
+        total:
+            normal +
+            overtime
+
+    };
 
 }
 
@@ -422,14 +696,17 @@ function createScheduleMap() {
     const map =
         new Map();
 
+
     schedule.forEach(item => {
 
         const id =
             getActivityId(item);
 
+
         if (!id) {
             return;
         }
+
 
         map.set(
             id,
@@ -437,6 +714,7 @@ function createScheduleMap() {
         );
 
     });
+
 
     return map;
 
@@ -452,20 +730,24 @@ function getFilteredReports() {
     const reports =
         getReports();
 
+
     return reports.filter(report => {
 
         const reportDate =
             getReportDate(report);
+
 
         const reportLocation =
             String(
                 report.location ?? ""
             ).trim();
 
+
         const reportProject =
             String(
                 report.project ?? ""
             ).trim();
+
 
         const reportUnit =
             String(
@@ -477,7 +759,8 @@ function getFilteredReports() {
 
         if (
             dateFilter?.value &&
-            reportDate !== dateFilter.value
+            reportDate !==
+            dateFilter.value
         ) {
 
             return false;
@@ -544,8 +827,10 @@ function populateLocations() {
         return;
     }
 
+
     const current =
         locationFilter.value;
+
 
     locationFilter.innerHTML = `
         <option value="All">
@@ -562,11 +847,14 @@ function populateLocations() {
                     "option"
                 );
 
+
             option.value =
                 location;
 
+
             option.textContent =
                 location;
+
 
             locationFilter.appendChild(
                 option
@@ -603,7 +891,9 @@ function populateProjects() {
 
 
     const location =
-        locationFilter?.value || "All";
+        locationFilter?.value ||
+        "All";
+
 
     const current =
         projectFilter.value;
@@ -629,7 +919,9 @@ function populateProjects() {
                 projectData[location]
             );
 
-    } else {
+    }
+
+    else {
 
         Object.values(projectData)
             .forEach(locationProjects => {
@@ -665,11 +957,14 @@ function populateProjects() {
                 "option"
             );
 
+
         option.value =
             project;
 
+
         option.textContent =
             project;
+
 
         projectFilter.appendChild(
             option
@@ -685,7 +980,9 @@ function populateProjects() {
         projectFilter.value =
             current;
 
-    } else {
+    }
+
+    else {
 
         projectFilter.value =
             "All";
@@ -707,10 +1004,14 @@ function populateUnits() {
 
 
     const location =
-        locationFilter?.value || "All";
+        locationFilter?.value ||
+        "All";
+
 
     const project =
-        projectFilter?.value || "All";
+        projectFilter?.value ||
+        "All";
+
 
     const current =
         unitFilter.value;
@@ -736,7 +1037,9 @@ function populateUnits() {
     ) {
 
         units =
-            projectData[location][project];
+            [
+                ...projectData[location][project]
+            ];
 
     }
 
@@ -771,7 +1074,7 @@ function populateUnits() {
     }
 
 
-    /* ALL LOCATION */
+    /* ALL LOCATION + PROJECT */
 
     else if (
         location === "All" &&
@@ -843,11 +1146,14 @@ function populateUnits() {
                 "option"
             );
 
+
         option.value =
             unit;
 
+
         option.textContent =
             unit;
+
 
         unitFilter.appendChild(
             option
@@ -863,7 +1169,9 @@ function populateUnits() {
         unitFilter.value =
             current;
 
-    } else {
+    }
+
+    else {
 
         unitFilter.value =
             "All";
@@ -880,13 +1188,18 @@ function populateUnits() {
 function populateFilters() {
 
     const currentLocation =
-        locationFilter?.value || "All";
+        locationFilter?.value ||
+        "All";
+
 
     const currentProject =
-        projectFilter?.value || "All";
+        projectFilter?.value ||
+        "All";
+
 
     const currentUnit =
-        unitFilter?.value || "All";
+        unitFilter?.value ||
+        "All";
 
 
     populateLocations();
@@ -959,56 +1272,61 @@ function populateFilters() {
    MANPOWER KPI
    ========================================================= */
 
-function updateManpowerKPI(reports) {
+function updateManpowerKPI(
+    reports
+) {
 
-    let manpower = 0;
+    let manpower =
+        0;
 
-    let normalHours = 0;
 
-    let overtimeHours = 0;
+    let normalManhoursValue =
+        0;
+
+
+    let overtimeManhoursValue =
+        0;
+
+
+    let totalManhoursValue =
+        0;
 
 
     reports.forEach(report => {
 
-        const foreman =
-            number(report.foreman);
-
-        const headWorker =
-            number(report.headWorker);
-
-        const skilledWorker =
-            number(report.skilledWorker);
-
-        const staffOffice =
-            number(report.staffOffice);
+        const reportManpower =
+            getReportManpower(
+                report
+            );
 
 
-        const totalPeople =
-            foreman +
-            headWorker +
-            skilledWorker +
-            staffOffice;
+        const reportManhours =
+            getReportManhours(
+                report
+            );
 
 
         manpower +=
-            totalPeople;
+            reportManpower.total;
 
 
-        normalHours +=
-            totalPeople *
-            number(
-                report.normalHours
-            );
+        normalManhoursValue +=
+            reportManhours.normal;
 
 
-        overtimeHours +=
-            totalPeople *
-            number(
-                report.overtimeHours
-            );
+        overtimeManhoursValue +=
+            reportManhours.overtime;
+
+
+        totalManhoursValue +=
+            reportManhours.total;
 
     });
 
+
+    /* ==============================================
+       UPDATE KPI
+       ============================================== */
 
     if (totalManpower) {
 
@@ -1024,7 +1342,7 @@ function updateManpowerKPI(reports) {
 
         normalManhours.textContent =
             formatNumber(
-                normalHours
+                normalManhoursValue
             );
 
     }
@@ -1034,7 +1352,7 @@ function updateManpowerKPI(reports) {
 
         overtimeManhours.textContent =
             formatNumber(
-                overtimeHours
+                overtimeManhoursValue
             );
 
     }
@@ -1044,11 +1362,49 @@ function updateManpowerKPI(reports) {
 
         totalManhours.textContent =
             formatNumber(
-                normalHours +
-                overtimeHours
+                totalManhoursValue
             );
 
     }
+
+
+    /* ==============================================
+       DEBUG
+       ============================================== */
+
+    console.log(
+        "=== MANPOWER KPI ==="
+    );
+
+
+    console.log(
+        "Filtered Reports:",
+        reports
+    );
+
+
+    console.log(
+        "Total Manpower:",
+        manpower
+    );
+
+
+    console.log(
+        "Normal Manhours:",
+        normalManhoursValue
+    );
+
+
+    console.log(
+        "Overtime Manhours:",
+        overtimeManhoursValue
+    );
+
+
+    console.log(
+        "Total Manhours:",
+        totalManhoursValue
+    );
 
 }
 
@@ -1057,10 +1413,13 @@ function updateManpowerKPI(reports) {
    ACTIVITY DATA
    ========================================================= */
 
-function buildActivityData(reports) {
+function buildActivityData(
+    reports
+) {
 
     const scheduleMap =
         createScheduleMap();
+
 
     const activityMap =
         new Map();
@@ -1072,6 +1431,7 @@ function buildActivityData(reports) {
             String(
                 report.project ?? ""
             );
+
 
         const unit =
             String(
@@ -1126,8 +1486,6 @@ function buildActivityData(reports) {
 
                         unit,
 
-                        activityId,
-
                         activity:
                             getReportActivityName(
                                 activity
@@ -1135,6 +1493,8 @@ function buildActivityData(reports) {
                             getActivityName(
                                 master
                             ),
+
+                        activityId,
 
                         workPackage:
                             getReportWorkPackage(
@@ -1221,7 +1581,9 @@ function getAllReportsForActivity(
     const reports =
         getReports();
 
-    let total = 0;
+
+    let total =
+        0;
 
 
     reports.forEach(report => {
@@ -1327,8 +1689,11 @@ function calculateProgress(
     ) {
 
         return {
+
             progress: 0,
+
             weightedProgress: 0
+
         };
 
     }
@@ -1349,7 +1714,8 @@ function calculateProgress(
             (
                 actual /
                 planned
-            ) * 100
+            ) *
+            100
         );
 
 
@@ -1368,8 +1734,11 @@ function calculateProgress(
 
 
     return {
+
         progress,
+
         weightedProgress
+
     };
 
 }
@@ -1389,9 +1758,12 @@ function updateActivityKPI(
         );
 
 
-    let progressCount = 0;
+    let progressCount =
+        0;
 
-    let completedCount = 0;
+
+    let completedCount =
+        0;
 
 
     activityData.forEach(item => {
@@ -1399,12 +1771,15 @@ function updateActivityKPI(
         if (
             normalize(
                 item.status
-            ) === "completed"
+            ) ===
+            "completed"
         ) {
 
             completedCount++;
 
-        } else {
+        }
+
+        else {
 
             progressCount++;
 
@@ -1445,9 +1820,11 @@ function isDANREMProjectSelected() {
         locationFilter?.value ||
         "All";
 
+
     const project =
         projectFilter?.value ||
         "All";
+
 
     const unit =
         unitFilter?.value ||
@@ -1455,7 +1832,8 @@ function isDANREMProjectSelected() {
 
 
     if (
-        location === "Tasikmalaya"
+        location ===
+        "Tasikmalaya"
     ) {
 
         return false;
@@ -1517,10 +1895,11 @@ function getProgressDate() {
 
     const reports =
         getReports()
-            .filter(report =>
-                getReportDate(
-                    report
-                )
+            .filter(
+                report =>
+                    getReportDate(
+                        report
+                    )
             );
 
 
@@ -1534,10 +1913,11 @@ function getProgressDate() {
 
 
     return reports
-        .map(report =>
-            getReportDate(
-                report
-            )
+        .map(
+            report =>
+                getReportDate(
+                    report
+                )
         )
         .sort()
         .at(-1);
@@ -1557,6 +1937,7 @@ function calculatePlannedActivityProgress(
     const start =
         activity.plannedStart;
 
+
     const finish =
         activity.plannedFinish;
 
@@ -1573,7 +1954,8 @@ function calculatePlannedActivityProgress(
 
 
     if (
-        targetDate < start
+        targetDate <
+        start
     ) {
 
         return 0;
@@ -1582,7 +1964,8 @@ function calculatePlannedActivityProgress(
 
 
     if (
-        targetDate >= finish
+        targetDate >=
+        finish
     ) {
 
         return 100;
@@ -1596,11 +1979,13 @@ function calculatePlannedActivityProgress(
             "T00:00:00"
         );
 
+
     const finishDate =
         new Date(
             finish +
             "T00:00:00"
         );
+
 
     const currentDate =
         new Date(
@@ -1612,6 +1997,7 @@ function calculatePlannedActivityProgress(
     const totalDuration =
         finishDate -
         startDate;
+
 
     const elapsed =
         currentDate -
@@ -1634,7 +2020,8 @@ function calculatePlannedActivityProgress(
             (
                 elapsed /
                 totalDuration
-            ) * 100
+            ) *
+            100
         )
     );
 
@@ -1663,7 +2050,8 @@ function calculatePlannedProjectProgress(
     }
 
 
-    let plannedProgress = 0;
+    let plannedProgress =
+        0;
 
 
     schedule.forEach(activity => {
@@ -1737,9 +2125,11 @@ function calculateActualProjectProgress(
         locationFilter?.value ||
         "All";
 
+
     const selectedProject =
         projectFilter?.value ||
         "All";
+
 
     const selectedUnit =
         unitFilter?.value ||
@@ -1757,7 +2147,8 @@ function calculateActualProjectProgress(
 
             if (
                 untilDate &&
-                reportDate > untilDate
+                reportDate >
+                untilDate
             ) {
 
                 return false;
@@ -1766,9 +2157,11 @@ function calculateActualProjectProgress(
 
 
             if (
-                selectedLocation !== "All" &&
+                selectedLocation !==
+                "All" &&
                 String(
-                    report.location ?? ""
+                    report.location ??
+                    ""
                 ) !==
                 selectedLocation
             ) {
@@ -1779,9 +2172,11 @@ function calculateActualProjectProgress(
 
 
             if (
-                selectedProject !== "All" &&
+                selectedProject !==
+                "All" &&
                 String(
-                    report.project ?? ""
+                    report.project ??
+                    ""
                 ) !==
                 selectedProject
             ) {
@@ -1792,9 +2187,11 @@ function calculateActualProjectProgress(
 
 
             if (
-                selectedUnit !== "All" &&
+                selectedUnit !==
+                "All" &&
                 String(
-                    report.unit ?? ""
+                    report.unit ??
+                    ""
                 ) !==
                 selectedUnit
             ) {
@@ -1809,7 +2206,8 @@ function calculateActualProjectProgress(
         });
 
 
-    let actualProgress = 0;
+    let actualProgress =
+        0;
 
 
     schedule.forEach(activity => {
@@ -1819,10 +2217,12 @@ function calculateActualProjectProgress(
                 activity
             );
 
+
         const weight =
             getActivityWeight(
                 activity
             );
+
 
         const plannedQuantity =
             getActivityPlannedQuantity(
@@ -1841,7 +2241,8 @@ function calculateActualProjectProgress(
         }
 
 
-        let actualQuantity = 0;
+        let actualQuantity =
+            0;
 
 
         selectedReports.forEach(report => {
@@ -1925,7 +2326,8 @@ function getProjectStatus(
 
 
     if (
-        deviation >= -1
+        deviation >=
+        -1
     ) {
 
         return "On Schedule";
@@ -1934,7 +2336,8 @@ function getProjectStatus(
 
 
     if (
-        deviation >= -5
+        deviation >=
+        -5
     ) {
 
         return "Slightly Behind";
@@ -1957,33 +2360,45 @@ function updateProjectProgressOverview() {
         !isDANREMProjectSelected()
     ) {
 
-        if (plannedProgressElement) {
+        if (
+            plannedProgressElement
+        ) {
 
             plannedProgressElement.textContent =
                 "—";
 
         }
 
-        if (actualProgressElement) {
+
+        if (
+            actualProgressElement
+        ) {
 
             actualProgressElement.textContent =
                 "—";
 
         }
 
-        if (progressDeviationElement) {
+
+        if (
+            progressDeviationElement
+        ) {
 
             progressDeviationElement.textContent =
                 "—";
 
         }
 
-        if (progressStatusElement) {
+
+        if (
+            progressStatusElement
+        ) {
 
             progressStatusElement.textContent =
                 "Not Available";
 
         }
+
 
         return;
 
@@ -1998,33 +2413,45 @@ function updateProjectProgressOverview() {
         !progressDate
     ) {
 
-        if (plannedProgressElement) {
+        if (
+            plannedProgressElement
+        ) {
 
             plannedProgressElement.textContent =
                 "0.00%";
 
         }
 
-        if (actualProgressElement) {
+
+        if (
+            actualProgressElement
+        ) {
 
             actualProgressElement.textContent =
                 "0.00%";
 
         }
 
-        if (progressDeviationElement) {
+
+        if (
+            progressDeviationElement
+        ) {
 
             progressDeviationElement.textContent =
                 "0.00%";
 
         }
 
-        if (progressStatusElement) {
+
+        if (
+            progressStatusElement
+        ) {
 
             progressStatusElement.textContent =
                 "No Data";
 
         }
+
 
         return;
 
@@ -2054,7 +2481,9 @@ function updateProjectProgressOverview() {
         );
 
 
-    if (plannedProgressElement) {
+    if (
+        plannedProgressElement
+    ) {
 
         plannedProgressElement.textContent =
             formatPercent(
@@ -2064,7 +2493,9 @@ function updateProjectProgressOverview() {
     }
 
 
-    if (actualProgressElement) {
+    if (
+        actualProgressElement
+    ) {
 
         actualProgressElement.textContent =
             formatPercent(
@@ -2074,7 +2505,9 @@ function updateProjectProgressOverview() {
     }
 
 
-    if (progressDeviationElement) {
+    if (
+        progressDeviationElement
+    ) {
 
         progressDeviationElement.textContent =
             formatPercent(
@@ -2084,7 +2517,9 @@ function updateProjectProgressOverview() {
     }
 
 
-    if (progressStatusElement) {
+    if (
+        progressStatusElement
+    ) {
 
         progressStatusElement.textContent =
             status;
@@ -2102,8 +2537,12 @@ function renderReports(
     reports
 ) {
 
-    if (!reportTableBody) {
+    if (
+        !reportTableBody
+    ) {
+
         return;
+
     }
 
 
@@ -2139,31 +2578,32 @@ function renderReports(
         sortedReports
             .map(report => {
 
-                const manpower =
-                    number(
-                        report.foreman
-                    ) +
-                    number(
-                        report.headWorker
-                    ) +
-                    number(
-                        report.skilledWorker
-                    ) +
-                    number(
-                        report.staffOffice
+
+                /*
+                   ====================================
+                   FIX:
+                   READ MANPOWER FROM report.manpower
+                   ====================================
+                */
+
+                const manpowerData =
+                    getReportManpower(
+                        report
                     );
+
+
+                const manhourData =
+                    getReportManhours(
+                        report
+                    );
+
+
+                const manpower =
+                    manpowerData.total;
 
 
                 const manhours =
-                    manpower *
-                    (
-                        number(
-                            report.normalHours
-                        ) +
-                        number(
-                            report.overtimeHours
-                        )
-                    );
+                    manhourData.total;
 
 
                 const activities =
@@ -2282,8 +2722,12 @@ function renderProgressTable(
     reports
 ) {
 
-    if (!progressTableBody) {
+    if (
+        !progressTableBody
+    ) {
+
         return;
+
     }
 
 
@@ -2330,7 +2774,8 @@ function renderProgressTable(
                 );
 
 
-            let progress = 0;
+            let progress =
+                0;
 
 
             if (
@@ -2414,64 +2859,65 @@ function renderProgressTable(
 
 
     progressTableBody.innerHTML =
-        rows.map(row => {
+        rows
+            .map(row => {
 
-            return `
-                <tr>
+                return `
+                    <tr>
 
-                    <td>
-                        ${escapeHTML(
-                            row.date
-                        )}
-                    </td>
+                        <td>
+                            ${escapeHTML(
+                                row.date
+                            )}
+                        </td>
 
-                    <td>
-                        ${escapeHTML(
-                            row.project
-                        )}
-                    </td>
+                        <td>
+                            ${escapeHTML(
+                                row.project
+                            )}
+                        </td>
 
-                    <td>
-                        ${escapeHTML(
-                            row.unit
-                        )}
-                    </td>
+                        <td>
+                            ${escapeHTML(
+                                row.unit
+                            )}
+                        </td>
 
-                    <td>
-                        ${escapeHTML(
-                            row.activity
-                        )}
-                    </td>
+                        <td>
+                            ${escapeHTML(
+                                row.activity
+                            )}
+                        </td>
 
-                    <td>
-                        ${formatQuantity(
-                            row.quantity
-                        )}
-                    </td>
+                        <td>
+                            ${formatQuantity(
+                                row.quantity
+                            )}
+                        </td>
 
-                    <td>
-                        ${escapeHTML(
-                            row.quantityUnit
-                        )}
-                    </td>
+                        <td>
+                            ${escapeHTML(
+                                row.quantityUnit
+                            )}
+                        </td>
 
-                    <td>
-                        ${formatQuantity(
-                            row.plannedQuantity
-                        )}
-                    </td>
+                        <td>
+                            ${formatQuantity(
+                                row.plannedQuantity
+                            )}
+                        </td>
 
-                    <td>
-                        ${formatPercent(
-                            row.progress
-                        )}
-                    </td>
+                        <td>
+                            ${formatPercent(
+                                row.progress
+                            )}
+                        </td>
 
-                </tr>
-            `;
+                    </tr>
+                `;
 
-        })
-        .join("");
+            })
+            .join("");
 
 }
 
@@ -2484,8 +2930,12 @@ function renderMaterials(
     reports
 ) {
 
-    if (!materialTableBody) {
+    if (
+        !materialTableBody
+    ) {
+
         return;
+
     }
 
 
@@ -2526,8 +2976,12 @@ function renderMaterials(
                 );
 
 
-            if (!name) {
+            if (
+                !name
+            ) {
+
                 return;
+
             }
 
 
@@ -2539,15 +2993,21 @@ function renderMaterials(
 
 
             if (
-                !materialMap.has(key)
+                !materialMap.has(
+                    key
+                )
             ) {
 
                 materialMap.set(
                     key,
                     {
+
                         name,
+
                         quantity: 0,
+
                         unit
+
                     }
                 );
 
@@ -2668,7 +3128,9 @@ function renderDashboard() {
 
 /* LOCATION */
 
-if (locationFilter) {
+if (
+    locationFilter
+) {
 
     locationFilter.addEventListener(
         "change",
@@ -2688,7 +3150,9 @@ if (locationFilter) {
 
 /* PROJECT */
 
-if (projectFilter) {
+if (
+    projectFilter
+) {
 
     projectFilter.addEventListener(
         "change",
@@ -2706,7 +3170,9 @@ if (projectFilter) {
 
 /* UNIT */
 
-if (unitFilter) {
+if (
+    unitFilter
+) {
 
     unitFilter.addEventListener(
         "change",
@@ -2718,7 +3184,9 @@ if (unitFilter) {
 
 /* DATE */
 
-if (dateFilter) {
+if (
+    dateFilter
+) {
 
     dateFilter.addEventListener(
         "change",
@@ -2758,3 +3226,25 @@ window.addEventListener(
 populateFilters();
 
 renderDashboard();
+
+
+/* =========================================================
+   DEBUG REPORT DATA
+   ========================================================= */
+
+console.log(
+    "====================================="
+);
+
+console.log(
+    "DAILY MONITORING INITIALIZED"
+);
+
+console.log(
+    "Reports:",
+    getReports()
+);
+
+console.log(
+    "====================================="
+);
