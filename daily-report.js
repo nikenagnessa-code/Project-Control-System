@@ -1681,6 +1681,8 @@ document.addEventListener("DOMContentLoaded", function () {
         alert(
             "Daily Report berhasil disimpan."
         );
+        window.location.replace("./daily-monitoring.html");
+        return;
 
 
         // =============================================
